@@ -1,24 +1,24 @@
 <template>
   <div class="list-row">
-    <h4> Courses view </h4>
+    <br>
     <div class="col-md-1"></div>
-    <div class="col-md-8 sticky-top">
+    <div class="col-md-8 sticky-top" style="margin: 10px; padding: 10px;">
       <div class="input-group mb-3">
         <input 
           type="text"
           class="form-control"
           placeholder="search by name or course number"
           v-model="searchVal"
-        />
-        <button @click="searchVal=''" style="margin-right: 10px;">clear search</button>
-        <button @click="showModal(null)" style="margin-left: 10px;">Add Course</button>
+        /> <p></p>
+        <button @click="searchVal=''" style="margin-right: 10px; border-radius: 4px;" class="btn btn-dark">Clear Search</button>
+        <button @click="showModal(null)" style="margin-left: 10px; border-radius: 4px;" class="btn btn-dark">Add Course</button>
 
       </div>
     </div>
-    <div class="col-md">
-      <h4> Courses </h4>
+    <div class="col-md" style="border-radius: 5px; padding: 10px; margin: 10px;">
+      <h4 style="text-align: center;"> Courses </h4>
       <div class="card">
-        <table class="table" style="border-radius: 5px;">
+        <table class="table">
           <thead class="" style="background-color: #f2f3f4;">
             <tr>
               <th scope="col">Course Number</th>
@@ -41,8 +41,8 @@
               <td>{{ course.level }}</td>
               <td>{{ course.hours }}</td>
               <td class="cell">{{ course.description }}</td>
-              <td><button @click="showModal(course.id)">edit</button></td>
-              <td><button @click="deleteCourse(course.id)">delete</button></td>
+              <td><button class="btn btn-outline-warning" @click="showModal(course.id)">edit</button></td>
+              <td><button class="btn btn-outline-danger" @click="deleteCourse(course.id)">delete</button></td>
             </tr>
           </tbody>
         </table>

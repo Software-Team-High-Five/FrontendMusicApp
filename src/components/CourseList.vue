@@ -143,6 +143,9 @@ import cds from '../services/CourseDataService';
 import VueModal from '@kouts/vue-modal';
 import '@kouts/vue-modal/dist/vue-modal.css'; 
 
+// import sds from '../services/StudentDataService';
+// import uds from '../services/UserDataService';
+
 export default {
   name: 'course-list'
   ,components: {
@@ -155,6 +158,8 @@ export default {
       ,currentCourse: {}
       ,editing: false
       ,viewModal: false
+      // ,users: []
+      // ,students: []
     }
   }
   ,methods: {
@@ -167,6 +172,24 @@ export default {
       .catch((e) => {
         console.log(e);
       })
+
+      // uds.getAll()
+      // .then((res) => {
+      //   this.users = res.data;
+      //   console.log(this.users);
+      // })
+      // .catch((e) => {
+      //   console.log(e);
+      // })
+      
+      // sds.getAll()
+      // .then((res) => {
+      //   this.students = res.data;
+      //   console.log(this.students);
+      // })
+      // .catch((e) => {
+      //   console.log(e);
+      // })
     }
     ,addCourse() {
       var data = {
@@ -251,6 +274,8 @@ export default {
   }
   ,mounted() {
     this.fetchAll();
+    // console.log('users: ', this.users);
+    // console.log('students: ', this.students);
   } 
 
 }

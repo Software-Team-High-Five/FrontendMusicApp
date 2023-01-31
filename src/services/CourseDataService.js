@@ -1,7 +1,6 @@
 import http from '../http-common';
 class CourseDataService {
   getAll() {
-    console.log('getting all');
     return http.get("/courses");
   }
   get(id) {

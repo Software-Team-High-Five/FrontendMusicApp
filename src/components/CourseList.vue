@@ -158,8 +158,6 @@ export default {
       ,currentCourse: {}
       ,editing: false
       ,viewModal: false
-      // ,users: []
-      // ,students: []
     }
   }
   ,methods: {
@@ -172,24 +170,6 @@ export default {
       .catch((e) => {
         console.log(e);
       })
-
-      // uds.getAll()
-      // .then((res) => {
-      //   this.users = res.data;
-      //   console.log(this.users);
-      // })
-      // .catch((e) => {
-      //   console.log(e);
-      // })
-      
-      // sds.getAll()
-      // .then((res) => {
-      //   this.students = res.data;
-      //   console.log(this.students);
-      // })
-      // .catch((e) => {
-      //   console.log(e);
-      // })
     }
     ,addCourse() {
       var data = {

@@ -9,6 +9,11 @@
       <button @click="updateStudent()">update student</button>
       <button @click="deleteUser()">delete user</button>
       <button @click="deleteStudent()">delete student</button> -->
+      <button @click="addAdmin()" v-show="!user">Add Admin</button>
+      <button @click="createRecital()" v-show="user.role == 'admin'">Create Recital</button>
+      <button @click="setAdmin()" v-show="user.role != 'admin'">set admin</button>
+      <button @click="setFaculty()" v-show="user.role != 'faculty'">set faculty</button>
+      <button @click="getPerformances()">getPerformances</button>
     </div>
   </div>
 </template>
@@ -16,28 +21,23 @@
 <script>
 import sds from '../src/services/StudentDataService' ;
 import uds from '../src/services/UserDataService';
+import eds from '../src/services/EventDataService';
 
   export default {
     name: "app",
     data() {
       return {
-        users: [],
+        users: []
+        ,user: {},
         students: [],
-        newUser: {
-          id: 1,
-          role: 'student',
-          fname: 'student',
-          lname: 'user',
-          email: 'student@user.com'
-        },
-        newStudent: {
-          id: 1,
-          userId: 1,
-          classification: 'senior',
-          major: 'music',
-          semester: 1,
-          level: 10
-        },
+        recital: {
+          date: '02-28-2023'
+          ,type: 'Recital Hearing'
+          ,startTime: '00:00:00'
+          ,endTime: '00:00:00'
+          ,openForSignup: 1
+        }
+        ,performances: []
       }
     },
     methods: {
@@ -116,6 +116,72 @@ import uds from '../src/services/UserDataService';
           })
           .catch(e => { console.log(e) })
       }
+      ,addAdmin() {
+        const userData = {
+          role: 'admin'
+          ,fName: 'Admin'
+          ,lName: 'Admin'
+          ,email: 'admin@admin.com'
+        };
+        uds.create(userData)
+          .then(res => {
+            console.log(res.data);
+            this.user = res.data;
+          })
+          .catch(e => {
+            console.log(e);
+          })
+      }
+      ,createRecital() {
+        eds.create(this.recital)
+          .then(res => {
+            console.log(res.data);
+          })
+          .catch(e => {
+            console.log(e);
+          })
+      }
+      ,addFaculty() {
+        uds.create({
+          role: 'faculty'
+          ,fName: 'Faculty'
+          ,lName: 'Faculty'
+          ,email: 'faculty@faculty.com'
+        })
+          .then(res => {
+            console.log(res.data);
+            this.users.push(res.data);
+          })
+          .catch(e => {
+            console.log(e);
+          })
+      }
+      ,setAdmin() {
+        this.user = this.users.find(u => u.id == 2);
+      }
+      ,setFaculty() {
+        this.user = this.users.find(u => u.id == 3);
+      }
+      ,getPerformances() {
+        eds.getActive()
+        .then(res => {
+          console.log(res.data);
+          this.performances.push(res.data);
+        })
+        .catch(e => {
+          console.log(e);
+        })
+      }
+    }
+    ,mounted() {
+      uds.getAll()
+        .then(res => {
+          this.users = res.data;
+          console.log(this.users);
+        })
+        .catch(e => {
+          console.log(e);
+        })
     }
   };
 </script>

@@ -2,7 +2,7 @@
   <v-app>
     <data-app>
       <v-app-bar App>
-        <router-link :to="{ name: 'newEvent'}"></router-link>
+        <router-link :to="{ name: 'newEvent'}">Create Event</router-link>
         <v-toolbar-title class="title">
           <div>Performance</div>    
         </v-toolbar-title>

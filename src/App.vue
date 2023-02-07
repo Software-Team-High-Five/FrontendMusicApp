@@ -2,11 +2,11 @@
   <v-app>
     <data-app>
       <v-app-bar App>
-        <router-link :to="{ name: 'newEvent'}">Create Event</router-link>
         <v-toolbar-title class="title">
           <div>Performance</div>    
         </v-toolbar-title>
         <v-spacer></v-spacer>
+        <router-link :to="{ name: 'newEvent'}">Create Event</router-link>
         <div>
           <!-- <button @click="fetch()">fetch</button>
           <button @click="addUser()">add user</button>
@@ -15,11 +15,11 @@
           <button @click="updateStudent()">update student</button>
           <button @click="deleteUser()">delete user</button>
           <button @click="deleteStudent()">delete student</button> -->
-          <button @click="addAdmin()" v-show="!user">Add Admin</button>
+          <!-- <button @click="addAdmin()" v-show="!user">Add Admin</button>
           <button @click="createRecital()" v-show="user.role == 'admin'">Create Recital</button>
           <button @click="setAdmin()" v-show="user.role != 'admin'">set admin</button>
           <button @click="setFaculty()" v-show="user.role != 'faculty'">set faculty</button>
-          <button @click="getPerformances()">getPerformances</button>
+          <button @click="getPerformances()">getPerformances</button> -->
         </div>
       </v-app-bar>
     </data-app>

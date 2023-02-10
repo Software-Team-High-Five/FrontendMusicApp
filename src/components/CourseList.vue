@@ -143,9 +143,6 @@ import cds from '../services/CourseDataService';
 import VueModal from '@kouts/vue-modal';
 import '@kouts/vue-modal/dist/vue-modal.css'; 
 
-// import sds from '../services/StudentDataService';
-// import uds from '../services/UserDataService';
-
 export default {
   name: 'course-list'
   ,components: {

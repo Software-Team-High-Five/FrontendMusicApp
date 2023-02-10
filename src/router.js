@@ -14,6 +14,11 @@ export default new Router({
       ,component: () => import("./components/CourseList")
     },
     {
+      path: "/newevent"
+      ,name: "new-event"
+      ,component: () => import("./components/NewEvent")
+    },
+    {
       path: "/events/:eventId/signup"
       ,name: "sign-up"
       ,component: () => import("./components/SignUp")

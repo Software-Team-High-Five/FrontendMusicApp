@@ -2,77 +2,113 @@
     <v-container>
         <v-row>
             <v-col>
-                <!--Event is already selected-->
                 <h1 class="text-center">Sign Up Page</h1>
-                <h2 class="text-center">Event Details</h2>
             </v-col>
         </v-row>
-        <v-row>
-            <v-col>
-                <!--Select a time slot-->
-                <!--Calculate the start and end time-->
-                <h4 class="text-center">Select a time slot</h4>
-                <v-card>
-                    <v-calendar
-                        type="day"
-                    ></v-calendar>
-                </v-card>
-            </v-col>
-            <v-col>
-                <br>
-                <v-container>
-                    <!-- Add an accompanist to the performance -->
-                    <v-row>
-                        <v-col>
-                            <v-text-field
-                                :disabled="noAccompanist"
-                                v-model="accompanist"
-                                label="Accompanist"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="1">
-                            <v-checkbox
-                                v-model="noAccompanist"
-                                label="None"
-                                hide-details
-                            ></v-checkbox>
-                        </v-col>
-                    </v-row>
-                    <!-- Select the instrument -->
-                    <v-row>
-                        <v-select
-                            label="Instrument"
-                            v-model="instrument"
-                            :items="testData.instruments"
-                            item-text="instrument"
-                        ></v-select>
-                    </v-row>
-                    <!-- Add songs to the performance -->
-                    <v-row>
-                        <v-card>
-                            <v-data-table
-                                :headers="songHeaders"
-                                :items="allSongs"
-                                show-select
-                                v-model="selectedSongs"
-                            >
-                                <template v-slot:top>
-                                    <v-btn
-                                        @click="selectSongsFromCurSem"
-                                    >
-                                        Select songs from current semester
-                                    </v-btn>
-                                </template>
-                            </v-data-table>
-                        </v-card>
-                    </v-row>
-                    <!-- Submit -->
-                    <v-row>
-                        <v-btn @click="submit">
-                            Submit
-                        </v-btn>
-                    </v-row>
-                </v-container>
+        <div v-if="loaded">
+            <v-row :align="'center'">
+                <v-col style="width:min-content">
+                    <h4 class="text-right">Event Details</h4>
+                </v-col>
+                <v-col style="width:min-content">
+                    <div><span class="font-weight-medium">Type:</span> {{ event.type }}</div>
+                    <div><span class="font-weight-medium">Date:</span> {{ event.date }}</div>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <!-- Select a time slot -->
+                    <h4 class="text-center">Select a time slot</h4>
+                    <v-card>
+                        <v-calendar
+                            type="day"
+                            v-model="event.date"
+                            :events="timeSlots"
+                            interval-minutes="5"
+                            :first-interval="calendarSettings.firstInterval"
+                            :interval-count="calendarSettings.intervalCount"
+                            :short-intervals="false"
+                            @click:event="selectTimeSlot"
+                            :event-color="getEventColor"
+                            hide-header
+                            style="max-height:600px"
+                        >
+                            <template v-slot:event="{ event }">
+                                <div class="pl-1 text-center">
+                                    <strong>{{ event.name }}</strong><br>
+                                    {{ timeRange(event.start, event.end) }}
+                                </div>
+                            </template>
+                        </v-calendar>
+                    </v-card>
+                </v-col>
+                <v-col>
+                    <br>
+                    <v-container>
+                        <!-- Add an accompanist to the performance -->
+                        <v-row>
+                            <v-col>
+                                <v-text-field
+                                    :disabled="noAccompanist"
+                                    v-model="accompanist"
+                                    label="Accompanist"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="1">
+                                <v-checkbox
+                                    v-model="noAccompanist"
+                                    label="None"
+                                    hide-details
+                                ></v-checkbox>
+                            </v-col>
+                        </v-row>
+                        <!-- Select the instrument -->
+                        <v-row>
+                            <v-select
+                                label="Instrument"
+                                v-model="instrument"
+                                :items="testData.instruments"
+                                item-text="instrument"
+                            ></v-select>
+                        </v-row>
+                        <!-- Add songs to the performance -->
+                        <v-row>
+                            <v-card>
+                                <v-data-table
+                                    :headers="songHeaders"
+                                    :items="allSongs"
+                                    show-select
+                                    v-model="selectedSongs"
+                                >
+                                    <template v-slot:top>
+                                        <v-btn
+                                            @click="selectSongsFromCurSem"
+                                        >
+                                            Select songs from current semester
+                                        </v-btn>
+                                    </template>
+                                </v-data-table>
+                            </v-card>
+                        </v-row>
+                        <!-- Submit -->
+                        <v-row>
+                            <v-btn @click="submit">
+                                Submit
+                            </v-btn>
+                        </v-row>
+                    </v-container>
+                </v-col>
+            </v-row>
+        </div>
+        <v-row v-else>
+            <v-col class="text-center">
+                <v-progress-circular
+                    indeterminate
+                    size="150"
+                    width="10"
+                >
+                    loading
+                </v-progress-circular>
             </v-col>
         </v-row>
     </v-container>
@@ -85,8 +121,10 @@ export default {
     name: 'sign-up'
     ,data() {
         return {
-            event: null
-            ,timeSlots: null
+            loaded: false
+            ,event: null
+            ,timeSlots: []
+            ,calendarSettings: {}
             ,selectedTime: null
             ,instrument: null
             ,accompanist: ""
@@ -124,10 +162,10 @@ export default {
                 ]
                 ,event: {
                     id: 0
-                    ,date: '2023-01-31'
+                    ,date: '2023-02-31'
                     ,type: 'Recital Hearing'
-                    ,startTime: '15:40:00'
-                    ,endTime: '16:30:00'
+                    ,startTime: '8:40:00'
+                    ,endTime: '10:30:00'
                     ,openForSignup: false
                 }
                 ,instruments: [
@@ -151,18 +189,42 @@ export default {
             }
         }
     }
-    ,computed: {
-
-    }
     ,methods: {
+        // Initialization Methods
         initializeData() {
             this.event = this.testData.event;
+            this.setCalendarSize();
             this.generateTimeSlots();
             this.generateSongList();
-            console.log(this.allSongs)
+        }
+        ,setCalendarSize() {
+            let temp = this.testData.event.startTime.split(':');
+            let start = {
+                hours: temp[0]
+                ,minutes: temp[1]
+            };
+            temp = this.testData.event.endTime.split(':');
+            let end = {
+                hours: temp[0]
+                ,minutes: temp[1]
+            };
+            this.calendarSettings.firstInterval = start.hours * 12 + start.minutes / 5;
+            this.calendarSettings.intervalCount = end.hours * 12 + end.minutes / 5 - this.calendarSettings.firstInterval;
         }
         ,generateTimeSlots() {
-
+            let time = this.calendarSettings.firstInterval;
+            let count = 1;
+            while (time < this.calendarSettings.intervalCount + this.calendarSettings.firstInterval)
+            {
+                this.timeSlots.push({
+                    name: `Time slot ${count}`
+                    ,start: `${this.event.date}T${Math.floor(time / 12).toString().padStart(2, '0')}:${(time % 12 * 5).toString().padStart(2, '0')}`
+                    ,end: `${this.event.date}T${Math.floor((time + 1) / 12).toString().padStart(2, '0')}:${((time + 1) % 12 * 5).toString().padStart(2, '0')}`
+                    ,available: true
+                });
+                time++;
+                count++;
+            }
         }
         ,generateSongList() {
             this.testData.songData.forEach((song) => {
@@ -173,6 +235,26 @@ export default {
                 });
             })
         }
+
+        //Other Methods
+        ,getEventColor(event) {
+            if (this.selectedTime && this.selectedTime.name === event.name)
+                return "secondary";
+            if (!event.available)
+                return "grey"
+            return "primary";
+        }
+        ,timeRange(start, end) {
+            let startTime = new Date(start);
+            let endTime = new Date(end);
+            let val = `${(startTime.getHours() - 1) % 12 + 1}:${startTime.getMinutes()} ${startTime.getHours() < 12 ? 'AM' : 'PM'}`;
+            val += ` - ${(endTime.getHours() - 1) % 12 + 1}:${endTime.getMinutes()} ${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
+            return val;
+        }
+        ,selectTimeSlot({ event }) {
+            if (event.available)
+                this.selectedTime = event;
+        }
         ,selectSongsFromCurSem() {
             this.allSongs.forEach((song) => {
                 // let curSemester = "2023SP";
@@ -181,6 +263,7 @@ export default {
             })
         }
         ,submit() {
+            // Calculate the start and end time
             let data = {
                 startTime: null
                 ,endTime: null
@@ -196,15 +279,7 @@ export default {
     }
     ,mounted() {
         this.initializeData();
-        // this.$route.params.eventId
-        // songDS.getAll()//where studentId = tempUserId
-        //     .then((res) => {
-        //         this.allSongs = res.data;
-        //         console.log(this.allSongs);
-        //     })
-        //     .catch((e) => {
-        //         console.log(e);
-        //     });
+        this.loaded = true;
     }
 }
 </script>

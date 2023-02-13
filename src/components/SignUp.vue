@@ -97,9 +97,6 @@
                                     Submit
                                 </v-btn>
                             </v-row>
-                            <!-- Delete later: testing only -->
-                            <br>
-                            {{ allSongs }}
                         </v-container>
                     </v-col>
                 </v-row>
@@ -132,6 +129,7 @@
 import eventDS from '../services/EventDataService';
 import songDS from '../services/SongDataService';
 import studentDS from '../services/StudentDataService';
+import PerformanceDS from '../services/PerformanceDataService';
 
 export default {
     name: 'sign-up'
@@ -206,7 +204,6 @@ export default {
             // Get user instrument list
             studentDS.get(this.student.id)
                 .then(res => {
-                    console.log(res.data);
                     this.instruments = res.data.instruments;
                 })
                 .catch(e => {
@@ -218,7 +215,8 @@ export default {
                 .then(res => {
                     this.allSongs = res.data.filter(song => song.studentId === this.student.id).map(song => {
                         return {
-                            title: song.title
+                            id: song.id
+                            ,title: song.title
                             ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
                             // ,semester: song.semester
                         };
@@ -255,11 +253,11 @@ export default {
         }
 
         // Create new performance
-        ,submit() {
+        ,async submit() {
             let data = {
                 startTime: this.selectedTime.start
                 ,endTime: this.selectedTime.end
-                ,accompanist: this.accompanist
+                ,accompanist: this.noAccompanist ? 'none' : this.accompanist
                 ,eventId: this.event.id
                 ,studentId: this.student.id
                 ,instructorId: this.student.instructorId
@@ -267,7 +265,30 @@ export default {
             };
             console.log(data);
             // Create performance
+            let performanceId = null;
+            await PerformanceDS.create(data)
+                .then((res) => {
+                    performanceId = res.data.id;
+                })
+                .catch((e) => {
+                    console.log("Unable to create performance");
+                    console.log(e);
+                });
+            
+            if (performanceId == null)
+                return;
+
             // Add performance songs
+            this.selectedSongs.forEach(async (song) => {
+                await PerformanceDS.addSong(performanceId, song.id)
+                    .catch((e) => {
+                        console.log(`Unable to add song "${song.title}" to the performance`);
+                        console.log(e);
+                    });
+            });
+
+            console.log('Performance created');
+            this.$router.push({ name: 'home page' });
         }
     }
     ,mounted() {

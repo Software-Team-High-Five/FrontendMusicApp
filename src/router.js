@@ -18,5 +18,10 @@ export default new Router({
       ,name: "new-event"
       ,component: () => import("./components/NewEvent")
     }
+    ,{
+      path: "/events"
+      ,name: 'event-s'
+      ,component: () => import('./components/Events')
+    }
   ]
 });

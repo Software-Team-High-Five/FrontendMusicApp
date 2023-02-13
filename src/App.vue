@@ -12,6 +12,12 @@
                     text> 
                     create event
                 </v-btn>
+                <v-btn
+                    exact
+                    :to="{ name: 'event-s' }"
+                    text
+                >student events
+                </v-btn>
             </v-toolbar-items>
         </v-app-bar>
         <v-main>

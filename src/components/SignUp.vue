@@ -33,10 +33,10 @@
                             hide-header
                             style="max-height:600px"
                         >
-                            <template v-slot:event="{ event }">
+                            <template v-slot:event="{ event, eventParsed }">
                                 <div class="pl-1 text-center">
                                     <strong>{{ event.name }}</strong><br>
-                                    {{ timeRange(event.start, event.end) }}
+                                    {{ timeRange(eventParsed.start, eventParsed.end) }}
                                 </div>
                             </template>
                         </v-calendar>
@@ -236,7 +236,7 @@ export default {
             })
         }
 
-        //Other Methods
+        // Other Methods
         ,getEventColor(event) {
             if (this.selectedTime && this.selectedTime.name === event.name)
                 return "secondary";
@@ -245,11 +245,7 @@ export default {
             return "primary";
         }
         ,timeRange(start, end) {
-            let startTime = new Date(start);
-            let endTime = new Date(end);
-            let val = `${(startTime.getHours() - 1) % 12 + 1}:${startTime.getMinutes()} ${startTime.getHours() < 12 ? 'AM' : 'PM'}`;
-            val += ` - ${(endTime.getHours() - 1) % 12 + 1}:${endTime.getMinutes()} ${endTime.getHours() < 12 ? 'AM' : 'PM'}`;
-            return val;
+            return `${start.time.replace(/^0/, '')} ${start.hours < 12 ? 'AM' : 'PM'} - ${end.time.replace(/^0/, '')} ${end.hours < 12 ? 'AM' : 'PM'}`;
         }
         ,selectTimeSlot({ event }) {
             if (event.available)
@@ -262,8 +258,9 @@ export default {
                     this.selectedSongs.push(song);
             })
         }
+
+        // Create new performance
         ,submit() {
-            // Calculate the start and end time
             let data = {
                 startTime: null
                 ,endTime: null

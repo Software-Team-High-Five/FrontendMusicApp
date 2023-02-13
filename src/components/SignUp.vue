@@ -67,9 +67,10 @@
                             <v-row>
                                 <v-select
                                     label="Instrument"
-                                    v-model="selectedInstrument"
+                                    v-model="selectedInstrumentId"
                                     :items="instruments"
                                     item-text="instrument"
+                                    item-value="id"
                                 ></v-select>
                             </v-row>
                             <!-- Add songs to the performance -->
@@ -145,7 +146,7 @@ export default {
             ,calAtts: {}
             ,selectedTime: null
             ,instruments: []
-            ,selectedInstrument: null
+            ,selectedInstrumentId: null
             ,accompanist: ""
             ,noAccompanist: false
             ,songHeaders: [
@@ -159,8 +160,9 @@ export default {
     ,methods: {
         // Initialization Methods
         async initializeData() {
-            // Load user id from local store
+            // Load data from local store
             this.student.id = 1;
+            this.student.instructorId = 2;
 
             // Get event data
             await eventDS.get(this.$route.params.eventId)
@@ -254,6 +256,11 @@ export default {
 
         // Create new performance
         ,async submit() {
+            if (this.selectedTime == null || this.selectedInstrumentId == null) {
+                console.log("Fill in empty fields");
+                return;
+            }
+
             let data = {
                 startTime: this.selectedTime.start
                 ,endTime: this.selectedTime.end
@@ -261,9 +268,9 @@ export default {
                 ,eventId: this.event.id
                 ,studentId: this.student.id
                 ,instructorId: this.student.instructorId
-                ,instrumentId: this.selectedInstrument.id
+                ,instrumentId: this.selectedInstrumentId
             };
-            console.log(data);
+
             // Create performance
             let performanceId = null;
             await PerformanceDS.create(data)
@@ -275,6 +282,7 @@ export default {
                     console.log(e);
                 });
             
+            // Stop if create failed
             if (performanceId == null)
                 return;
 

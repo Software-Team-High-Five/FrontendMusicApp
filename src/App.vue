@@ -1,28 +1,30 @@
 <template>
     <v-app>
-        <v-app-bar app>
-            <v-toolbar-title class="title">
-                <div>Performance</div>    
-            </v-toolbar-title>
+        <v-app-bar flat app color="cyan lighten-5">
+            <router-link style="text-decoration: none; color: inherit;" to="/">
+                <v-toolbar-title class="text-uppercase grey-text">
+                <span>OC </span>
+                <span class="font-weight-light">Music Department</span>
+                </v-toolbar-title>
+            </router-link>            
             <v-spacer></v-spacer>
-            <v-toolbar-items v-if="user != null">
-                <v-btn 
-                    exact
-                    :to="{ name: 'new-event' }"
-                    text> 
-                    create event
-                </v-btn>
-                <v-btn
-                    exact
-                    :to="{ name: 'event-s' }"
-                    text
-                >student events
-                </v-btn>
-            </v-toolbar-items>
+            <router-link style="text-decoration: none; color: inherit;" class="mr-5" to="/NewEvent">New Event</router-link>
+            <router-link style="text-decoration: none; color: inherit; " class="mr-5" to="/">New Critique</router-link>
+            <router-link style="text-decoration: none; color: inherit; " class="mr-5" to="/">Students</router-link>
+            <v-spacer></v-spacer>
+            <router-link style="text-decoration: none; color: inherit;" to="/">
+                <v-toolbar-btn icon> 
+                <v-icon> mdi-account </v-icon> 
+            </v-toolbar-btn> 
+            </router-link>            
         </v-app-bar>
+
         <v-main>
             <router-view />
         </v-main>
+
+        <v-footer color="cyan lighten-5" class="justify-center">&copy;Stay Sticky</v-footer>
+
     </v-app>
 </template>
 

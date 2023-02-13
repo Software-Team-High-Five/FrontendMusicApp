@@ -15,6 +15,11 @@ export default new Router({
       alias: "/home",
       name: "home page",
       component: () => import("./components/Homepage"),
+    },
+    {
+      path: "/newevent"
+      ,name: "new-event"
+      ,component: () => import("./components/NewEvent")
     }
   ],
 });

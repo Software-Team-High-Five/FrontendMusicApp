@@ -20,6 +20,11 @@ export default new Router({
       path: "/newevent"
       ,name: "new-event"
       ,component: () => import("./components/NewEvent")
+    },
+    {
+      path: "/events/:eventId/signup"
+      ,name: "sign-up"
+      ,component: () => import("./components/SignUp")
     }
     ,{
       path: "/events"

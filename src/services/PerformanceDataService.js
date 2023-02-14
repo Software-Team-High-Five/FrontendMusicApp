@@ -18,5 +18,12 @@ class PerformanceDataService {
   getAllForStudent(sid) {
     return http.get(`/performances/student/${sid}`);
   }
+
+  addSong(id, songId) {
+    return http.post(`/performanceSongs?performanceId=${id}&songId=${songId}`);
+  }
+  removeSong(id, songId) {
+    return http.delete(`/performanceSongs?performanceId=${id}&songId=${songId}`);
+  }
 }
 export default new PerformanceDataService();

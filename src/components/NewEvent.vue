@@ -181,6 +181,7 @@ export default {
                     console.log(res.data); 
                     console.log('event created successfully');
                     this.clearEvent();
+                    this.$router.push({ name: 'home-page' });
                 })
                 .catch(e => {
                     console.log(e)

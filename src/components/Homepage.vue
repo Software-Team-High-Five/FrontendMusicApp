@@ -7,15 +7,16 @@
           <div class="card-button align-center" style="position:relative">
             <div>
               <h2 class="pa-5" style="color:#03003f">
-                Sign up for a Recital Hearing
+                View all events
               </h2>
             </div>
             <div class="align-end" style="position:absolute; bottom:20px; left:20px;">
               <v-btn color="#03003f"
                 elevation="5"
                 style="color:#ffffff"
+                href="/events"
                 >
-                Sign up                              
+                Events                              
               </v-btn>
             </div>
           </div>
@@ -24,15 +25,16 @@
           <div class="card-button align-center" style="position:relative">
             <div>
               <h2 class="pa-5" style="color:#03003f">
-                Sign up for a Jury
+                Create a new event
               </h2>
             </div>
             <div class="align-end" style="position:absolute; bottom:20px; left:20px">
               <v-btn color="#03003f"
                 elevation="5"
                 style="color:#ffffff"
+                href="/newevent"
                 >
-                Sign up                              
+                Create                              
               </v-btn>
             </div>
           </div>
@@ -41,13 +43,14 @@
           <div class="card-button align-center" style="position:relative">
             <div>
               <h2 class="pa-5" style="color:#03003f">
-                Sign up for a Senior Recital
+                Sign up for an event
               </h2>
             </div>
             <div class="align-end" style="position:absolute; bottom:20px; left:20px">
               <v-btn color="#03003f"
                 elevation="5"
                 style="color:#ffffff"
+                href="/events/1/SignUp"
                 >
                 Sign up                              
               </v-btn>

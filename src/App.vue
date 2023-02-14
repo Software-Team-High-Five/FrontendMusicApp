@@ -13,9 +13,9 @@
             <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">Students</router-link>
             <v-spacer></v-spacer>
             <router-link style="text-decoration: none; color: inherit;" to="/">
-                <v-toolbar-btn icon> 
-                <v-icon> mdi-account </v-icon> 
-            </v-toolbar-btn> 
+                <v-btn icon> 
+                    <v-icon> mdi-account </v-icon> 
+                </v-btn> 
             </router-link>            
         </v-app-bar>
 

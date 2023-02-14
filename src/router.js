@@ -13,7 +13,7 @@ export default new Router({
     {
       path: "/",
       alias: "/home",
-      name: "home page",
+      name: "home-page",
       component: () => import("./components/Homepage"),
     },
     {

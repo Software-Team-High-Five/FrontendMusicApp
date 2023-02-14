@@ -296,7 +296,7 @@ export default {
             });
 
             console.log('Performance created');
-            this.$router.push({ name: 'home page' });
+            this.$router.push({ name: 'home-page' });
         }
     }
     ,mounted() {

@@ -67,7 +67,7 @@
 export default {
   name: "home-page",
   components: {  },
-  data() {  },
+  // data() {  },
   methods: {  },
   computed: {  },
   mounted() { },

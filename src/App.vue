@@ -8,9 +8,9 @@
                 </v-toolbar-title>
             </router-link>            
             <v-spacer></v-spacer>
-            <router-link style="text-decoration: none; color: inherit;" class="mr-5" to="/NewEvent">New Event</router-link>
-            <router-link style="text-decoration: none; color: inherit; " class="mr-5" to="/">New Critique</router-link>
-            <router-link style="text-decoration: none; color: inherit; " class="mr-5" to="/">Students</router-link>
+            <router-link style="text-decoration: none; color: inherit;" class="mr-5" :to="{name: 'new-event'}">New Event</router-link>
+            <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">New Critique</router-link>
+            <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">Students</router-link>
             <v-spacer></v-spacer>
             <router-link style="text-decoration: none; color: inherit;" to="/">
                 <v-toolbar-btn icon> 

@@ -4,14 +4,32 @@ Vue.use(Router);
 
 // deploy test #4
 export default new Router({
-  base: process.env.NODE_ENV === 'development' ? "http://localhost/" : "/performance/t5",
+  base:
+    process.env.NODE_ENV === "development"
+      ? "/"
+      : "/performance/t5",
   mode: "history",
   routes: [
     {
-      path: "/"
-      ,alias: "/courses"
-      ,name: "courses"
-      ,component: () => import("./components/CourseList")
+      path: "/",
+      alias: "/home",
+      name: "home page",
+      component: () => import("./components/Homepage"),
+    },
+    {
+      path: "/newevent"
+      ,name: "new-event"
+      ,component: () => import("./components/NewEvent")
+    },
+    {
+      path: "/events/:eventId/signup"
+      ,name: "sign-up"
+      ,component: () => import("./components/SignUp")
+    }
+    ,{
+      path: "/events"
+      ,name: 'event-s'
+      ,component: () => import('./components/Events')
     }
   ]
 });

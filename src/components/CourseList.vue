@@ -251,6 +251,9 @@ export default {
   }
   ,mounted() {
     this.fetchAll();
+    console.log(this.users);
+    // console.log('users: ', this.users);
+    // console.log('students: ', this.students);
   } 
 
 }

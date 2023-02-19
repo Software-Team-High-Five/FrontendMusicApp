@@ -14,7 +14,7 @@
               <v-btn color="#03003f"
                 elevation="5"
                 style="color:#ffffff"
-                :to="{name: 'event-s'}"
+                :to="{name: 'all-events'}"
                 >
                 Events                              
               </v-btn>

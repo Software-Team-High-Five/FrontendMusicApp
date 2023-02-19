@@ -27,9 +27,14 @@ export default new Router({
       ,component: () => import("./components/SignUp")
     }
     ,{
-      path: "/events"
-      ,name: 'event-s'
-      ,component: () => import('./components/Events')
+      path: "/performance/:performanceId"
+      ,name: 'view-performance'
+      ,component: () => import('./components/ViewPerformance')
+    }
+    ,{
+      path: '/allevents'
+      ,name: 'all-events'
+      ,component: () => import('./components/AllEvents')
     }
   ]
 });

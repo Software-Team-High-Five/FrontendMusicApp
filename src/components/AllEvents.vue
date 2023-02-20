@@ -83,7 +83,6 @@ export default {
             events: []
             ,userPerformances: []
             ,today: null
-            ,cond: 0
             ,user: {
                 role: 'student'
                 ,id: 3

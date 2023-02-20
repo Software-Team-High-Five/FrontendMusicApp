@@ -1,5 +1,6 @@
 <template>
     <div>
+        <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css">
         <br>
         <h2> &nbsp; {{ event.name }} ({{ event.date }})</h2>
         <br>
@@ -77,12 +78,60 @@
             </v-row>
             <br>
         </Modal>
-        <Modal title="Filters" v-model="showFilters">
-            <v-select
-                    label="Select a composer"
-                    :items="composers"
-                    v-model="activeComposer"
-                ></v-select>
+        <Modal title="Filters" v-model="showFilters">            
+            <label>Select composers</label>
+            <MultiSelect 
+                v-model="activeComposers" 
+                :options="composers" 
+                :multiple="true" 
+                :close-on-select="true" 
+                :clear-on-select="false" 
+                :preserve-search="true" 
+                placeholder="Pick one or more">
+                <template 
+                    slot="selection" 
+                    slot-scope="{ composers,  isOpen }"
+                ><span class="multiselect__single" v-if="composers" v-show="!isOpen">{{ activeComposers }}</span></template>
+            </MultiSelect>
+            <br>
+            <label>Select instruments</label>
+            <MultiSelect 
+                v-model="activeInstruments" 
+                :options="instruments" 
+                :multiple="true" 
+                :close-on-select="true" 
+                :clear-on-select="false" 
+                :preserve-search="true" 
+                placeholder="Pick one or more">
+                <template 
+                    slot="selection" 
+                    slot-scope="{ instruments,  isOpen }"
+                ><span class="multiselect__single" v-if="instruments" v-show="!isOpen">{{ activeInstruments }}</span></template>
+            </MultiSelect>
+            <br>
+            <label>Select accompanists</label>
+            <MultiSelect 
+                v-model="activeAccompanists" 
+                :options="accompanists" 
+                :multiple="true" 
+                :close-on-select="true" 
+                :clear-on-select="false" 
+                :preserve-search="true" 
+                placeholder="Pick one or more">
+                <template 
+                    slot="selection" 
+                    slot-scope="{ accompanists,  isOpen }"
+                ><span class="multiselect__single" v-if="accompanists" v-show="!isOpen">{{ activeAccompanists }}</span></template>
+            </MultiSelect>
+            <br>
+            <v-row>
+                <v-col>
+                    <button class="btn btn-danger" style="width: 100%" @click="clearFilters()">Cancel</button>
+                </v-col>
+                <v-col>
+                    <button class="btn btn-dark" style="width: 100%" @click="showFilters = fasle">Apply</button>
+                </v-col>
+            </v-row>
         </Modal>
     </div>
 </template>
@@ -93,6 +142,8 @@ import { mapStores } from 'pinia';
 import eds from '../services/EventDataService';
 import VueModal from '@kouts/vue-modal';
 import '@kouts/vue-modal/dist/vue-modal.css'; 
+import MultiSelect from 'vue-multiselect'
+
 
 export default {
     name: 'event-details'
@@ -108,14 +159,17 @@ export default {
             ,songs: {}
             ,searchString: ''
             ,showFilters: false
-            ,accompanists: new Set()
-            ,composers: new Set()
-            ,instruments: new Set()
-            ,activeComposer: []
+            ,accompanists: []
+            ,composers: []
+            ,instruments: []
+            ,activeComposers: []
+            ,activeInstruments: []
+            ,activeAccompanists: []
         }
     }
     ,components: {
         'Modal': VueModal
+        ,MultiSelect
     }
     ,computed: { 
         ...mapStores(useUserStore)
@@ -129,7 +183,6 @@ export default {
                     p.student.user.lName.toLowerCase().indexOf(ss) > -1 ||
                     p.accompanist.toLowerCase().indexOf(ss) > -1 || 
                     this.songsString(p).toLowerCase().indexOf(ss) > -1
-
                 ))
             }
         } 
@@ -167,9 +220,21 @@ export default {
             }
         }   
         ,setFilters() {
-            this.event.performances.forEach(p => {this.accompanists.add(p.accompanist)});
-            this.event.performances.forEach(p => p.songs.forEach(s => this.composers.add(s.composer.fName + ' ' + s.composer.lName)));
-            this.event.performances.forEach(p => this.instruments.add(p.instrument.instrument));
+            var a = new Set()
+            this.event.performances.forEach(p => {a.add(p.accompanist)});
+            this.accompanists = Array.from(a);
+            var c = new Set();
+            this.event.performances.forEach(p => p.songs.forEach(s => c.add(s.composer.fName + ' ' + s.composer.lName)));
+            this.composers = Array.from(c);
+            var i = new Set();
+            this.event.performances.forEach(p => i.add(p.instrument.instrument));
+            this.instruments = Array.from(i);
+        }
+        ,clearFilters() {
+            this.activeAccompanists = [];
+            this.activeInstruments = [];
+            this.activeComposers = [];
+            this.showFilters = false;
         }
    
     }

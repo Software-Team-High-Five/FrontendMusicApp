@@ -6,7 +6,7 @@
         <br>
         <v-row>
             <v-col class="col-md-3 sticky-top">
-                <h3>Performances</h3>
+                <h3> &nbsp; Performances</h3>
             </v-col>
             <v-col class="col-md-7 sticky-top" style="margin: 10px; padding: 10px;">
                 <div class="input-group mb-3">
@@ -30,7 +30,7 @@
         <div class="col-md-15" style="border-radius: 5px; padding: 10px; margin: 10px;">
             <div class="card">
                 <table class="table">
-                    <thead class="" style="background-color: #f2f3f4;">
+                    <thead style="background-color: #f2f3f4;">
                         <tr>
                             <th scope="col">Name</th>
                             <th scope="col">Songs</th>
@@ -53,32 +53,49 @@
                 </table>
             </div>
         </div>
-        <Modal v-model="showPerformanceDetails" title="Performance" v-show="performance">
+        <Modal v-model="showPerformanceDetails" :title="(user.fName + ' ' +user.lName + '\n (' + event.date + ')')" width="70%">
             <v-row>
-                <v-col>{{ user.fName }} {{ user.lName }}</v-col>
+                <v-col><strong>Event</strong></v-col>
+                <v-col><strong>Instrument</strong></v-col>
+                <v-col><strong>Level</strong></v-col>
+            </v-row>
+            <v-row>
+                <v-col>{{ event.name }}</v-col>
                 <v-col>{{ instrument.instrument }}</v-col>
-                <v-col>{{ event.date }}</v-col>
+                <v-col>{{ student.level }}</v-col>
             </v-row>
-            <br>
-            SONGS
+            <br><br>
+            <v-row><h4><strong>Songs</strong></h4></v-row>
+            <v-row>
+                <v-col><strong>Title</strong></v-col>
+                <v-col><strong>Translation</strong></v-col>
+                <v-col><strong>Composer</strong></v-col>
+            </v-row>
             <v-row
-                v-for="song in songs"
-                :key="song.id">
-                <v-col>{{ song.title }}</v-col>
-                <v-col>{{ song.translation || 'no transaltion available' }}</v-col>
-                <v-col>{{ song.composer.fName }} {{ song.composer.lName }}</v-col>
+                v-for="s in songs"
+                :key="s.id">
+                <v-col>{{ s.title }}</v-col>
+                <v-col>{{ s.translation || 'No translation available' }}</v-col>
+                <v-col>{{ getComposerFullName(s.composer) }}</v-col>
             </v-row>
-            <br>
-            FEEDBACK
+            <br><br>
+            <v-row><h4><strong>Feedback</strong></h4></v-row>
+            <v-row>
+                <v-col class="col-xs"><strong>Judge</strong></v-col>
+                <v-col class="col-lg"><strong>Notes</strong></v-col>
+            </v-row>
             <v-row
-                v-for="feedback in performance.feedbacks"
-                :key="feedback.id">
-                <v-col>Judge: {{ feedback.judge.fName }} {{  feedback.judge.lName }}</v-col>
-                <v-col>Notes: {{ feedback.notes }}</v-col>
+                v-for="f in performance.feedbacks"
+                :key="f.id">
+                <v-col class="col-sm">{{ f.judge.fName }} {{ f.judge.lName }}</v-col>
+                <v-col class="col-lg">{{ f.notes }}</v-col>
             </v-row>
-            <br>
+            <br><br>
+            <v-row>
+                <button class="btn btn-dark" @click="showPerformanceDetails = false">Close</button>
+            </v-row>
         </Modal>
-        <Modal title="Filters" v-model="showFilters">            
+        <Modal title="Filters" v-model="showFilters">
             <label>Select composers</label>
             <MultiSelect 
                 v-model="activeComposers" 
@@ -124,12 +141,28 @@
                 ><span class="multiselect__single" v-if="accompanists" v-show="!isOpen">{{ activeAccompanists }}</span></template>
             </MultiSelect>
             <br>
+            <label>Level</label>
+            <MultiSelect
+                v-model="activeLevels"
+                :options="levels"
+                :multiple="true"
+                :close-on-select="true"
+                :clear-on-select="false"
+                :preserve-search="true"
+                placeholder="select one or more">
+                <template
+                    slot="selection"
+                    slot-scope="{ levels, isOpen }"
+                ><span class="multiselect__single" v-if="levels" v-show="!isOpen">{{ activeLevels }}</span></template>
+
+            </MultiSelect>
+            <br>
             <v-row>
                 <v-col>
-                    <button class="btn btn-danger" style="width: 100%" @click="clearFilters()">Cancel</button>
+                    <button class="btn btn-danger" style="width: 100%" @click="clearFilters()">Clear Filters</button>
                 </v-col>
                 <v-col>
-                    <button class="btn btn-dark" style="width: 100%" @click="showFilters = fasle">Apply</button>
+                    <button class="btn btn-dark" style="width: 100%" @click="showFilters = false">Apply</button>
                 </v-col>
             </v-row>
         </Modal>
@@ -162,9 +195,11 @@ export default {
             ,accompanists: []
             ,composers: []
             ,instruments: []
+            ,levels: [1, 2, 3, 4, 5, 6, 7, 8]
             ,activeComposers: []
             ,activeInstruments: []
             ,activeAccompanists: []
+            ,activeLevels: []
         }
     }
     ,components: {
@@ -175,14 +210,28 @@ export default {
         ...mapStores(useUserStore)
         ,filteredPerformances() {
             if( this.searchString == ''){
-                return this.event.performances
+                if( !this.activeAccompanists.length && !this.activeComposers.length && !this.activeInstruments.length && !this.activeLevels.length){
+                    return this.event.performances
+                }
+                return this.event.performances.filter(p => (
+                    this.activeAccompanists.includes(p.accompanist) ||
+                    this.activeInstruments.includes(p.instrument.instrument) ||
+                    p.songs.forEach(s => { this.activeComposers.includes(this.getComposerFullName(s.composer))}) ||
+                    this.activeLevels.includes(p.student.level)
+                ))
             } else {
                 const ss = this.searchString.toLowerCase();
                 return this.event.performances.filter(p => (
                     p.student.user.fName.toLowerCase().indexOf(ss) > -1 ||
                     p.student.user.lName.toLowerCase().indexOf(ss) > -1 ||
                     p.accompanist.toLowerCase().indexOf(ss) > -1 || 
-                    this.songsString(p).toLowerCase().indexOf(ss) > -1
+                    this.songsString(p).toLowerCase().indexOf(ss) > -1 ||
+                    //filters
+                    this.activeAccompanists.includes(p.accompanist) ||
+                    this.activeInstruments.includes(p.instrument.instrument) ||
+                    p.songs.forEach(s => { this.activeComposers.includes(this.getComposerFullName(s.composer))}) ||
+                    this.activeLevels.includes(p.student.level)
+
                 ))
             }
         } 
@@ -192,7 +241,6 @@ export default {
             await eds.get(this.$route.params.eventId)
                 .then(res => {
                     this.event = {...res.data};
-                    console.log(this.event)
                     this.event.performances.forEach(p => this.students.push(p.student));
                     this.setFilters();
                 })
@@ -224,7 +272,7 @@ export default {
             this.event.performances.forEach(p => {a.add(p.accompanist)});
             this.accompanists = Array.from(a);
             var c = new Set();
-            this.event.performances.forEach(p => p.songs.forEach(s => c.add(s.composer.fName + ' ' + s.composer.lName)));
+            this.event.performances.forEach(p => p.songs.forEach(s => c.add(this.getComposerFullName(s.composer))));
             this.composers = Array.from(c);
             var i = new Set();
             this.event.performances.forEach(p => i.add(p.instrument.instrument));
@@ -234,9 +282,12 @@ export default {
             this.activeAccompanists = [];
             this.activeInstruments = [];
             this.activeComposers = [];
+            this.activeLevels = [];
             this.showFilters = false;
         }
-   
+        ,getComposerFullName(c) {
+            return c.fName + ' ' + c.mName + ' ' + c.lName;
+        }   
     }
     ,mounted() {
         this.getEventDetails();

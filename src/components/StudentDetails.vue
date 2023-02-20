@@ -1,18 +1,17 @@
 <template>
     <v-container>
         <v-row>
-            <v-col>
-                <h3>Name</h3>
-                <h5>Email</h5>
+            <v-col class="text-right">
+                <div class="body-1"><strong>Name</strong></div>
+                <div class="body-1"><strong>Email</strong></div>
                 <br>
-                <h5>Major</h5>
-                <h5>Classification</h5>
-                <h5>Semester</h5>
-                <h5>Level</h5>
-                <h5>Instructor</h5>
+                <div class="body-1"><strong>Major</strong></div>
+                <div class="body-1"><strong>Classification</strong></div>
+                <div class="body-1"><strong>Semester</strong></div>
+                <div class="body-1"><strong>Level</strong></div>
+                <div class="body-1"><strong>Instructor</strong></div>
             </v-col>
             <v-col>
-                <div class="body-1"></div>
                 <div class="body-1">{{ userStore.name }}</div>
                 <div class="body-1">{{ userStore.user.email }}</div>
                 <br>
@@ -34,7 +33,7 @@ export default {
     name: 'student-details'
     ,data() {
         return {
-            instructor: ''
+            instructor: '<loading>'
         };
     }
     ,computed: {
@@ -49,6 +48,7 @@ export default {
             })
             .catch(e => {
                 console.log(e);
+                this.instructor = 'Error: not found'
             });
     }
 }

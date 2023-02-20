@@ -17,7 +17,7 @@ export default new Router({
       component: () => import("./components/Homepage"),
     },
     {
-      path: "/newevent"
+      path: "/newevent" 
       ,name: "new-event"
       ,component: () => import("./components/NewEvent")
     },
@@ -25,11 +25,16 @@ export default new Router({
       path: "/events/:eventId/signup"
       ,name: "sign-up"
       ,component: () => import("./components/SignUp")
-    }
-    ,{
+    },
+    {
       path: "/events"
       ,name: 'event-s'
       ,component: () => import('./components/Events')
+    },
+    {
+      path: "/critique"
+      ,name: 'critique-f'
+      ,component: () => import('./components/MakeHearingCritique')
     }
   ]
 });

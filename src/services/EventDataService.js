@@ -3,8 +3,12 @@ class EventDataService {
   getAll() {
     return http.get("/events");
   }
-  get(id) {
-    return http.get(`/events/${id}`);
+  get(id, iid = null) {
+    var path = `/events/${id}`;
+    if(iid) {
+      path += `?iid=${iid}`
+    }
+    return http.get(path);
   }
   create(data) {
     return http.post("/events", data);

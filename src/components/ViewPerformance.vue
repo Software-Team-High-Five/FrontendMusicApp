@@ -2,7 +2,7 @@
     <div>
         <br><br><br>
         <h3 style="text-align: left">
-            &nbsp; {{ this.performance.event.type }} ({{ this.performance.event.date }})
+            {{ this.performance.event.name }} &nbsp; {{ this.performance.event.type }} ({{ this.performance.event.date }})
         </h3>
         <br>
     </div>
@@ -10,6 +10,8 @@
 
 <script>
 import pds from '../services/PerformanceDataService';
+import { useUserStore } from '@/stores/userStore';
+import { mapStores } from 'pinia';
 
 export default {
     name: 'view-perofrmance'
@@ -29,7 +31,7 @@ export default {
                 })
         }
     }
-    ,computed: { }
+    ,computed: { ...mapStores(useUserStore) }
     ,mounted() {
         this.getPerformacnce();
     }

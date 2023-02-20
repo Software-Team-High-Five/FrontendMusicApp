@@ -14,6 +14,12 @@
                     v-model="event.type"
                 ></v-select>
                 <div v-show="event.type">
+                    <v-row> 
+                        <v-text-field
+                            v-model="event.name"
+                            label="Name"
+                        ></v-text-field>
+                    </v-row>
                     <!-- date picker -->
                     <div>
                         <v-menu
@@ -46,7 +52,7 @@
                     <!-- time pickers -->
                     <br>
                     <v-row>
-                        <v-col cols="11" sm="5">           
+                        <v-col cols="11" sm="5" style="width: 50%;">           
                             <v-menu
                                 ref="timeMenu1"
                                 v-model="timeMenu1"
@@ -75,8 +81,7 @@
                                 ></v-time-picker>
                             </v-menu>
                         </v-col>
-                        <v-spacer></v-spacer>
-                        <v-col cols="11" sm="5">
+                        <v-col cols="11" sm="5" style="width: 50%;">
                             <v-menu
                                 ref="timeMenu2"
                                 v-model="timeMenu2"
@@ -144,6 +149,8 @@
 
 <script>
 import eds from '../services/EventDataService';
+import { useUserStore } from '@/stores/userStore';
+import { mapStores } from 'pinia';
 
 export default {
     name: 'new-event'
@@ -156,6 +163,7 @@ export default {
             ]
             ,event: {
                 date: ''
+                ,name: ''
                 ,type: ''
                 ,startTime: ''
                 ,endTime: ''
@@ -178,7 +186,6 @@ export default {
             eds.create({...this.event})
                 .then(res => {
                     console.log(res.data); 
-                    console.log('event created successfully');
                     this.clearEvent();
                     this.$router.push({ name: 'all-events' });
                 })
@@ -190,6 +197,7 @@ export default {
             this.event = {
                 date: ''
                 ,type: ''
+                ,name: ''
                 ,startTime: ''
                 ,endTime: ''
                 ,openForSignup: 0
@@ -202,7 +210,7 @@ export default {
             return !(!Object.values(this.event).find(e => !e));
         }
     }
-    ,computed: { }
+    ,computed: { ...mapStores(useUserStore) }
     ,mounted() { 
         this.today = new Date().toISOString().substring(0, 10);
     }

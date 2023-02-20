@@ -15,15 +15,10 @@
                     :key="e.id"
                     @click="signUp(e.id)"
                 >
-                    <v-col>
-                        {{ e.date }}
-                    </v-col>
-                    <v-col>
-                        {{ e.type }}
-                    </v-col>
-                    <v-col>
-                        {{ e.startTime }} - {{ e.endTime }}
-                    </v-col>
+                    <v-col>{{ e.name }}</v-col>
+                    <v-col>{{ e.date }}</v-col>
+                    <v-col>{{ e.type }}</v-col>
+                    <v-col>{{ e.startTime }} - {{ e.endTime }}</v-col>
                 </v-row>
             </v-col>
             <v-col ></v-col>
@@ -41,15 +36,10 @@
                     :key="e.id"
                     @click="editSignup(e.id)"
                 >
-                    <v-col>
-                        {{ e.date }}
-                    </v-col>
-                    <v-col>
-                        {{ e.type }}
-                    </v-col>
-                    <v-col>
-                        {{ e.startTime }} - {{ e.endTime }}
-                    </v-col>
+                    <v-col>{{ e.name }}</v-col>
+                    <v-col>{{ e.date }}</v-col>
+                    <v-col>{{ e.type }}</v-col>
+                    <v-col>{{ e.startTime }} - {{ e.endTime }}</v-col>
                 </v-row>
             </v-col>
             <v-col ></v-col>
@@ -67,15 +57,10 @@
                     :key="e.id"
                     @click="viewPerformance(e.id)"
                 >
-                    <v-col>
-                        {{ e.date }}
-                    </v-col>
-                    <v-col>
-                        {{ e.type }}
-                    </v-col>
-                    <v-col>
-                        {{ e.startTime }} - {{ e.endTime }}
-                    </v-col>
+                    <v-col>{{ e.name }}</v-col>
+                    <v-col>{{ e.date }}</v-col>
+                    <v-col>{{ e.type }}</v-col>
+                    <v-col>{{ e.startTime }} - {{ e.endTime }}</v-col>
                 </v-row>
             </v-col>
             <v-col ></v-col>
@@ -87,6 +72,9 @@
 
 import eds from '../services/EventDataService';
 import pds from '../services/PerformanceDataService';
+import sds from '../services/StudentDataService';
+import { useUserStore } from '@/stores/userStore';
+import { mapStores } from 'pinia';
 
 export default {
     name: 'all-events'
@@ -100,6 +88,7 @@ export default {
                 role: 'student'
                 ,id: 3
             }
+            ,students: []
         }
 
     }
@@ -110,11 +99,12 @@ export default {
                     res.data.forEach(e => {
                         this.events.push(e);
                     });
-                    console.log('events fetched successfully');
+                    console.log('all events: ', this.events);
+                    console.log(this.today > this.events[0].date );
                 })
                 .catch(e => console.log(e));
-            if(this.user.role == 'student'){
-                pds.getAllForStudent(this.user.id)
+            if(this.userStore.user.student){
+                pds.getAllForStudent(this.userStore.user.id)
                 .then(res => {
                     res.data.forEach(p => {
                         this.userPerformances.push(p);
@@ -122,30 +112,43 @@ export default {
                 })
                 .catch(e => console.log(e));
             } else {
-                pds.getAllForInstructor(this.user.id)
+                pds.getAllForInstructor(this.userStore.user.id)
                 .then(res => {
-                    res.data.forEach(p => {
-                        this.userPerformances.push(p);
-                    })
+                    res.data.forEach(p => { this.userPerformances.push(p) })
                 })
                 .catch(e => console.log(e));
+                sds.instructorStudents(this.userStore.user.id)
+                    .then(res => { res.data.forEach(s => this.students.push(s)) })
+                    .catch(e => console.log(e));
             }
 
         }
         ,signUp(eid) {
-            this.$router.push({name: 'sign-up', params: {eventId: eid}});
+            if(this.userStore.isAdmin){
+                console.log('direct admin to edit the upcoming event');
+            } else {
+                this.$router.push({name: 'sign-up', params: {eventId: eid}});
+            }
         }
         ,editSignup(eid){
             console.log('this is where the events will be edited from. eventId: ', eid);
         }
         ,viewPerformance(eid){
-            const viewPerformance = this.userPerformances.find(p => p.eventId == eid);
-            this.$router.push({ name: 'view-performance', params: {performanceId: viewPerformance.id}});
+            if(this.userStore.user.student){
+                const viewPerformance = this.userPerformances.find(p => p.eventId == eid);
+                this.$router.push({ name: 'view-performance', params: {performanceId: viewPerformance.id}});
+            } else {
+                this.$router.push({ name: 'event-details', params: {eventId: eid}});
+            }
         }
     }
     ,computed:{
-        myPastEvents() {
-            return this.events.filter(e => e.date < this.today);
+        ...mapStores(useUserStore)
+        ,myPastEvents() {
+            return this.events.filter(e => 
+                e.date < this.today
+            );
+           
         }
         ,upcomingEvents() {
             return this.events.filter(e => (e.date > this.today && !(this.userPerformances.find(p => p.eventId == e.id))));

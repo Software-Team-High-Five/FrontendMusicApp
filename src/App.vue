@@ -13,8 +13,9 @@
             <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">Students</router-link>
             <v-spacer></v-spacer>
             <router-link style="text-decoration: none; color: inherit;" to="/">
-                <v-btn icon> 
-                    <v-icon> mdi-account </v-icon> 
+                {{ userStore.name }}
+                <v-btn icon>
+                    <v-icon> mdi-account </v-icon>
                 </v-btn> 
             </router-link>            
         </v-app-bar>
@@ -30,6 +31,8 @@
 
 <script>
 import uds from '../src/services/UserDataService';
+import { useUserStore } from '@/stores/userStore';
+import { mapStores } from 'pinia';
 
   export default {
     name: "app",
@@ -39,16 +42,21 @@ import uds from '../src/services/UserDataService';
             user: {},
         };
     },
+    computed: {
+        ...mapStores(useUserStore),
+    },
     methods: {  },
     mounted() {
         uds.getAll()
             .then(res => {
-            this.users = res.data;
-            this.user = this.users.find(u => u.id == 2);
-        })
+                this.users = res.data;
+                this.user = this.users.find(u => u.id === 1);
+                this.userStore.setUser(this.user);
+                console.log(this.userStore);
+            })
             .catch(e => {
-            console.log(e);
-        });
+                console.log(e);
+            });
     },
 };
 </script>

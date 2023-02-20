@@ -38,7 +38,6 @@ import { mapStores } from 'pinia';
     name: "app",
     data() {
         return {
-            users: [],
             user: {},
         };
     },
@@ -47,10 +46,9 @@ import { mapStores } from 'pinia';
     },
     methods: {  },
     mounted() {
-        uds.getAll()
+        uds.get(1)
             .then(res => {
-                this.users = res.data;
-                this.user = this.users.find(u => u.id === 1);
+                this.user = res.data;
                 this.userStore.setUser(this.user);
                 console.log(this.userStore);
             })

@@ -30,6 +30,11 @@ export default new Router({
       path: "/events"
       ,name: 'event-s'
       ,component: () => import('./components/Events')
+    },
+    {
+      path: "/student"
+      ,name: "student-details"
+      ,component: () => import('./components/StudentDetails')
     }
   ]
 });

@@ -15,8 +15,12 @@ class PerformanceDataService {
   delete(id) {
     return http.delete(`/performances/${id}`);
   }
-  getAllForStudent(sid) {
-    return http.get(`/performances/student/${sid}`);
+  getAllForStudent(id) {
+    return http.get(`/performances/student/${id}`);
+  }
+
+  getAllForInstructor(id) {
+    return http.get(`/performances/instructor/${id}`);
   }
 
   addSong(id, songId) {

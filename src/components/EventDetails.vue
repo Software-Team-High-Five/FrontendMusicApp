@@ -32,22 +32,60 @@
                 <table class="table" style="margin-bottom: 0px;">
                     <thead style="background-color: #f2f3f4;">
                         <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Songs</th>
-                            <th scope="col">Instrument</th>
-                            <th scope="col">Accompanist</th>
-                            <th scope="col">Time</th>
-                            <th scope="col">Level</th>
+                            <th>Name</th>
+                            <th>Songs</th>
+                            <th>Instrument</th>
+                            <th>Accompanist</th>
+                            <th>Time</th>
+                            <th>Level</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="table-group-item" v-for="p in filteredPerformances" :key="p.id" @click="performanceDetails(p)">
+                        <tr 
+                            class="table-group-item" 
+                            v-for="p in filteredPerformances" 
+                            :key="p.id" 
+                            @click="performanceDetails(p)">
                             <td>{{ p.student.user.fName }} {{ p.student.user.lName }}</td>
                             <td>{{ songsString(p) }}</td>
                             <td>{{ p.instrument.instrument }}</td>
                             <td>{{ p.accompanist }}</td>
                             <td>{{ p.startTime }} - {{ p.endTime }}</td>
                             <td>{{ p.student.level }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        <div class="col-md-15" style="border-radius: 5px; padding: 10px; margin: 10px;" v-show="showAllPerformances">
+            <div class="card">
+                <table class="table" style="margin-bottom: 0px;">
+                    <thead style="background-color: #f2f3f4;">
+                        <tr colspan="6"><th>All Performances</th></tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Event</th>
+                            <th>Songs</th>
+                            <th>Instrument</th>
+                            <th>Accompanist</th>
+                            <th>Time</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr 
+                            class="table-group-item" 
+                            v-for="perform in allPerformances" 
+                            :key="perform.id" 
+                            @click="performanceDetails(perform)">
+                            <td>{{ perform.student.user.fName }} {{ perform.student.user.lName }}</td>
+                            <td>{{ perform.event.name }} ({{ perform.event.date }})</td>
+                            <td>{{ songsString(perform) }}</td>
+                            <td>{{ perform.instrument.instrument }}</td>
+                            <td>{{ perform.accompanist }}</td>
+                            <td>{{ perform.startTime }} - {{ perform.endTime }}</td>
+                            <td>{{ perform.student.level }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -154,8 +192,17 @@
                     slot="selection"
                     slot-scope="{ levels, isOpen }"
                 ><span class="multiselect__single" v-if="levels" v-show="!isOpen">{{ activeLevels }}</span></template>
-
             </MultiSelect>
+            <br>
+            <v-row class="col-md-15">
+                <v-col>
+                    <v-checkbox
+                        v-model="showAllPerformances"
+                        label="Show All Performances"
+                        hide-details
+                    ></v-checkbox>
+                </v-col>
+            </v-row>
             <br>
             <v-row>
                 <v-col>
@@ -173,6 +220,7 @@
 import { useUserStore } from '@/stores/userStore';
 import { mapStores } from 'pinia';
 import eds from '../services/EventDataService';
+import pds from '../services/PerformanceDataService'
 import VueModal from '@kouts/vue-modal';
 import '@kouts/vue-modal/dist/vue-modal.css'; 
 import MultiSelect from 'vue-multiselect'
@@ -183,6 +231,7 @@ export default {
     ,data() {
         return {
             event: {}
+            ,allPerformances: {}
             ,students: []
             ,showPerformanceDetails: false
             ,performance: {}
@@ -200,6 +249,7 @@ export default {
             ,activeInstruments: []
             ,activeAccompanists: []
             ,activeLevels: []
+            ,showAllPerformances: false
         }
     }
     ,components: {
@@ -287,10 +337,25 @@ export default {
         }
         ,getComposerFullName(c) {
             return c.fName + ' ' + c.mName + ' ' + c.lName;
+        }
+        ,async getAllPerformances() {
+            if(this.userStore.user.role == 'student') {
+                await pds.getAllForStudent() 
+                .then(res => {
+                    res.data.forEach(p => this.allPerformances.push(p))
+                })
+                .catch(e => console.log(e))
+            } else {
+                await pds.getAllForInstructor()
+                .then(res => {
+                    res.data.forEach(p => this.allPerformances.push(p))
+                })
+            }
         }   
     }
     ,mounted() {
         this.getEventDetails();
+        this.getAllPerformances();
     }
 }
 </script>

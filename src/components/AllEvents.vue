@@ -187,7 +187,6 @@ export default {
     }
     ,methods: {
         async fetch() {
-            console.log(this.userStore.user.student)
             await eds.getAll()
                 .then(res => {
                     res.data.forEach(e => {
@@ -196,7 +195,6 @@ export default {
                 })
                 .catch(e => console.log(e));
             if(this.userStore.user.role == 'student'){
-                console.log('getting all for studetn')
                await pds.getAllForStudent(this.userStore.user.id)
                 .then(res => {
                     res.data.forEach(p => {

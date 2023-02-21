@@ -4,10 +4,7 @@ Vue.use(Router);
 
 // deploy test #4
 export default new Router({
-  base:
-    process.env.NODE_ENV === "development"
-      ? "/"
-      : "/performance/t5",
+  base: process.env.NODE_ENV === "development" ? "/" : "/performance/t5",
   mode: "history",
   routes: [
     {
@@ -17,24 +14,34 @@ export default new Router({
       component: () => import("./components/Homepage"),
     },
     {
-      path: "/newevent" 
-      ,name: "new-event"
-      ,component: () => import("./components/NewEvent")
+      path: "/newevent",
+      name: "new-event",
+      component: () => import("./components/NewEvent"),
     },
     {
-      path: "/events/:eventId/signup"
-      ,name: "sign-up"
-      ,component: () => import("./components/SignUp")
+      path: "/events/:eventId/signup",
+      name: "sign-up",
+      component: () => import("./components/SignUp"),
     },
     {
-      path: "/events"
-      ,name: 'event-s'
-      ,component: () => import('./components/Events')
+      path: "/performance/:performanceId",
+      name: "view-performance",
+      component: () => import("./components/ViewPerformance"),
     },
     {
-      path: "/critique"
-      ,name: 'critique-f'
-      ,component: () => import('./components/MakeHearingCritique')
-    }
-  ]
+      path: "/newevent",
+      name: "new-event",
+      component: () => import("./components/NewEvent"),
+    },
+    {
+      path: "/allevents",
+      name: "all-events",
+      component: () => import("./components/AllEvents"),
+    },
+    {
+      path: "/event/:eventId",
+      name: "event-details",
+      component: () => import("./components/EventDetails"),
+    },
+  ],
 });

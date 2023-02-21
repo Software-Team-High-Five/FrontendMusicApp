@@ -10,7 +10,7 @@
             <v-spacer></v-spacer>
             <router-link style="text-decoration: none; color: inherit;" class="mr-5" :to="{name: 'new-event'}">New Event</router-link>
             <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">New Critique</router-link>
-            <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">Students</router-link>
+            <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'student-s'}">Students</router-link>
             <v-spacer></v-spacer>
             <router-link style="text-decoration: none; color: inherit;" to="/">
                 {{ userStore.name }}

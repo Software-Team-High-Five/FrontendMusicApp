@@ -18,5 +18,8 @@ class StudentDataService {
   findByTitle(title) {
     return http.get(`/students?title=${title}`);
   }
+  instructorStudents(iid){
+    return http.get(`students/instructor/${iid}`);
+  }
 }
 export default new StudentDataService();

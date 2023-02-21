@@ -8,8 +8,8 @@
                 </v-toolbar-title>
             </router-link>            
             <v-spacer></v-spacer>
-            <router-link style="text-decoration: none; color: inherit;" class="mr-5" :to="{name: 'new-event'}">New Event</router-link>
-            <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}">New Critique</router-link>
+            <router-link style="text-decoration: none; color: inherit;" class="mr-5" :to="{name: 'new-event'}" v-if="true">New Event</router-link>
+            <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}" v-if="userStore.isFaculty || userStore.isAdmin">New Critique</router-link>
             <router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'student-s'}">Students</router-link>
             <v-spacer></v-spacer>
             <router-link style="text-decoration: none; color: inherit;" to="/">
@@ -46,8 +46,8 @@ import { mapStores } from 'pinia';
         ...mapStores(useUserStore),
     },
     methods: {  },
-    mounted() {
-        uds.getAll()
+    async mounted() {
+        await uds.getAll()
             .then(res => {
                 this.users = res.data;
                 this.user = this.users.find(u => u.id === 1);

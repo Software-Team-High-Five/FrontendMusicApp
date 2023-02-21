@@ -1,10 +1,13 @@
 <template>
     <div>
-        <br><br><br>
-        <h3 style="text-align: left">
-            {{ this.performance.event.name }} &nbsp; {{ this.performance.event.type }} ({{ this.performance.event.date }})
-        </h3>
         <br>
+        <h2> &nbsp; {{ this.performance.event.name}} ({{ this.performance.event.date }})</h2>
+        <br>
+        <v-col class="col-md-15">
+            <v-row>
+                
+            </v-row>
+        </v-col>
     </div>
 </template>
 

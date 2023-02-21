@@ -29,7 +29,7 @@
         <br>
         <div class="col-md-15" style="border-radius: 5px; padding: 10px; margin: 10px;">
             <div class="card">
-                <table class="table">
+                <table class="table" style="margin-bottom: 0px;">
                     <thead style="background-color: #f2f3f4;">
                         <tr>
                             <th scope="col">Name</th>

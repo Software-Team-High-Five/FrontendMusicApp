@@ -21,7 +21,7 @@
             </div>
           </div>
         </v-col>
-        <v-col class="pa-5">
+        <v-col class="pa-5" v-show="userStore.isAdmin">
           <div class="card-button align-center" style="position:relative">
             <div>
               <h2 class="pa-5" style="color:#03003f">
@@ -50,7 +50,7 @@
               <v-btn color="#03003f"
                 elevation="5"
                 style="color:#ffffff"
-                :to="{name: 'sign-up', params: {eventId: 1}}"
+                :to="{name: 'all-events', query: {'upcoming': 1}}"
                 >
                 Sign up                              
               </v-btn>
@@ -63,14 +63,16 @@
 </template>
 
 <script>
+import { useUserStore } from '@/stores/userStore';
+import { mapStores } from 'pinia';
 
 export default {
   name: "home-page",
-  components: {  },
-  // data() {  },
+  components: { },
+  data() { return { } },
   methods: {  },
-  computed: {  },
-  mounted() { },
+  computed: {  ...mapStores(useUserStore)  },
+  mounted() {  },
 };
 </script>
 

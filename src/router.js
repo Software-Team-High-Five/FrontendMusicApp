@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from "vue";
 import Router from "vue-router";
 Vue.use(Router);
@@ -42,6 +43,11 @@ export default new Router({
       path: "/event/:eventId",
       name: "event-details",
       component: () => import("./components/EventDetails"),
+    },
+    {
+      path: "/critique-f",
+      name: "critique-f",
+      component: () => import("./components/MakeHearingCritique"),
     },
   ],
 });

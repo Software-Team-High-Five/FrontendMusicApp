@@ -10,6 +10,7 @@
                 <div class="body-1"><strong>Semester</strong></div>
                 <div class="body-1"><strong>Level</strong></div>
                 <div class="body-1"><strong>Instructor</strong></div>
+                <div class="body-1"><strong>Instruments</strong></div>
             </v-col>
             <v-col>
                 <div class="body-1">{{ userStore.name }}</div>
@@ -20,6 +21,9 @@
                 <div class="body-1">{{ userStore.user.student.semester }}</div>
                 <div class="body-1">{{ userStore.user.student.level }}</div>
                 <div class="body-1">{{ instructor }}</div>
+                <div class="body-1" v-for="instrument in userStore.user.student.instruments" :key="instrument.id">
+                    {{ instrument.instrument }}
+                </div>
             </v-col>
         </v-row>
     </v-container>
@@ -44,11 +48,11 @@ export default {
     ,mounted() {
         userDS.get(this.userStore.user.student.instructorId)
             .then(res => {
-                this.instructor = `${res.data.fName} ${res.data.lName}`
+                this.instructor = `${res.data.fName} ${res.data.lName}`;
             })
             .catch(e => {
                 console.log(e);
-                this.instructor = 'Error: not found'
+                this.instructor = 'Error: not found';
             });
     }
 }

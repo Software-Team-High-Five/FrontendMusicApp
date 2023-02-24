@@ -50,7 +50,7 @@ import { mapStores } from 'pinia';
         await uds.getAll()
             .then(res => {
                 this.users = res.data;
-                this.user = this.users.find(u => u.id === 1);
+                this.user = this.users.find(u => u.id === 300);
                 this.userStore.setUser(this.user);
                 console.log(this.userStore);
             })

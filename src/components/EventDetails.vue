@@ -165,23 +165,24 @@
       >
       <v-row>
         <v-col class="col-xs"><strong>Judge</strong></v-col>
-        <v-col class="col-lg"><strong>Notes</strong></v-col>
       </v-row>
+
       <v-row v-for="f in performance.feedbacks" :key="f.id + 'f'">
         <v-col class="col-sm">{{ f.judge.fName }} {{ f.judge.lName }}</v-col>
-        <!-- <v-col class="col-lg">{{ f.notes }}</v-col>-->
-        <v-col class="col-lg">
-          <textarea
+        <v-row>
+          <v-col class="col-lg"><strong>Notes</strong></v-col>
+        </v-row>
+        <v-row>
+          <v-textarea
             solo
             label="Label"
             outline="true"
             v-model="f.notes"
-          ></textarea>
-        </v-col>
+          ></v-textarea>
+        </v-row>
       </v-row>
       <br /><br />
       <v-row>
-        <!--<button class="btn btn-dark" @click="showPerformanceDetails = false">-->
         <button class="btn btn-dark" @click="saveCritique()">Close</button>
       </v-row>
     </Modal>

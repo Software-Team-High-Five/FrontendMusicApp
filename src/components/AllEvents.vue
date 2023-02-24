@@ -142,11 +142,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr
+            <!--<tr
               class="table-group-item"
               v-for="e in registeredEvents"
               :key="e.id"
               @click="editSignup(e.id)"
+              v-show="!isUpcoming"
+            > -->
+            <tr
+              class="table-group-item"
+              v-for="e in registeredEvents"
+              :key="e.id"
+              @click="viewPerformance(e.id)"
               v-show="!isUpcoming"
             >
               <td>{{ e.name }}</td>

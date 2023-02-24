@@ -131,6 +131,8 @@ import eventDS from '../services/EventDataService';
 import songDS from '../services/SongDataService';
 import studentDS from '../services/StudentDataService';
 import PerformanceDS from '../services/PerformanceDataService';
+import { useUserStore } from '@/stores/userStore';
+import { mapStores } from 'pinia';
 
 export default {
     name: 'sign-up'
@@ -155,7 +157,11 @@ export default {
             ]
             ,allSongs: []
             ,selectedSongs: []
+            ,takenTimes: []
         }
+    }
+    ,computed: {
+        ...mapStores(useUserStore),
     }
     ,methods: {
         // Initialization Methods
@@ -204,30 +210,60 @@ export default {
                 });
 
             // Get user instrument list
-            studentDS.get(this.student.id)
+            if(this.userStore.user.student) {          
+                await studentDS.get(this.userStore.user.student.id)
                 .then(res => {
                     this.instruments = res.data.instruments;
                 })
                 .catch(e => {
                     console.log(e);
                 });
-
+            
+            
             // Get user song list
-            await songDS.getAll()
-                .then(res => {
-                    this.allSongs = res.data.filter(song => song.studentId === this.student.id).map(song => {
-                        return {
-                            id: song.id
-                            ,title: song.title
-                            ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
-                            // ,semester: song.semester
-                        };
+                await songDS.getAll()
+                    .then(res => {
+                        this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
+                            return {
+                                id: song.id
+                                ,title: song.title
+                                ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
+                                // ,semester: song.semester
+                            };
+                        });
+                    })
+                    .catch(e => {
+                        console.log(e);
                     });
-                })
-                .catch(e => {
-                    console.log(e);
+            }
+            // get signup times that have already been taken
+            await PerformanceDS.getTakenTimes(this.$route.params.eventId)
+            .then(res => {
+                res.data.forEach(p => {
+                    this.takenTimes.push(p);
+                    this.takenTimes.forEach(t => {
+                        var takenTime = this.timeSlots.find(ts => (ts.start.slice(-5) == t.startTime.substr(0, 5) && t.endTime.substr(0, 5) == ts.end.slice(-5)))
+                        takenTime.available = false;
+                    })
+                    
                 });
+            })
+            .catch(e => console.log(e))
 
+            //set up for edit
+            if(this.$route.query.editing && this.userStore.user.student){
+                await PerformanceDS.editPerformance(this.userStore.user.student.id, this.$route.params.eventId)
+                .then(res => {
+                    this.accompanist = res.data.accompanist ? res.data.accompanist : 'none';
+                    this.studentId = res.data.studentId;
+                    this.instructorId = res.data.instructorId;
+                    this.selectedInstrumentId = res.data.instrument.id;
+                    this.selectedTime = this.timeSlots.find(ts => (ts.start.slice(-5) == res.data.startTime.substr(0, 5) && ts.end.slice(-5) == res.data.endTime.substr(0, 5)));
+                    this.selectedTime.available = true;
+                    console.log(res.data);
+                    res.data.songs.forEach(s => this.selectedSongs.push(s));
+                })
+            }
             this.loaded = true;
         }
 
@@ -260,7 +296,7 @@ export default {
                 console.log("Fill in empty fields");
                 return;
             }
-
+            // submit data needs to be updated
             let data = {
                 startTime: this.selectedTime.start
                 ,endTime: this.selectedTime.end

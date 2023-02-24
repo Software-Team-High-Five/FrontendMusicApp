@@ -223,13 +223,11 @@ export default {
             }
         }
         ,editSignup(eid){
-            console.log('this is where the events will be edited from. eventId: ', eid);
+            this.$router.push({name: 'sign-up', params: { eventId: eid }, query: { 'editing': 1 }})
         }
         ,viewPerformance(eid){
             if(this.userStore.user.role == 'student'){
                 const viewPerformance = this.userPerformances.find(p => p.eventId == eid);
-                console.log(this.userPerformances)
-                console.log(viewPerformance);
                 this.$router.push({ name: 'view-performance', params: {performanceId: viewPerformance.id}});
             } else {
                 this.$router.push({ name: 'event-details', params: {eventId: eid}});

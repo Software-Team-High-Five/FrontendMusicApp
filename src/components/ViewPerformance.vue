@@ -1,38 +1,31 @@
 <template>
-    <div>
+    <div class="pl-10">
         <br>
-        <h2> &nbsp; {{ performance.event.name}} ({{ performance.event.date }})</h2>
-        <p>{{ performance.event.type }}</p>
-        <p>{{ performance.instrument.instrument }}</p>
+        <h2>{{ performance.event.name}} ({{ performance.event.date }})</h2>
+        <p>{{ performance.event.type }}  -  {{ performance.instrument.instrument }}</p>
         <br>
-        <v-col class="col-md-15">
-            <v-row>
-                <h3>Songs</h3>
-            </v-row>
-            <v-row class="col-md-15">
+            <h3>Songs</h3>
+            <v-row class="px-3">
                 <v-col><strong>Title</strong></v-col>
-                <v-col><strong>Translation</strong></v-col>
                 <v-col><strong>Composer</strong></v-col>
+                <v-col><strong>Translation</strong></v-col>
             </v-row>
-            <v-row 
-                class="col-md-15" 
+            <v-row class="px-3" 
                 v-for="song in performance.songs" 
                 :key="song.id">
                 <v-col>{{ song.title }}</v-col>
-                <v-col>{{ song.translation || 'No Traslation Available' }}</v-col>
                 <v-col>{{ song.composer.fName }} {{ song.composer.mName }} {{ song.composer.lName }}</v-col>
+                <v-col>{{ song.translation || 'No Traslation Available' }}</v-col>
             </v-row>
             <br><br>
-            <v-row>
-                <h3>Feedback</h3>
-            </v-row>
-            <v-row
+
+            <h3>Feedback</h3>
+            <v-col 
                 v-for="feedback in performance.feedbacks"
                 :key="feedback.id">
-                <v-row>{{ feedback.judge.fName }} {{ feedback.judge.lName }}</v-row>
-                <v-row><v-text-area readonly v-model="feedback.notes"></v-text-area></v-row>
-            </v-row>
-        </v-col>
+                <v-row class="w-100"><strong>{{ feedback.judge.fName }} {{ feedback.judge.lName }}</strong></v-row>
+                <v-row class="w-100 pt-4" ><v-text-area readonly v-model="feedback.notes">feedback notes go here</v-text-area></v-row>
+            </v-col>
     </div>
 </template>
 
@@ -65,3 +58,8 @@ export default {
     }
 }
 </script>
+<!-- <style>
+div {  
+  border: 2px solid blue;  
+}  
+</style> -->

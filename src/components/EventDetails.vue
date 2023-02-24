@@ -55,6 +55,7 @@
               <th>Accompanist</th>
               <th>Time</th>
               <th>Level</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -77,6 +78,7 @@
                   style="margin-right: 10px; border-radius: 4px"
                 >
                   Critique
+                  <!--Replace with pen icon later-->
                 </button>
               </td>
             </tr>
@@ -165,7 +167,7 @@
         <v-col class="col-xs"><strong>Judge</strong></v-col>
         <v-col class="col-lg"><strong>Notes</strong></v-col>
       </v-row>
-      <v-row v-for="f in performance.feedbacks" :key="f.id">
+      <v-row v-for="f in performance.feedbacks" :key="f.id + 'f'">
         <v-col class="col-sm">{{ f.judge.fName }} {{ f.judge.lName }}</v-col>
         <!-- <v-col class="col-lg">{{ f.notes }}</v-col>-->
         <v-col class="col-lg">
@@ -300,6 +302,7 @@ import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
 import eds from "../services/EventDataService";
 import pds from "../services/PerformanceDataService";
+import feedbackDataService from "../services/FeebackDataService";
 import VueModal from "@kouts/vue-modal";
 import "@kouts/vue-modal/dist/vue-modal.css";
 import MultiSelect from "vue-multiselect";
@@ -434,7 +437,7 @@ export default {
     },
     saveCritique() {
       //   pds
-      //     .update({this.event.performance.id, this.event.performance})           // .update({ ...this.event})
+      //     .update({this.event.performance.id, this.event.performance})
       //     .then((res) => {
       //       console.log(res.data);
       //     })
@@ -449,7 +452,7 @@ export default {
           judgeId: this.performance.feedbacks[i].judgeId,
           userId: this.performance.feedbacks[i].userId,
         };
-        pds
+        feedbackDataService
           .update(tempCritique.id, tempCritique)
           .then((res) => {
             console.log(res.data);

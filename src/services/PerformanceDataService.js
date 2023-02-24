@@ -10,6 +10,7 @@ class PerformanceDataService {
     return http.post("/performances", data);
   }
   update(id, data) {
+    console.log('pid: ', id, data);
     return http.put(`/performances/${id}`, data);
   }
   delete(id) {

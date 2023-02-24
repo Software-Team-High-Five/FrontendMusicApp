@@ -260,6 +260,7 @@ export default {
                     this.selectedInstrumentId = res.data.instrument.id;
                     this.selectedTime = this.timeSlots.find(ts => (ts.start.slice(-5) == res.data.startTime.substr(0, 5) && ts.end.slice(-5) == res.data.endTime.substr(0, 5)));
                     this.selectedTime.available = true;
+                    this.updateId = res.data.id
                     console.log(res.data);
                     res.data.songs.forEach(s => this.selectedSongs.push(s));
                 })
@@ -295,6 +296,32 @@ export default {
             if (this.selectedTime == null || this.selectedInstrumentId == null) {
                 console.log("Fill in empty fields");
                 return;
+            }
+
+            if(this.$route.query.editing) {
+                const data = {
+                    id: this.updateId
+                    ,startTime: this.selectedTime.start
+                    ,endTime: this.selectedTime.end,
+                    instrumentId: this.selectedInstrumentId
+                }
+                await PerformanceDS.update(data.id, data)
+                    .then(res => {
+                        console.log(res.data);
+                        console.log('perofrmance updated');
+                        this.$router.push({ name: 'all-events'});
+                    })
+                    .catch(e => {
+                        console.log('error updating performance: ', e);
+                    })
+                    this.selectedSongs.forEach(async (song) => {
+                        await PerformanceDS.addSong(data.id, song.id)
+                            .catch((e) => {
+                                console.log(`Unable to add song "${song.title}" to the performance`);
+                                console.log(e);
+                            });
+                    });
+                return false;
             }
             // submit data needs to be updated
             let data = {
@@ -334,6 +361,7 @@ export default {
             console.log('Performance created');
             this.$router.push({ name: 'home-page' });
         }
+        
     }
     ,mounted() {
         this.initializeData();

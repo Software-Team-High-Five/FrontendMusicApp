@@ -44,10 +44,5 @@ export default new Router({
       name: "event-details",
       component: () => import("./components/EventDetails"),
     },
-    {
-      path: "/critique-f",
-      name: "critique-f",
-      component: () => import("./components/MakeHearingCritique"),
-    },
   ],
 });

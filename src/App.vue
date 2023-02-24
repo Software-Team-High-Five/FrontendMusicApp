@@ -12,14 +12,10 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'new-event' }"
+        v-if="true"
         >New Event</router-link
       >
-      <router-link
-        style="text-decoration: none; color: inherit"
-        class="mr-5"
-        :to="{ name: 'critique-f' }"
-        >New Critique</router-link
-      >
+      <!--<router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}" v-if="userStore.isFaculty || userStore.isAdmin">New Critique</router-link>-->
       <router-link
         style="text-decoration: none; color: inherit"
         class="mr-5"
@@ -67,7 +63,9 @@ export default {
       .getAll()
       .then((res) => {
         this.users = res.data;
-        this.user = this.users.find((u) => u.id === 200);
+        // this.user = this.users.find(u => u.id === 100); //David North Admin
+        this.user = this.users.find((u) => u.id === 200); //Kyle Pullen Faculty
+        // this.user = this.users.find((u) => u.id === 300); //Jess Long Student
         this.userStore.setUser(this.user);
         console.log(this.userStore);
       })
@@ -75,5 +73,34 @@ export default {
         console.log(e);
       });
   },
+};
+</script>
+
+  export default {
+    name: "app",
+    data() {
+        return {
+            users: [],
+            user: {},
+        };
+    },
+    computed: {
+        ...mapStores(useUserStore),
+    },
+    methods: {  },
+    async mounted() {
+        await uds.getAll()
+            .then(res => {
+                this.users = res.data;
+                // this.user = this.users.find(u => u.id === 100); //David North Admin
+                // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
+                this.user = this.users.find(u => u.id === 300); //Jess Long Student
+                this.userStore.setUser(this.user);
+                console.log(this.userStore);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    },
 };
 </script>

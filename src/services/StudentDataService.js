@@ -18,6 +18,9 @@ class StudentDataService {
   findByTitle(title) {
     return http.get(`/students?title=${title}`);
   }
+  instructorStudents(iid){
+    return http.get(`students/instructor/${iid}`);
+  }
   addInstrument(studentId, instrumentId) {
     return http.post(`/studentInstruments?studentId=${studentId}&instrumentId=${instrumentId}`);
   }

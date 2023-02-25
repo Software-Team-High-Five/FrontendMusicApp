@@ -35,6 +35,11 @@ export default new Router({
       path: "/student"
       ,name: "student-details"
       ,component: () => import('./components/StudentDetails')
+    },
+    {
+      path: "/student/:id"
+      ,name: "student-edit"
+      ,component: () => import('./components/StudentEdit')
     }
   ]
 });

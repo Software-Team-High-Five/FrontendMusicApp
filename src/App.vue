@@ -50,7 +50,10 @@ import { mapStores } from 'pinia';
         await uds.getAll()
             .then(res => {
                 this.users = res.data;
-                this.user = this.users.find(u => u.id === 300);
+                // this.user = this.users.find(u => u.id === 100); //David North Admin
+                // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
+                this.user = this.users.find(u => u.id === 300); //Jess Long Student
+
                 this.userStore.setUser(this.user);
                 console.log(this.userStore);
             })

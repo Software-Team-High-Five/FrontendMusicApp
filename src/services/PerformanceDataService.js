@@ -10,6 +10,7 @@ class PerformanceDataService {
     return http.post("/performances", data);
   }
   update(id, data) {
+    console.log('pid: ', id, data);
     return http.put(`/performances/${id}`, data);
   }
   delete(id) {
@@ -28,6 +29,14 @@ class PerformanceDataService {
   }
   removeSong(id, songId) {
     return http.delete(`/performanceSongs?performanceId=${id}&songId=${songId}`);
+  }
+
+  getTakenTimes(eventId) {
+    return http.get(`/performances/takenTimes/${eventId}`);
+  }
+
+  editPerformance(studentId, eventId) {
+    return http.get(`/performances/editPerformance/${eventId}/${studentId}`);
   }
 }
 export default new PerformanceDataService();

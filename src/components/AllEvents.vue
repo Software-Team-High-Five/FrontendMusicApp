@@ -287,78 +287,7 @@ export default {
       eventTypes: ["Recital Hearing", "Jury", "Audition"],
       activeTypes: [],
     };
-  },
-  methods: {
-    async fetch() {
-      await eds
-        .getAll()
-        .then((res) => {
-          res.data.forEach((e) => {
-            this.events.push(e);
-          });
-        })
-        .catch((e) => console.log(e));
-      if (this.userStore.user.role == "student") {
-        await pds
-          .getAllForStudent(this.userStore.user.id)
-          .then((res) => {
-            res.data.forEach((p) => {
-              this.userPerformances.push(p);
-            });
-            console.log(this.userPerformances);
-          })
-          .catch((e) => console.log(e));
-      } else {
-        await pds
-          .getAllForInstructor(this.userStore.user.id)
-          .then((res) => {
-            res.data.forEach((p) => {
-              this.userPerformances.push(p);
-            });
-          })
-          .catch((e) => console.log(e));
-        await sds
-          .instructorStudents(this.userStore.user.id)
-          .then((res) => {
-            res.data.forEach((s) => this.students.push(s));
-          })
-          .catch((e) => console.log(e));
-      }
-    },
-    signUp(eid) {
-      if (this.userStore.isAdmin) {
-        console.log("direct admin to edit the upcoming event");
-      } else {
-        this.$router.push({ name: "sign-up", params: { eventId: eid } });
-      }
-    },
-    editSignup(eid) {
-      console.log(
-        "this is where the events will be edited from. eventId: ",
-        eid
-      );
-    },
-    viewPerformance(eid) {
-      if (this.userStore.user.role == "student") {
-        const viewPerformance = this.userPerformances.find(
-          (p) => p.eventId == eid
-        );
-        console.log(this.userPerformances);
-        console.log(viewPerformance);
-        this.$router.push({
-          name: "view-performance",
-          params: { performanceId: viewPerformance.id },
-        });
-      } else {
-        this.$router.push({ name: "event-details", params: { eventId: eid } });
-      }
-    },
-    generalFilter(event) {
-      if (this.searchString == "") {
-        if (!this.activeTypes.length) {
-          return true;
-        }
-    }
+  }
     ,methods: {
         async fetch() {
             await eds.getAll()
@@ -426,63 +355,48 @@ export default {
         ,clearFilters() {
             this.activeTypes = [];
         }
-      } else {
-        if (
-          event.name.toLowerCase().indexOf(this.searchString.toLowerCase()) >
-            -1 ||
-          this.activeTypes.includes(event.type)
-        ) {
-          return true;
+    },
+    computed: {
+        ...mapStores(useUserStore),
+        myPastEvents() {
+        return this.events.filter(
+            (e) =>
+            e.date < this.today &&
+            this.userPerformances.find((p) => p.eventId == e.id) &&
+            this.generalFilter(e)
+        );
+        },
+        upcomingEvents() {
+        return this.events.filter(
+            (e) =>
+            e.date > this.today &&
+            !this.userPerformances.find((p) => p.eventId == e.id) &&
+            this.generalFilter(e)
+        );
+        },
+        registeredEvents() {
+        return this.events.filter(
+            (e) =>
+            e.date > this.today &&
+            this.generalFilter(e) &&
+            this.userPerformances.find((p) => p.eventId == e.id)
+        );
+        },
+        todaysEvents() {
+        return this.events.filter(
+            (e) =>
+            e.date == this.today &&
+            !this.userPerformances.find((p) => p.eventId == e.id) &&
+            this.generalFilter(e)
+        );
+        },
+    },
+    mounted() {
+        this.fetch();
+        this.today = new Date().toISOString().substring(0, 10);
+        if (this.$route.query.upcoming) {
+        this.isUpcoming = 1;
         }
-        return false;
-      }
-      return false;
-    },
-    clearFilters() {
-      this.activeTypes = [];
-    },
-  },
-  computed: {
-    ...mapStores(useUserStore),
-    myPastEvents() {
-      return this.events.filter(
-        (e) =>
-          e.date < this.today &&
-          this.userPerformances.find((p) => p.eventId == e.id) &&
-          this.generalFilter(e)
-      );
-    },
-    upcomingEvents() {
-      return this.events.filter(
-        (e) =>
-          e.date > this.today &&
-          !this.userPerformances.find((p) => p.eventId == e.id) &&
-          this.generalFilter(e)
-      );
-    },
-    registeredEvents() {
-      return this.events.filter(
-        (e) =>
-          e.date > this.today &&
-          this.generalFilter(e) &&
-          this.userPerformances.find((p) => p.eventId == e.id)
-      );
-    },
-    todaysEvents() {
-      return this.events.filter(
-        (e) =>
-          e.date == this.today &&
-          !this.userPerformances.find((p) => p.eventId == e.id) &&
-          this.generalFilter(e)
-      );
-    },
-  },
-  mounted() {
-    this.fetch();
-    this.today = new Date().toISOString().substring(0, 10);
-    if (this.$route.query.upcoming) {
-      this.isUpcoming = 1;
     }
-  },
 };
 </script>

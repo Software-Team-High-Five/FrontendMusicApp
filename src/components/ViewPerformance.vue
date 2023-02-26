@@ -20,7 +20,7 @@
             <br><br>
 
             <h3>Feedback</h3>
-            <v-col 
+            <v-col
                 v-for="feedback in performance.feedbacks"
                 :key="feedback.id">
                 <v-row class="w-100"><strong>{{ feedback.judge.fName }} {{ feedback.judge.lName }}</strong></v-row>
@@ -35,7 +35,7 @@ import { useUserStore } from '@/stores/userStore';
 import { mapStores } from 'pinia';
 
 export default {
-    name: 'view-perofrmance'
+    name: 'view-performance'
     ,components: { }
     ,data() {
         return {

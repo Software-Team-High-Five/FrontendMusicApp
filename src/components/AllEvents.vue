@@ -1,9 +1,6 @@
 <template>
   <div>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css" />
     <br />
     <v-row>
       <v-col class="col-md-3 sticky-top" v-if="!isUpcoming">
@@ -43,7 +40,7 @@
     <div
       class="col-md-15"
       style="border-radius: 5px; padding: 10px; margin: 10px"
-      v-show="!isUpcoming"
+      v-show="!isUpcoming && todaysEvents.length"
     >
       <div class="card">
         <table class="table" style="margin-bottom: 0px">
@@ -63,10 +60,9 @@
           <tbody>
             <tr
               class="table-group-item"
-              v-for="e in myPastEvents"
+              v-for="e in todaysEvents"
               :key="e.id"
               @click="viewPerformance(e.id)"
-              v-show="todaysEvents.length"
             >
               <td>{{ e.name }}</td>
               <td>{{ e.type }}</td>

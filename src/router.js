@@ -30,11 +30,6 @@ export default new Router({
       component: () => import("./components/ViewPerformance"),
     },
     {
-      path: "/newevent",
-      name: "new-event",
-      component: () => import("./components/NewEvent"),
-    },
-    {
       path: "/allevents",
       name: "all-events",
       component: () => import("./components/AllEvents"),

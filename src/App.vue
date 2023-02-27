@@ -23,7 +23,7 @@
         >Students</router-link
       >
       <v-spacer></v-spacer>
-      <router-link style="text-decoration: none; color: inherit" to="/">
+      <router-link style="text-decoration: none; color: inherit" :to="{name: 'student-details'}">
         {{ userStore.name }}
         <v-btn icon>
           <v-icon> mdi-account </v-icon>
@@ -50,7 +50,6 @@ import { mapStores } from "pinia";
     name: "app",
     data() {
         return {
-            users: [],
             user: {},
         };
     },

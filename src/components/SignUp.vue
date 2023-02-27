@@ -141,7 +141,6 @@ export default {
             loaded: false
             ,error: false
 
-            ,student: {}
             ,event: null
             ,timeSlots: []
             // calendar settings
@@ -166,10 +165,6 @@ export default {
     ,methods: {
         // Initialization Methods
         async initializeData() {
-            // Load data from local store
-            this.student.id = 1;
-            this.student.instructorId = 2;
-
             // Get event data
             await eventDS.get(this.$route.params.eventId)
                 .then(res => {
@@ -302,8 +297,8 @@ export default {
                 const data = {
                     id: this.updateId
                     ,startTime: this.selectedTime.start
-                    ,endTime: this.selectedTime.end,
-                    instrumentId: this.selectedInstrumentId
+                    ,endTime: this.selectedTime.end
+                    ,instrumentId: this.selectedInstrumentId
                 }
                 await PerformanceDS.update(data.id, data)
                     .then(res => {
@@ -329,8 +324,8 @@ export default {
                 ,endTime: this.selectedTime.end
                 ,accompanist: this.noAccompanist ? 'none' : this.accompanist
                 ,eventId: this.event.id
-                ,studentId: this.student.id
-                ,instructorId: this.student.instructorId
+                ,studentId: this.userStore.user.student.id
+                ,instructorId: this.userStore.user.student.instructorId
                 ,instrumentId: this.selectedInstrumentId
             };
 

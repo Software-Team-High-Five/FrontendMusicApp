@@ -10,13 +10,18 @@ class PerformanceDataService {
     return http.post("/performances", data);
   }
   update(id, data) {
+    console.log('pid: ', id, data);
     return http.put(`/performances/${id}`, data);
   }
   delete(id) {
     return http.delete(`/performances/${id}`);
   }
-  getAllForStudent(sid) {
-    return http.get(`/performances/student/${sid}`);
+  getAllForStudent(id) {
+    return http.get(`/performances/student/${id}`);
+  }
+
+  getAllForInstructor(id) {
+    return http.get(`/performances/instructor/${id}`);
   }
 
   addSong(id, songId) {
@@ -24,6 +29,14 @@ class PerformanceDataService {
   }
   removeSong(id, songId) {
     return http.delete(`/performanceSongs?performanceId=${id}&songId=${songId}`);
+  }
+
+  getTakenTimes(eventId) {
+    return http.get(`/performances/takenTimes/${eventId}`);
+  }
+
+  editPerformance(studentId, eventId) {
+    return http.get(`/performances/editPerformance/${eventId}/${studentId}`);
   }
 }
 export default new PerformanceDataService();

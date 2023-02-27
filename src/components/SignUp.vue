@@ -296,8 +296,8 @@ export default {
             if(this.$route.query.editing) {
                 const data = {
                     id: this.updateId
-                    ,startTime: this.selectedTime.start
-                    ,endTime: this.selectedTime.end
+                    ,startTime: this.selectedTime.start.replace("T", " ")
+                    ,endTime: this.selectedTime.end.replace("T", " ")
                     ,instrumentId: this.selectedInstrumentId
                 }
                 await PerformanceDS.update(data.id, data)
@@ -320,8 +320,8 @@ export default {
             }
             // submit data needs to be updated
             let data = {
-                startTime: this.selectedTime.start
-                ,endTime: this.selectedTime.end
+                startTime: this.selectedTime.start.replace("T", " ")
+                ,endTime: this.selectedTime.end.replace("T", " ")
                 ,accompanist: this.noAccompanist ? 'none' : this.accompanist
                 ,eventId: this.event.id
                 ,studentId: this.userStore.user.student.id

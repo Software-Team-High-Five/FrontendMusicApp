@@ -38,7 +38,8 @@ export default {
     ,data() {
         return {
             instructor: '<loading>'
-        };
+            ,prevRoute: null
+        }
     }
     ,computed: {
         ...mapStores(useUserStore)
@@ -54,6 +55,15 @@ export default {
                 console.log(e);
                 this.instructor = 'Error: not found';
             });
+        if(this.prevRoute.name == 'student-edit') {
+            window.location.reload()
+        }
+        console.log(this.userStore);
+    }
+    ,beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.prevRoute = from;
+        })
     }
 }
 </script>

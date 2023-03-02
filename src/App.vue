@@ -23,7 +23,10 @@
         >Students</router-link
       >
       <v-spacer></v-spacer>
-      <router-link style="text-decoration: none; color: inherit" :to="{name: 'student-details'}">
+      <router-link
+        style="text-decoration: none; color: inherit"
+        :to="{ name: 'student-details' }"
+      >
         {{ userStore.name }}
         <v-btn icon>
           <v-icon> mdi-account </v-icon>
@@ -45,32 +48,63 @@
 import uds from "../src/services/UserDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
+import Utils from "@/config/utils.js";
+import AuthServices from "@/services/authServices";
 
-  export default {
-    name: "app",
-    data() {
-        return {
-            user: {},
-        };
+export default {
+  name: "app",
+  data() {
+    return {
+      user: {},
+      title: "Musid Performance Scheduling App",
+      initials: "",
+      name: "",
+    };
+  },
+  computed: {
+    ...mapStores(useUserStore),
+  },
+  methods: {
+    resetMenu() {
+      this.user = null;
+      // ensures that their name gets set properly from store
+      this.user = Utils.getStore("user");
+      if (this.user != null) {
+        this.initials = this.user.fName[0] + this.user.lName[0];
+        this.name = this.user.fName + " " + this.user.lName;
+      }
     },
-    computed: {
-        ...mapStores(useUserStore),
+    logout() {
+      AuthServices.logoutUser(this.user)
+        .then((response) => {
+          console.log(response);
+          Utils.removeItem("user");
+          this.$router.push({ name: "login" });
+          this.$router.go();
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
     },
-    methods: {  },
-    async mounted() {
-        await uds.getAll()
-            .then(res => {
-                this.users = res.data;
-                // this.user = this.users.find(u => u.id === 100); //David North Admin
-                // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-                this.user = this.users.find(u => u.id === 300); //Jess Long Student
+  },
+  async created() {
+    this.resetMenu();
+  },
+  async mounted() {
+    await uds
+      .getAll()
+      .then((res) => {
+        this.users = res.data;
+        // this.user = this.users.find(u => u.id === 100); //David North Admin
+        // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
+        this.user = this.users.find((u) => u.id === 300); //Jess Long Student
 
-                this.userStore.setUser(this.user);
-                console.log(this.userStore);
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    },
+        this.userStore.setUser(this.user);
+        console.log(this.userStore);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  },
 };
 </script>

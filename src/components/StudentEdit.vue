@@ -114,7 +114,7 @@ import instrumentDS from '@/services/InstrumentDataService';
 import studentDS from '@/services/StudentDataService';
 
 export default {
-    name: 'student-details'
+    name: 'student-edit'
     ,data() {
         return {
             student: {}

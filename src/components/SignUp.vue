@@ -9,7 +9,7 @@
             <div v-if="!error">
                 <v-row :align="'center'">
                     <v-col style="width:min-content">
-                        <h4 class="text-right">Event Details</h4>
+                        <h4 :class="[userStore.user.student ? 'text-right' : '']">Event Details</h4>
                     </v-col>
                     <v-col style="width:min-content">
                         <div><span class="font-weight-medium">Type:</span> {{ event.type }}</div>
@@ -43,9 +43,12 @@
                             </v-calendar>
                         </v-card>
                     </v-col>
+                    <v-row> 
+                        <button class="btn btn-dark" @click="facultySubmit">Submit</button>
+                    </v-row>
                     <v-col>
                         <br>
-                        <v-container>
+                        <v-container v-if="userStore.user.student">
                             <!-- Add an accompanist to the performance -->
                             <v-row>
                                 <v-col>
@@ -94,7 +97,7 @@
                             </v-row>
                             <!-- Submit -->
                             <v-row>
-                                <v-btn @click="submit">
+                                <v-btn @click="studentSubmit">
                                     Submit
                                 </v-btn>
                             </v-row>
@@ -131,6 +134,7 @@ import eventDS from '../services/EventDataService';
 import songDS from '../services/SongDataService';
 import studentDS from '../services/StudentDataService';
 import PerformanceDS from '../services/PerformanceDataService';
+import AvailabilityDS from '../services/AvailabilityDataService';
 import { useUserStore } from '@/stores/userStore';
 import { mapStores } from 'pinia';
 
@@ -140,7 +144,6 @@ export default {
         return {
             loaded: false
             ,error: false
-
             ,event: null
             ,timeSlots: []
             // calendar settings
@@ -231,19 +234,21 @@ export default {
                         console.log(e);
                     });
             }
-            // get signup times that have already been taken
-            await PerformanceDS.getTakenTimes(this.$route.params.eventId)
-            .then(res => {
-                res.data.forEach(p => {
-                    this.takenTimes.push(p);
-                    this.takenTimes.forEach(t => {
-                        var takenTime = this.timeSlots.find(ts => (ts.start.slice(-5) == t.startTime.substr(0, 5) && t.endTime.substr(0, 5) == ts.end.slice(-5)))
-                        takenTime.available = false;
-                    })
-                    
-                });
-            })
-            .catch(e => console.log(e))
+            // get signup times that have already been taken for students only
+            if(this.userStore.user.student) {
+                await PerformanceDS.getTakenTimes(this.$route.params.eventId)
+                .then(res => {
+                    res.data.forEach(p => {
+                        this.takenTimes.push(p);
+                        this.takenTimes.forEach(t => {
+                            var takenTime = this.timeSlots.find(ts => (ts.start.slice(-5) == t.startTime.substr(0, 5) && t.endTime.substr(0, 5) == ts.end.slice(-5)))
+                            takenTime.available = false;
+                        })
+                        
+                    });
+                })
+                .catch(e => console.log(e))
+            }
 
             //set up for edit
             if(this.$route.query.editing && this.userStore.user.student){
@@ -275,8 +280,22 @@ export default {
             return `${start.time.replace(/^0/, '')} ${start.hours < 12 ? 'AM' : 'PM'} - ${end.time.replace(/^0/, '')} ${end.hours < 12 ? 'AM' : 'PM'}`;
         }
         ,selectTimeSlot({ event: timeSlot }) {
-            if (timeSlot.available)
-                this.selectedTime = timeSlot;
+            // allows students to select one time slot
+            if(timeSlot.available) {
+                if(this.userStore.user.student) {
+                    this.selectedTime = timeSlot;
+                // allows for faculty to select multiple time slots
+                } else {
+                    timeSlot.available = false;
+                    this.selectedTime[timeSlot.name.split(" ").pop()] = timeSlot;
+                }
+            // support for removing time slots for faculty
+            } else {
+                if(!this.userStore.user.student) {
+                    delete this.selectedTime[timeSlot.name.split(" ").pop()];
+                    timeSlot.available = true;
+                }
+            }
         }
         ,selectSongsFromCurSem() {
             this.allSongs.forEach((song) => {
@@ -285,9 +304,8 @@ export default {
                     this.selectedSongs.push(song);
             })
         }
-
         // Create new performance
-        ,async submit() {
+        ,async studentSubmit() {
             if (this.selectedTime == null || this.selectedInstrumentId == null) {
                 console.log("Fill in empty fields");
                 return;
@@ -356,10 +374,63 @@ export default {
             console.log('Performance created');
             this.$router.push({ name: 'home-page' });
         }
+
+        ,async facultySubmit() {
+            console.log('faculty submit');
+            if(this.selectedTime.length == 0 ){
+                console.log('please select at least one time slot');
+                return false;
+            }
+            const availabilities = this.combineConsecutive();
+            availabilities.forEach( async (a) => {
+                const data = {
+                    startTime: a.start.replace("T", " ")
+                    ,endTime: a.end.replace("T", " ")
+                    ,eventId: this.event.id
+                    ,userId: this.userStore.user.id
+                }
+                console.log(data);
+                await AvailabilityDS.create(data)
+                    .then(res => {
+                        console.log('availability inserted. not sure what to do now', res.data);
+                    })
+                    .catch(e => {console.log('error: ', e || 'unknown')})
+            })
+        }
+        ,combineConsecutive() {
+            let timeSlots = []
+            let ts = {};
+            Object.keys(this.selectedTime).forEach((key, index) => {
+                if( index == 0 ) {
+                    ts = {
+                        start: this.selectedTime[key].start
+                        ,end: this.selectedTime[key].end
+                    }
+                } else {
+                    if( key - Object.keys(this.selectedTime)[index - 1] == 1) {
+                        ts.end = this.selectedTime[key].end
+                    } else {
+                        timeSlots.push(ts);
+                        ts = {
+                            start: this.selectedTime[key].start
+                            ,end: this.selectedTime[key].end
+                        }
+                    }
+                }
+            });
+            timeSlots.push(ts);
+            return timeSlots;
+
+        }
         
     }
     ,mounted() {
         this.initializeData();
+        if(this.userStore.user.student){
+            this.selectedTime = null
+        } else {
+            this.selectedTime = {};
+        }
     }
 }
 </script>

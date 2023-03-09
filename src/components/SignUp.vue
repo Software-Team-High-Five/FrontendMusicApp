@@ -9,7 +9,7 @@
             <div v-if="!error">
                 <v-row :align="'center'">
                     <v-col style="width:min-content">
-                        <h4 :class="[userStore.user.student ? 'text-right' : '']">Event Details</h4>
+                        <h4 class='text-right'>Event Details</h4>
                     </v-col>
                     <v-col style="width:min-content">
                         <div><span class="font-weight-medium">Type:</span> {{ event.type }}</div>
@@ -48,15 +48,18 @@
                     </v-row>
                     <v-col>
                         <br>
-                        <v-container v-if="userStore.user.student">
+                        <v-container>
                             <!-- Add an accompanist to the performance -->
                             <v-row>
                                 <v-col>
-                                    <v-text-field
+                                    <v-select
                                         :disabled="noAccompanist"
-                                        v-model="accompanist"
+                                        v-model="selectedAccompanist"
+                                        :items="accompanists"
+                                        item-text="fullName"
+                                        item-value="id"
                                         label="Accompanist"
-                                    ></v-text-field>
+                                    ></v-select>
                                 </v-col>
                                 <v-col cols="1">
                                     <v-checkbox
@@ -132,9 +135,10 @@
 <script>
 import eventDS from '../services/EventDataService';
 import songDS from '../services/SongDataService';
-import studentDS from '../services/StudentDataService';
+// import studentDS from '../services/StudentDataService';
 import PerformanceDS from '../services/PerformanceDataService';
 import AvailabilityDS from '../services/AvailabilityDataService';
+import UserDS from '../services/UserDataService';
 import { useUserStore } from '@/stores/userStore';
 import { mapStores } from 'pinia';
 
@@ -151,7 +155,7 @@ export default {
             ,selectedTime: null
             ,instruments: []
             ,selectedInstrumentId: null
-            ,accompanist: ""
+            ,selectedAccompanist: null
             ,noAccompanist: false
             ,songHeaders: [
                 { text: 'Title', value: 'title' }
@@ -160,10 +164,30 @@ export default {
             ,allSongs: []
             ,selectedSongs: []
             ,takenTimes: []
+            ,accompanists: []
+            ,availabilities: {}
         }
     }
     ,computed: {
         ...mapStores(useUserStore),
+    }
+    ,watch: {
+        // these watch for changes in both data attributes and update the available time slots based on them
+        selectedAccompanist(newAccompanist, oldAccompanist){
+            if(newAccompanist != oldAccompanist){
+                delete this.availabilities[oldAccompanist];
+                this.processAvailability();
+            }
+            this.getEventAvailability(newAccompanist);
+        }
+        ,noAccompanist(newVal){
+            if(newVal){
+                delete this.availabilities[this.selectedAccompanist];
+                this.processAvailability()
+            } else {
+                this.getEventAvailability(this.selectedAccompanist);
+            }
+        }
     }
     ,methods: {
         // Initialization Methods
@@ -202,38 +226,46 @@ export default {
                         count++;
                     }
                 })
-                .catch(e => {
+                .catch((e)=> {
                     console.log(e);
                     this.error = true;
                 });
 
             // Get user instrument list
-            if(this.userStore.user.student) {          
-                await studentDS.get(this.userStore.user.student.id)
-                .then(res => {
-                    this.instruments = res.data.instruments;
-                })
-                .catch(e => {
-                    console.log(e);
-                });
+            this.userStore.user.instruments.forEach(i => {
+                this.instruments.push(i);
+            })
             
             
             // Get user song list
-                await songDS.getAll()
-                    .then(res => {
-                        this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
-                            return {
-                                id: song.id
-                                ,title: song.title
-                                ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
-                                // ,semester: song.semester
-                            };
-                        });
-                    })
-                    .catch(e => {
-                        console.log(e);
+            await songDS.getAll()
+                .then(res => {
+                    this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
+                        return {
+                            id: song.id
+                            ,title: song.title
+                            ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
+                            // ,semester: song.semester
+                        };
                     });
-            }
+                })
+                .catch((e) =>{
+                    console.log(e);
+                }); 
+
+            //get accompanists 
+            await UserDS.getAccompanists()
+                .then(res => {
+                    this.accompanists = res.data;
+                    console.log('accompanists', this.accompanists);
+                    this.accompanists.forEach(a => {
+                        a.fullName = a.fName + ' ' + a.lName;
+                    })
+                })
+                .catch((e) =>console.log(e || 'unknown error'));
+            
+
+
             // get signup times that have already been taken for students only
             if(this.userStore.user.student) {
                 await PerformanceDS.getTakenTimes(this.$route.params.eventId)
@@ -247,7 +279,12 @@ export default {
                         
                     });
                 })
-                .catch(e => console.log(e))
+                .catch((e) => console.log(e))
+            }
+
+            //get instructor availability
+            if(this.userStore.user.student) {
+                this.getEventAvailability(this.userStore.user.student.instructorId);
             }
 
             //set up for edit
@@ -275,6 +312,21 @@ export default {
             if (!event.available)
                 return "grey"
             return "primary";
+        }
+
+        // will be used for both faculty and accompanists, uid will be the user id of either an instructor or an accompanist
+        ,async getEventAvailability(uid) {
+            await AvailabilityDS.getForEvent(uid, this.event.id)
+                .then(res => {
+                    res.data.forEach(a => {
+                        if(this.availabilities[a.userId] === undefined) {
+                            this.availabilities[a.userId] = a;
+                        } else {
+                            this.availabilities.push(a);
+                        }
+                    })
+                    this.processAvailability();
+                });
         }
         ,timeRange(start, end) {
             return `${start.time.replace(/^0/, '')} ${start.hours < 12 ? 'AM' : 'PM'} - ${end.time.replace(/^0/, '')} ${end.hours < 12 ? 'AM' : 'PM'}`;
@@ -304,6 +356,28 @@ export default {
                     this.selectedSongs.push(song);
             })
         }
+        // filters array of timeslots to the times that are within the instructor and acompnaist availability
+        ,processAvailability() {
+            this.timeSlots.forEach(ts => {
+                const startString = ts.start.slice(-5);
+                let sTime = new Date();
+                sTime.setHours(startString.slice(0, 2), startString.slice(-2), 0);
+                const endString = ts.end.slice(-5);
+                let eTime = new Date();
+                eTime.setHours(endString.slice(0, 2), endString.slice(-2), 0); 
+                Object.values(this.availabilities).forEach(a => {
+                    let aStart = new Date();
+                    let aEnd = new Date();
+                    aStart.setHours(a.startTime.slice(0, 2), a.startTime.slice(3, 5), 0);
+                    aEnd.setHours(a.endTime.slice(0, 2), a.endTime.slice(3, 5), 0);
+                    if(sTime < aStart || eTime > aEnd) {
+                        ts.available = false;
+                    } else if (sTime >= aStart && eTime <= aEnd) {
+                        ts.available = true;
+                    }
+                });
+            });
+        }
         // Create new performance
         ,async studentSubmit() {
             if (this.selectedTime == null || this.selectedInstrumentId == null) {
@@ -324,7 +398,7 @@ export default {
                         console.log('perofrmance updated');
                         this.$router.push({ name: 'all-events'});
                     })
-                    .catch(e => {
+                    .catch((e) =>{
                         console.log('error updating performance: ', e);
                     })
                     this.selectedSongs.forEach(async (song) => {
@@ -374,7 +448,6 @@ export default {
             console.log('Performance created');
             this.$router.push({ name: 'home-page' });
         }
-
         ,async facultySubmit() {
             console.log('faculty submit');
             if(this.selectedTime.length == 0 ){
@@ -394,7 +467,7 @@ export default {
                     .then(res => {
                         console.log('availability inserted. not sure what to do now', res.data);
                     })
-                    .catch(e => {console.log('error: ', e || 'unknown')})
+                    .catch((e) =>{console.log('error: ', e || 'unknown')})
             })
         }
         ,combineConsecutive() {

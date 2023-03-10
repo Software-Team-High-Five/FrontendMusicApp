@@ -5,15 +5,17 @@
 //   headers: { "Content-Type": "application/json" }
 // });
 import axios from "axios";
-import Utils from "@/config/utils.js";
-import AuthServices from "./authServices.js";
-import Router from "../router.js";
+// import Utils from "./config/utils.js";
+import AuthServices from "./services/authServices.js";
+import Router from "./router.js";
+import { useUserStore } from "@/stores/userStore";
+// import { mapStores } from "pinia";
 
 var baseurl = "";
 if (process.env.NODE_ENV === "development") {
-  baseurl = "http://localhost/tutorial/";
+  baseurl = "http://localhost/3025/performance-t5/";
 } else {
-  baseurl = "/tutorial/";
+  baseurl = "/performance-t5/";
 }
 
 const apiClient = axios.create({
@@ -26,7 +28,8 @@ const apiClient = axios.create({
     crossDomain: true,
   },
   transformRequest: (data, headers) => {
-    let user = Utils.getStore("user");
+    // let user = Utils.getStore("user");
+    let user = useUserStore.getUser();
     if (user != null) {
       let token = user.token;
       let authHeader = "";
@@ -41,10 +44,10 @@ const apiClient = axios.create({
     //   localStorage.deleteItem("user");
     // }
     if (data.message !== undefined && data.message.includes("Unauthorized")) {
-      AuthServices.logoutUser(Utils.getStore("user"))
+      AuthServices.logoutUser(useUserStore.getUser())
         .then((response) => {
           console.log(response);
-          Utils.removeItem("user");
+          useUserStore.clearUser();
           Router.push({ name: "login" });
         })
         .catch((error) => {

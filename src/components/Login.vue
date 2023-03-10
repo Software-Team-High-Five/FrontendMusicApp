@@ -8,7 +8,9 @@
 
 <script>
 import AuthServices from "@/services/authServices";
-import Utils from "@/config/utils.js";
+import { pinia } from "@/main";
+import { useUserStore } from "@/stores/userStore";
+// import Utils from "@/config/utils.js";
 
 export default {
   name: "LoginSignupSocial",
@@ -52,11 +54,13 @@ export default {
       };
       AuthServices.loginUser(token)
         .then((response) => {
+          const userStore = useUserStore(pinia);
+          console.log(userStore);
           this.user = response.data;
-          Utils.setStore("user", this.user);
-          this.fName = this.user.fName;
-          this.lName = this.user.lName;
-          this.$router.push({ name: "tutorials" });
+          useUserStore.setUser("user", this.user);
+          // this.fName = this.user.fName;
+          // this.lName = this.user.lName;
+          this.$router.push({ name: "performance-t5" });
           this.$router.go();
         })
         .catch((error) => {

@@ -48,8 +48,8 @@
 import uds from "../src/services/UserDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
-import Utils from "@/config/utils.js";
 import AuthServices from "@/services/authServices";
+// import Utils from "@/config/utils.js";
 
 export default {
   name: "app",
@@ -68,7 +68,8 @@ export default {
     resetMenu() {
       this.user = null;
       // ensures that their name gets set properly from store
-      this.user = Utils.getStore("user");
+      this.user = this.useUserStore.getUser();
+
       if (this.user != null) {
         this.initials = this.user.fName[0] + this.user.lName[0];
         this.name = this.user.fName + " " + this.user.lName;
@@ -78,7 +79,8 @@ export default {
       AuthServices.logoutUser(this.user)
         .then((response) => {
           console.log(response);
-          Utils.removeItem("user");
+          // Utils.removeItem("user");
+          useUserStore.clearUser();
           this.$router.push({ name: "login" });
           this.$router.go();
         })
@@ -91,13 +93,15 @@ export default {
     this.resetMenu();
   },
   async mounted() {
+    this.user = this.userStore.getUser();
+
     await uds
       .getAll()
       .then((res) => {
         this.users = res.data;
         // this.user = this.users.find(u => u.id === 100); //David North Admin
         // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-        this.user = this.users.find((u) => u.id === 300); //Jess Long Student
+        // this.user = this.users.find((u) => u.id === 300); //Jess Long Student
 
         this.userStore.setUser(this.user);
         console.log(this.userStore);

@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 
-export const useUserStore = defineStore("userStore", {
+export const useUserStore = defineStore("user", {
   state: () => {
-    //user (userId, fName, lName, email, token)
+    //user (id, role, fName, lName, email)
     return { user: {} };
   },
   getters: {
@@ -10,44 +10,19 @@ export const useUserStore = defineStore("userStore", {
       state.user != null
         ? `${state.user.fName} ${state.user.lName}`
         : "Error: user not initialized",
-    isFaculty: (state) => state.user != null && state.user.role === "faculty",
-    isAdmin: (state) => state.user != null && state.user.role === "admin",
+    isFaculty: (state) =>
+      state.user.roles.find((r) => r.role === "faculty") ? true : false,
+    isAdmin: (state) =>
+      state.user.roles.find((r) => r.role === "admin") ? true : false,
+    isAccompanist: (state) =>
+      state.user.roles.find((r) => r.role === "accompanist") ? true : false,
   },
   actions: {
     setUser(userData) {
       this.user = userData;
-    },
-    getUser() {
-      return this.user;
     },
     clearUser() {
       this.user = null;
     },
   },
 });
-
-// import Vue from "vue";
-//  import Vuex from "vuex";
-// import Utils from "@/config/utils";
-
-// Vue.use(Vuex);
-
-// const user = Utils.getStore("user");
-
-// export default new Vuex.Store({
-//   state: {
-//     loginUser: user,
-//   },
-//   mutations: {
-//     setLoginUser(state, user) {
-//       state.loginUser = user;
-//       Utils.setStore("user", user);
-//     },
-//   },
-//   actions: {},
-//   getters: {
-//     getLoginUserInfo(state) {
-//       return state.loginUser;
-//     },
-//   },
-// });

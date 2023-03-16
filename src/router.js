@@ -43,7 +43,7 @@ export default new Router({
         path: "/students"
         ,name: "student-s"
         ,component: () => import('./components/Students')
-    }
+    },
     {
       path: "/student"
       ,name: "student-details"

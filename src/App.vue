@@ -16,7 +16,17 @@
         >New Event</router-link
       >
       <!--<router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}" v-if="userStore.isFaculty || userStore.isAdmin">New Critique</router-link>-->
+
       <router-link
+        v-show="userStore.isAdmin"
+        style="text-decoration: none; color: inherit"
+        class="mr-5"
+        :to="{ name: 'student-s' }"
+        >Users</router-link
+      >
+
+      <router-link
+        v-show="userStore.isFaculty"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'student-s' }"
@@ -61,9 +71,9 @@ import { mapStores } from "pinia";
         await uds.getAll()
             .then(res => {
                 this.users = res.data;
-                // this.user = this.users.find(u => u.id === 100); //David North Admin
+                 this.user = this.users.find(u => u.id === 100); //David North Admin
                 // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-                this.user = this.users.find(u => u.id === 300); //Jess Long Student
+                // this.user = this.users.find(u => u.id === 300); //Jess Long Student
 
                 this.userStore.setUser(this.user);
                 console.log(this.userStore);

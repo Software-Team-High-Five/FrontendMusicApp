@@ -42,11 +42,11 @@
                                 </template>
                             </v-calendar>
                         </v-card>
-                    </v-col>
-                    <v-row> 
-                        <button class="btn btn-dark" @click="facultySubmit">Submit</button>
-                    </v-row>
-                    <v-col>
+                        <v-row v-if="!userStore.user.student" :align="'center'" style="padding-top: 15px;">
+                            <button class="btn btn-dark" @click="facultySubmit">Submit</button>
+                        </v-row>
+                    </v-col>    
+                    <v-col v-if="userStore.user.student">
                         <br>
                         <v-container>
                             <!-- Add an accompanist to the performance -->
@@ -135,7 +135,6 @@
 <script>
 import eventDS from '../services/EventDataService';
 import songDS from '../services/SongDataService';
-// import studentDS from '../services/StudentDataService';
 import PerformanceDS from '../services/PerformanceDataService';
 import AvailabilityDS from '../services/AvailabilityDataService';
 import UserDS from '../services/UserDataService';
@@ -166,6 +165,8 @@ export default {
             ,takenTimes: []
             ,accompanists: []
             ,availabilities: {}
+            ,person1TimeSlots: []
+            ,person2TimeSlots: []
         }
     }
     ,computed: {
@@ -220,7 +221,10 @@ export default {
                             name: `Time slot ${count}`
                             ,start: `${this.event.date}T${Math.floor(startI / 12).toString().padStart(2, '0')}:${(startI % 12 * 5).toString().padStart(2, '0')}`
                             ,end: `${this.event.date}T${Math.floor((startI + 1) / 12).toString().padStart(2, '0')}:${((startI + 1) % 12 * 5).toString().padStart(2, '0')}`
-                            ,available: true  //whether the timeslot is open or not
+                            // ,instructorAvailabile: false
+                            // ,accompanistAvailable: false
+                            // ,available: (this.instructorAvailabile && this.accompanistAvailable) || (this.instructorAvailabile && Object.keys(this.availabilities).length == 1)  //whether the timeslot is open or not
+                            ,available: true
                         });
                         startI++;
                         count++;
@@ -238,26 +242,27 @@ export default {
             
             
             // Get user song list
-            await songDS.getAll()
-                .then(res => {
-                    this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
-                        return {
-                            id: song.id
-                            ,title: song.title
-                            ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
-                            // ,semester: song.semester
-                        };
-                    });
-                })
-                .catch((e) =>{
-                    console.log(e);
-                }); 
+            if(this.userStore.user.student){
+                await songDS.getAll()
+                    .then(res => {
+                        this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
+                            return {
+                                id: song.id
+                                ,title: song.title
+                                ,composer: [song.composer.fName, song.composer.mName, song.composer.lName].filter(Boolean).join(' ')
+                                // ,semester: song.semester
+                            };
+                        });
+                    })
+                    .catch((e) =>{
+                        console.log(e);
+                    }); 
+            }
 
             //get accompanists 
             await UserDS.getAccompanists()
                 .then(res => {
                     this.accompanists = res.data;
-                    console.log('accompanists', this.accompanists);
                     this.accompanists.forEach(a => {
                         a.fullName = a.fName + ' ' + a.lName;
                     })
@@ -280,6 +285,8 @@ export default {
                     });
                 })
                 .catch((e) => console.log(e))
+            } else {
+                this.takenTimes = this.takenTimes.map(t => t.available = true);
             }
 
             //get instructor availability
@@ -319,14 +326,14 @@ export default {
             await AvailabilityDS.getForEvent(uid, this.event.id)
                 .then(res => {
                     res.data.forEach(a => {
-                        if(this.availabilities[a.userId] === undefined) {
-                            this.availabilities[a.userId] = a;
+                        if(!this.availabilities[a.userId]){
+                            this.availabilities[a.userId] = [{...a}];
                         } else {
-                            this.availabilities.push(a);
+                            this.availabilities[a.userId].push({...a});
                         }
-                    })
+                    });
                     this.processAvailability();
-                });
+                })
         }
         ,timeRange(start, end) {
             return `${start.time.replace(/^0/, '')} ${start.hours < 12 ? 'AM' : 'PM'} - ${end.time.replace(/^0/, '')} ${end.hours < 12 ? 'AM' : 'PM'}`;
@@ -357,26 +364,36 @@ export default {
             })
         }
         // filters array of timeslots to the times that are within the instructor and acompnaist availability
+        // move the third loop to filter to available slots and if the time is not within
         ,processAvailability() {
             this.timeSlots.forEach(ts => {
-                const startString = ts.start.slice(-5);
-                let sTime = new Date();
-                sTime.setHours(startString.slice(0, 2), startString.slice(-2), 0);
-                const endString = ts.end.slice(-5);
-                let eTime = new Date();
-                eTime.setHours(endString.slice(0, 2), endString.slice(-2), 0); 
-                Object.values(this.availabilities).forEach(a => {
-                    let aStart = new Date();
-                    let aEnd = new Date();
-                    aStart.setHours(a.startTime.slice(0, 2), a.startTime.slice(3, 5), 0);
-                    aEnd.setHours(a.endTime.slice(0, 2), a.endTime.slice(3, 5), 0);
-                    if(sTime < aStart || eTime > aEnd) {
-                        ts.available = false;
-                    } else if (sTime >= aStart && eTime <= aEnd) {
-                        ts.available = true;
+                ts.available = false;
+                const slotStartTime = Date.parse(ts.start);
+                const slotEndTime = Date.parse(ts.end);
+                for(const time of Object.values(this.availabilities)[0]){
+                    const startTime1 = Date.parse(this.event.date + ' ' + time.startTime);
+                    const endTime1 = Date.parse(this.event.date + ' ' + time.endTime);
+                    if(Object.keys(this.availabilities).length > 1) {
+                        for(const t2 of Object.values(this.availabilities)[1]) {
+                            const startTime2 = Date.parse(this.event.date + ' ' + t2.startTime);
+                            const endTime2 = Date.parse(this.event.date + ' ' + t2.endTime);
+                            if(this.timeWithin(startTime1, endTime1, slotStartTime, slotEndTime) && this.timeWithin(startTime2, endTime2, slotStartTime, slotEndTime)) {
+                                ts.available = true;
+                                continue;
+                            }
+                            continue;
+                        }
+                    } else {
+                        if (this.timeWithin(startTime1, endTime1, slotStartTime, slotEndTime)) {
+                            ts.available = true;
+                        }
                     }
-                });
-            });
+                }
+            })
+
+        }
+        ,timeWithin(s1, e1, s2, e2) {
+            return s2 >= s1 && e2 <= e1;
         }
         // Create new performance
         ,async studentSubmit() {
@@ -500,7 +517,7 @@ export default {
     ,mounted() {
         this.initializeData();
         if(this.userStore.user.student){
-            this.selectedTime = null
+            this.selectedTime = null;
         } else {
             this.selectedTime = {};
         }

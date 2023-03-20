@@ -149,6 +149,8 @@ export default {
       if (this.eventIncomplete()) {
         return false;
       }
+      this.event.startTime += ':00';
+      this.event.endTime += ':00';
       eds
         .create({ ...this.event })
         .then((res) => {

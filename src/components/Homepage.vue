@@ -43,7 +43,7 @@
     <v-container class="mt-15">
       <v-row class="align-center">
         <v-col class="pa-5">
-          <div class="card-button align-center" style="position:relative" margin-left:50%
+          <div class="card-button align-center" style="position:relative"
               v-for="e in upcomingEvents"
               :key="e.id"
               @click="signUp(e.id)"

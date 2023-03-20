@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', {
     state: () => {
-        //user (id, role, fName, lName, email)
+        //user (id, fName, lName, email, student: {}, instruments: [{}], roles: [{}])
         return { user: {} };
     }
     ,getters: {
@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', {
         ,isFaculty: (state) => state.user.roles.find(r => r.role === 'faculty') ? true : false
         ,isAdmin: (state) => state.user.roles.find(r => r.role === 'admin' ) ? true : false
         ,isAccompanist: (state) => state.user.roles.find(r => r.role === 'accompanist') ? true : false
+        ,isStudent: (state) => state.user.roles.find(r => r.role === 'student') ? true : false
     }
     ,actions: {
         setUser(userData) {

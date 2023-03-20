@@ -9,7 +9,7 @@
             <div v-if="!error">
                 <v-row :align="'center'">
                     <v-col style="width:min-content">
-                        <h4 class="text-right">Event Details</h4>
+                        <h4 class='text-right'>Event Details</h4>
                     </v-col>
                     <v-col style="width:min-content">
                         <div><span class="font-weight-medium">Type:</span> {{ event.type }}</div>
@@ -42,18 +42,24 @@
                                 </template>
                             </v-calendar>
                         </v-card>
-                    </v-col>
-                    <v-col>
+                        <v-row v-if="!userStore.user.student" :align="'center'" style="padding-top: 15px;">
+                            <button class="btn btn-dark" @click="facultySubmit">Submit</button>
+                        </v-row>
+                    </v-col>    
+                    <v-col v-if="userStore.user.student">
                         <br>
                         <v-container>
                             <!-- Add an accompanist to the performance -->
                             <v-row>
                                 <v-col>
-                                    <v-text-field
+                                    <v-select
                                         :disabled="noAccompanist"
-                                        v-model="accompanist"
+                                        v-model="selectedAccompanist"
+                                        :items="accompanists"
+                                        item-text="fullName"
+                                        item-value="id"
                                         label="Accompanist"
-                                    ></v-text-field>
+                                    ></v-select>
                                 </v-col>
                                 <v-col cols="1">
                                     <v-checkbox
@@ -94,7 +100,7 @@
                             </v-row>
                             <!-- Submit -->
                             <v-row>
-                                <v-btn @click="submit">
+                                <v-btn @click="studentSubmit">
                                     Submit
                                 </v-btn>
                             </v-row>
@@ -129,8 +135,9 @@
 <script>
 import eventDS from '../services/EventDataService';
 import songDS from '../services/SongDataService';
-import studentDS from '../services/StudentDataService';
 import PerformanceDS from '../services/PerformanceDataService';
+import AvailabilityDS from '../services/AvailabilityDataService';
+import UserDS from '../services/UserDataService';
 import { useUserStore } from '@/stores/userStore';
 import { mapStores } from 'pinia';
 
@@ -140,7 +147,6 @@ export default {
         return {
             loaded: false
             ,error: false
-
             ,event: null
             ,timeSlots: []
             // calendar settings
@@ -148,7 +154,7 @@ export default {
             ,selectedTime: null
             ,instruments: []
             ,selectedInstrumentId: null
-            ,accompanist: ""
+            ,selectedAccompanist: null
             ,noAccompanist: false
             ,songHeaders: [
                 { text: 'Title', value: 'title' }
@@ -157,10 +163,32 @@ export default {
             ,allSongs: []
             ,selectedSongs: []
             ,takenTimes: []
+            ,accompanists: []
+            ,availabilities: {}
+            ,person1TimeSlots: []
+            ,person2TimeSlots: []
         }
     }
     ,computed: {
         ...mapStores(useUserStore),
+    }
+    ,watch: {
+        // these watch for changes in both data attributes and update the available time slots based on them
+        selectedAccompanist(newAccompanist, oldAccompanist){
+            if(newAccompanist != oldAccompanist){
+                delete this.availabilities[oldAccompanist];
+                this.processAvailability();
+            }
+            this.getEventAvailability(newAccompanist);
+        }
+        ,noAccompanist(newVal){
+            if(newVal){
+                delete this.availabilities[this.selectedAccompanist];
+                this.processAvailability()
+            } else {
+                this.getEventAvailability(this.selectedAccompanist);
+            }
+        }
     }
     ,methods: {
         // Initialization Methods
@@ -193,29 +221,28 @@ export default {
                             name: `Time slot ${count}`
                             ,start: `${this.event.date}T${Math.floor(startI / 12).toString().padStart(2, '0')}:${(startI % 12 * 5).toString().padStart(2, '0')}`
                             ,end: `${this.event.date}T${Math.floor((startI + 1) / 12).toString().padStart(2, '0')}:${((startI + 1) % 12 * 5).toString().padStart(2, '0')}`
-                            ,available: true  //whether the timeslot is open or not
+                            // ,instructorAvailabile: false
+                            // ,accompanistAvailable: false
+                            // ,available: (this.instructorAvailabile && this.accompanistAvailable) || (this.instructorAvailabile && Object.keys(this.availabilities).length == 1)  //whether the timeslot is open or not
+                            ,available: true
                         });
                         startI++;
                         count++;
                     }
                 })
-                .catch(e => {
+                .catch((e)=> {
                     console.log(e);
                     this.error = true;
                 });
 
             // Get user instrument list
-            if(this.userStore.user.student) {          
-                await studentDS.get(this.userStore.user.student.id)
-                .then(res => {
-                    this.instruments = res.data.instruments;
-                })
-                .catch(e => {
-                    console.log(e);
-                });
+            this.userStore.user.instruments.forEach(i => {
+                this.instruments.push(i);
+            })
             
             
             // Get user song list
+            if(this.userStore.user.student){
                 await songDS.getAll()
                     .then(res => {
                         this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
@@ -227,23 +254,45 @@ export default {
                             };
                         });
                     })
-                    .catch(e => {
+                    .catch((e) =>{
                         console.log(e);
-                    });
+                    }); 
             }
-            // get signup times that have already been taken
-            await PerformanceDS.getTakenTimes(this.$route.params.eventId)
-            .then(res => {
-                res.data.forEach(p => {
-                    this.takenTimes.push(p);
-                    this.takenTimes.forEach(t => {
-                        var takenTime = this.timeSlots.find(ts => (ts.start.slice(-5) == t.startTime.substr(0, 5) && t.endTime.substr(0, 5) == ts.end.slice(-5)))
-                        takenTime.available = false;
+
+            //get accompanists 
+            await UserDS.getAccompanists()
+                .then(res => {
+                    this.accompanists = res.data;
+                    this.accompanists.forEach(a => {
+                        a.fullName = a.fName + ' ' + a.lName;
                     })
-                    
-                });
-            })
-            .catch(e => console.log(e))
+                })
+                .catch((e) =>console.log(e || 'unknown error'));
+            
+
+
+            // get signup times that have already been taken for students only
+            if(this.userStore.user.student) {
+                await PerformanceDS.getTakenTimes(this.$route.params.eventId)
+                .then(res => {
+                    res.data.forEach(p => {
+                        this.takenTimes.push(p);
+                        this.takenTimes.forEach(t => {
+                            var takenTime = this.timeSlots.find(ts => (ts.start.slice(-5) == t.startTime.substr(0, 5) && t.endTime.substr(0, 5) == ts.end.slice(-5)))
+                            takenTime.available = false;
+                        })
+                        
+                    });
+                })
+                .catch((e) => console.log(e))
+            } else {
+                this.takenTimes = this.takenTimes.map(t => t.available = true);
+            }
+
+            //get instructor availability
+            if(this.userStore.user.student) {
+                this.getEventAvailability(this.userStore.user.student.instructorId);
+            }
 
             //set up for edit
             if(this.$route.query.editing && this.userStore.user.student){
@@ -271,12 +320,41 @@ export default {
                 return "grey"
             return "primary";
         }
+
+        // will be used for both faculty and accompanists, uid will be the user id of either an instructor or an accompanist
+        ,async getEventAvailability(uid) {
+            await AvailabilityDS.getForEvent(uid, this.event.id)
+                .then(res => {
+                    res.data.forEach(a => {
+                        if(!this.availabilities[a.userId]){
+                            this.availabilities[a.userId] = [{...a}];
+                        } else {
+                            this.availabilities[a.userId].push({...a});
+                        }
+                    });
+                    this.processAvailability();
+                })
+        }
         ,timeRange(start, end) {
             return `${start.time.replace(/^0/, '')} ${start.hours < 12 ? 'AM' : 'PM'} - ${end.time.replace(/^0/, '')} ${end.hours < 12 ? 'AM' : 'PM'}`;
         }
         ,selectTimeSlot({ event: timeSlot }) {
-            if (timeSlot.available)
-                this.selectedTime = timeSlot;
+            // allows students to select one time slot
+            if(timeSlot.available) {
+                if(this.userStore.user.student) {
+                    this.selectedTime = timeSlot;
+                // allows for faculty to select multiple time slots
+                } else {
+                    timeSlot.available = false;
+                    this.selectedTime[timeSlot.name.split(" ").pop()] = timeSlot;
+                }
+            // support for removing time slots for faculty
+            } else {
+                if(!this.userStore.user.student) {
+                    delete this.selectedTime[timeSlot.name.split(" ").pop()];
+                    timeSlot.available = true;
+                }
+            }
         }
         ,selectSongsFromCurSem() {
             this.allSongs.forEach((song) => {
@@ -285,9 +363,40 @@ export default {
                     this.selectedSongs.push(song);
             })
         }
+        // filters array of timeslots to the times that are within the instructor and acompnaist availability
+        // move the third loop to filter to available slots and if the time is not within
+        ,processAvailability() {
+            this.timeSlots.forEach(ts => {
+                ts.available = false;
+                const slotStartTime = Date.parse(ts.start);
+                const slotEndTime = Date.parse(ts.end);
+                for(const time of Object.values(this.availabilities)[0]){
+                    const startTime1 = Date.parse(this.event.date + ' ' + time.startTime);
+                    const endTime1 = Date.parse(this.event.date + ' ' + time.endTime);
+                    if(Object.keys(this.availabilities).length > 1) {
+                        for(const t2 of Object.values(this.availabilities)[1]) {
+                            const startTime2 = Date.parse(this.event.date + ' ' + t2.startTime);
+                            const endTime2 = Date.parse(this.event.date + ' ' + t2.endTime);
+                            if(this.timeWithin(startTime1, endTime1, slotStartTime, slotEndTime) && this.timeWithin(startTime2, endTime2, slotStartTime, slotEndTime)) {
+                                ts.available = true;
+                                continue;
+                            }
+                            continue;
+                        }
+                    } else {
+                        if (this.timeWithin(startTime1, endTime1, slotStartTime, slotEndTime)) {
+                            ts.available = true;
+                        }
+                    }
+                }
+            })
 
+        }
+        ,timeWithin(s1, e1, s2, e2) {
+            return s2 >= s1 && e2 <= e1;
+        }
         // Create new performance
-        ,async submit() {
+        ,async studentSubmit() {
             if (this.selectedTime == null || this.selectedInstrumentId == null) {
                 console.log("Fill in empty fields");
                 return;
@@ -306,7 +415,7 @@ export default {
                         console.log('perofrmance updated');
                         this.$router.push({ name: 'all-events'});
                     })
-                    .catch(e => {
+                    .catch((e) =>{
                         console.log('error updating performance: ', e);
                     })
                     this.selectedSongs.forEach(async (song) => {
@@ -356,10 +465,62 @@ export default {
             console.log('Performance created');
             this.$router.push({ name: 'home-page' });
         }
+        ,async facultySubmit() {
+            console.log('faculty submit');
+            if(this.selectedTime.length == 0 ){
+                console.log('please select at least one time slot');
+                return false;
+            }
+            const availabilities = this.combineConsecutive();
+            availabilities.forEach( async (a) => {
+                const data = {
+                    startTime: a.start.replace("T", " ")
+                    ,endTime: a.end.replace("T", " ")
+                    ,eventId: this.event.id
+                    ,userId: this.userStore.user.id
+                }
+                console.log(data);
+                await AvailabilityDS.create(data)
+                    .then(res => {
+                        console.log('availability inserted. not sure what to do now', res.data);
+                    })
+                    .catch((e) =>{console.log('error: ', e || 'unknown')})
+            })
+        }
+        ,combineConsecutive() {
+            let timeSlots = []
+            let ts = {};
+            Object.keys(this.selectedTime).forEach((key, index) => {
+                if( index == 0 ) {
+                    ts = {
+                        start: this.selectedTime[key].start
+                        ,end: this.selectedTime[key].end
+                    }
+                } else {
+                    if( key - Object.keys(this.selectedTime)[index - 1] == 1) {
+                        ts.end = this.selectedTime[key].end
+                    } else {
+                        timeSlots.push(ts);
+                        ts = {
+                            start: this.selectedTime[key].start
+                            ,end: this.selectedTime[key].end
+                        }
+                    }
+                }
+            });
+            timeSlots.push(ts);
+            return timeSlots;
+
+        }
         
     }
     ,mounted() {
         this.initializeData();
+        if(this.userStore.user.student){
+            this.selectedTime = null;
+        } else {
+            this.selectedTime = {};
+        }
     }
 }
 </script>

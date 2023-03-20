@@ -6,6 +6,9 @@ class UserDataService {
   get(id) {
     return http.get(`/users/${id}`);
   }
+  getAccompanists() {
+    return http.get('/users/accompanists');
+  }
   create(data) {
     return http.post("/users", data);
   }

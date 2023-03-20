@@ -71,7 +71,7 @@
                     <strong>Instruments</strong>
                 </v-col>
                 <v-col class="py-0" cols="7">
-                    <div v-for="instrument in userStore.user.student.instruments" :key="instrument.id">
+                    <div v-for="instrument in userStore.user.instruments" :key="instrument.id">
                         {{ instrument.instrument }}
                     </div>
                 </v-col>
@@ -163,7 +163,7 @@
                             <v-col class="py-0" cols="8">
                                 <v-select
                                     v-model="selectedSong.instrumentId"
-                                    :items="userStore.user.student.instruments"
+                                    :items="userStore.user.instruments"
                                     item-text="instrument"
                                     item-value="id"
                                     dense
@@ -263,7 +263,7 @@ export default {
                     let song = res.data;
                     song.composer = this.allComposers
                         .find(c => c.id == song.composerId).name;
-                    song.instrument = this.userStore.user.student.instruments
+                    song.instrument = this.userStore.user.instruments
                         .find(i => i.id == res.data.instrumentId).instrument;
                     this.allSongs.push(song);
                     this.songDialog = false;
@@ -283,7 +283,7 @@ export default {
                 .then(() => {
                     this.selectedSong.composer = this.allComposers
                         .find(c => c.id == this.selectedSong.composerId).name;
-                    this.selectedSong.instrument = this.userStore.user.student.instruments
+                    this.selectedSong.instrument = this.userStore.user.instruments
                         .find(i => i.id == this.selectedSong.instrumentId).instrument;
                     Object.assign(this.allSongs[this.songIndex], this.selectedSong);
                     this.songDialog = false;
@@ -319,7 +319,7 @@ export default {
                 this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.id).map(song => {
                     song.composer = [ song.composer.fName, song.composer.mName, song.composer.lName ]
                         .filter(Boolean).join(' ');
-                    song.instrument = this.userStore.user.student.instruments
+                    song.instrument = this.userStore.user.instruments
                         .find(i => i.id == song.instrumentId).instrument;
                     return song;
                 });

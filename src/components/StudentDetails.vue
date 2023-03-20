@@ -170,6 +170,21 @@
                                 ></v-select>
                             </v-col>
                         </v-row>
+                        <!-- Translation -->
+                        <v-row>
+                            <v-col class="text-right py-0" align-self="center" cols="4">
+                                <strong>Translation</strong>
+                            </v-col>
+                            <v-col>
+                                <v-textarea
+                                    v-model="selectedSong.translation"
+                                    rows="6"
+                                    no-resize
+                                    outlined
+                                    dense
+                                ></v-textarea>
+                            </v-col>
+                        </v-row>
                     </v-container>
                 </v-card-text>
                 <!-- Save/Cancel Actions -->
@@ -349,14 +364,14 @@ export default {
                 console.log("Unable to display page because of 1 or more errors while loading data");
             });
 
-        if(this.prevRoute.name == 'student-edit') {
-            window.location.reload()
-        }
+        // if(this.prevRoute.name == 'student-edit') {
+        //     window.location.reload()
+        // }
     }
-    ,beforeRouteEnter(to, from, next) {
-        next(vm => {
-            vm.prevRoute = from;
-        })
-    }
+    // ,beforeRouteEnter(to, from, next) {
+    //     next(vm => {
+    //         vm.prevRoute = from;
+    //     })
+    // }
 }
 </script>

@@ -34,10 +34,10 @@
     <v-main>
       <router-view />
     </v-main>
-
+<!-- 
     <v-footer color="cyan lighten-5" class="justify-center"
       >&copy;Stay Sticky</v-footer
-    >
+    > -->
   </v-app>
 </template>
 

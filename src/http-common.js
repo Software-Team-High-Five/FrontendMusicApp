@@ -29,7 +29,9 @@ const apiClient = axios.create({
   },
   transformRequest: (data, headers) => {
     // let user = Utils.getStore("user");
-    let user = useUserStore.getUser();
+    // let user = useUserStore.getUser();
+    let user = useUserStore().user;
+
     if (user != null) {
       let token = user.token;
       let authHeader = "";
@@ -44,7 +46,7 @@ const apiClient = axios.create({
     //   localStorage.deleteItem("user");
     // }
     if (data.message !== undefined && data.message.includes("Unauthorized")) {
-      AuthServices.logoutUser(useUserStore.getUser())
+      AuthServices.logoutUser(useUserStore().user)
         .then((response) => {
           console.log(response);
           useUserStore.clearUser();

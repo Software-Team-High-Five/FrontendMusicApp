@@ -60,7 +60,7 @@ export default {
           useUserStore.setUser("user", this.user);
           // this.fName = this.user.fName;
           // this.lName = this.user.lName;
-          this.$router.push({ name: "performance-t5" });
+          this.$router.push({ name: "home-page" });
           this.$router.go();
         })
         .catch((error) => {

@@ -47,7 +47,7 @@
 <script>
 import uds from "../src/services/UserDataService";
 import { useUserStore } from "@/stores/userStore";
-import { mapStores } from "pinia";
+import { mapStores, mapActions } from "pinia";
 import AuthServices from "@/services/authServices";
 // import Utils from "@/config/utils.js";
 
@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       user: {},
-      title: "Musid Performance Scheduling App",
+      title: "Music Performance Scheduling App",
       initials: "",
       name: "",
     };
@@ -65,10 +65,12 @@ export default {
     ...mapStores(useUserStore),
   },
   methods: {
+    ...mapActions(useUserStore, ["setUser", "clearUser"]),
+
     resetMenu() {
       this.user = null;
       // ensures that their name gets set properly from store
-      this.user = this.useUserStore.getUser();
+      // this.user = useUserStore().user;
 
       if (this.user != null) {
         this.initials = this.user.fName[0] + this.user.lName[0];
@@ -93,20 +95,21 @@ export default {
     this.resetMenu();
   },
   async mounted() {
-    this.user = this.userStore.getUser();
+    console.log(this.user);
+    this.user = useUserStore().user;
 
     await uds
       .getAll()
       .then((res) => {
         this.users = res.data;
-        // this.user = this.users.find(u => u.id === 100); //David North Admin
+        this.user = this.users.find((u) => u.id === 100); //David North Admin
         // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
         // this.user = this.users.find(u => u.id === 300); //Jess Long Student
         // this.user = this.users.find(u => u.id === 400); //Chloe Sheasby Student & Faculty
-        this.user = this.users.find((u) => u.id === 500); //Miho Fischer Accompanist
+        // this.user = this.users.find((u) => u.id === 500); //Miho Fischer Accompanist
 
-        this.userStore.setUser(this.user);
-        console.log(this.userStore);
+        this.setUser(this.user);
+        console.log(this.user);
       })
       .catch((e) => {
         console.log(e);

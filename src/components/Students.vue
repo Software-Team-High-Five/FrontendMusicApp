@@ -19,7 +19,7 @@
             >
                 <v-col>{{ u.fName }}</v-col>
                 <v-col>{{ u.lName }}</v-col>
-                <v-col>{{ u.role }}</v-col>
+                <v-col>{{ u.roles.role }}</v-col>
                 
             </v-row>
         </v-card>
@@ -30,6 +30,8 @@
             <v-row>
                 <v-col>First Name</v-col>
                 <v-col>Last Name</v-col>
+                <v-col>Classification</v-col>
+                <v-col></v-col>
             </v-row>
             </v-card>
             <v-card style="padding-left:30px; margin-left: 30px;" width="90%" class="center">
@@ -37,8 +39,14 @@
                     v-for="s in students"
                     :key="s.id"
                 >
-                    <v-col>{{ s.fName }}</v-col>
-                    <v-col>{{ s.lName }}</v-col>
+                    <v-col>{{ s.user.fName }}</v-col>
+                    <v-col>{{ s.user.lName }}</v-col>
+                    <v-col style="text-transform: capitalize;">{{ s.classification }}</v-col>
+                    <v-col>
+                        <v-btn :to="{name: 'student-edit', params: {id: s.id}}">
+                            <v-icon >mdi-pencil</v-icon>
+                        </v-btn>
+                    </v-col>
                 </v-row>
             </v-card>
         </div>

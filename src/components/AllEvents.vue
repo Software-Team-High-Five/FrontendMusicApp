@@ -206,7 +206,7 @@
       </div>
     </div>
 
-    <Modal title="Filters" v-model="showFilters">
+    <Modal title="Filters" v-model="showFilters" v-if="!userStore.isStudent">
       <label>Event Type</label><br />
       <MultiSelect
         v-model="activeTypes"

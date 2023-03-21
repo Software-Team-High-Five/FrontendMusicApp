@@ -4,7 +4,7 @@
     <h3 style="text-align: left">Create a New Performance</h3>
     <v-col></v-col>
     <v-col class="col-md">
-      <v-card>
+      <v-card style="padding: 5px">
         <br />
         <v-col class="col-md-15">
           <v-select

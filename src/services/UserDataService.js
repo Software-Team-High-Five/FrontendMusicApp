@@ -18,5 +18,11 @@ class UserDataService {
   delete(id) {
     return http.delete(`/users/${id}`);
   }
+  addInstrument(userId, instrumentId) {
+    return http.post(`/userInstruments?userId=${userId}&instrumentId=${instrumentId}`);
+  }
+  removeInstrument(userId, instrumentId) {
+    return http.delete(`/userInstruments?userId=${userId}&instrumentId=${instrumentId}`);
+  }
 }
 export default new UserDataService();

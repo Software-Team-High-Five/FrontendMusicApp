@@ -130,7 +130,7 @@
         </table>
       </div>
     </div>
-    <Modal
+    <v-dialog
       v-model="showPerformanceDetails"
       :title="user.fName + ' ' + user.lName + '\n (' + event.date + ')'"
       width="70%"
@@ -185,116 +185,118 @@
       <v-row>
         <button class="btn btn-dark" @click="saveCritique()">Close</button>
       </v-row>
-    </Modal>
-    <Modal title="Filters" v-model="showFilters">
-      <label>Select composers</label>
-      <MultiSelect
-        v-model="activeComposers"
-        :options="composers"
-        :multiple="true"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        placeholder="Pick one or more"
-      >
-        <template slot="selection" slot-scope="{ composers, isOpen }"
-          ><span
-            class="multiselect__single"
-            v-if="composers"
-            v-show="!isOpen"
-            >{{ activeComposers }}</span
-          ></template
+    </v-dialog>
+    <v-dialog title="Filters" v-model="showFilters">
+      <v-card>
+        <label>Select composers</label>
+        <MultiSelect
+          v-model="activeComposers"
+          :options="composers"
+          :multiple="true"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          placeholder="Pick one or more"
         >
-      </MultiSelect>
-      <br />
-      <label>Select instruments</label>
-      <MultiSelect
-        v-model="activeInstruments"
-        :options="instruments"
-        :multiple="true"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        placeholder="Pick one or more"
-      >
-        <template slot="selection" slot-scope="{ instruments, isOpen }"
-          ><span
-            class="multiselect__single"
-            v-if="instruments"
-            v-show="!isOpen"
-            >{{ activeInstruments }}</span
-          ></template
-        >
-      </MultiSelect>
-      <br />
-      <label>Select accompanists</label>
-      <MultiSelect
-        v-model="activeAccompanists"
-        :options="accompanists"
-        :multiple="true"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        placeholder="Pick one or more"
-      >
-        <template slot="selection" slot-scope="{ accompanists, isOpen }"
-          ><span
-            class="multiselect__single"
-            v-if="accompanists"
-            v-show="!isOpen"
-            >{{ activeAccompanists }}</span
-          ></template
-        >
-      </MultiSelect>
-      <br />
-      <label>Level</label>
-      <MultiSelect
-        v-model="activeLevels"
-        :options="levels"
-        :multiple="true"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        placeholder="select one or more"
-      >
-        <template slot="selection" slot-scope="{ levels, isOpen }"
-          ><span class="multiselect__single" v-if="levels" v-show="!isOpen">{{
-            activeLevels
-          }}</span></template
-        >
-      </MultiSelect>
-      <br />
-      <v-row class="col-md-15">
-        <v-col>
-          <v-checkbox
-            v-model="showAllPerformances"
-            label="Show All Performances"
-            hide-details
-          ></v-checkbox>
-        </v-col>
-      </v-row>
-      <br />
-      <v-row>
-        <v-col>
-          <button
-            class="btn btn-danger"
-            style="width: 100%"
-            @click="clearFilters()"
+          <template slot="selection" slot-scope="{ composers, isOpen }"
+            ><span
+              class="multiselect__single"
+              v-if="composers"
+              v-show="!isOpen"
+              >{{ activeComposers }}</span
+            ></template
           >
-            Clear Filters
-          </button>
-        </v-col>
-        <v-col>
-          <button
-            class="btn btn-dark"
-            style="width: 100%"
-            @click="showFilters = false"
+        </MultiSelect>
+        <br />
+        <label>Select instruments</label>
+        <MultiSelect
+          v-model="activeInstruments"
+          :options="instruments"
+          :multiple="true"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          placeholder="Pick one or more"
+        >
+          <template slot="selection" slot-scope="{ instruments, isOpen }"
+            ><span
+              class="multiselect__single"
+              v-if="instruments"
+              v-show="!isOpen"
+              >{{ activeInstruments }}</span
+            ></template
           >
-            Apply
-          </button>
-        </v-col>
-      </v-row>
-    </Modal>
+        </MultiSelect>
+        <br />
+        <label>Select accompanists</label>
+        <MultiSelect
+          v-model="activeAccompanists"
+          :options="accompanists"
+          :multiple="true"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          placeholder="Pick one or more"
+        >
+          <template slot="selection" slot-scope="{ accompanists, isOpen }"
+            ><span
+              class="multiselect__single"
+              v-if="accompanists"
+              v-show="!isOpen"
+              >{{ activeAccompanists }}</span
+            ></template
+          >
+        </MultiSelect>
+        <br />
+        <label>Level</label>
+        <MultiSelect
+          v-model="activeLevels"
+          :options="levels"
+          :multiple="true"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          placeholder="select one or more"
+        >
+          <template slot="selection" slot-scope="{ levels, isOpen }"
+            ><span class="multiselect__single" v-if="levels" v-show="!isOpen">{{
+              activeLevels
+            }}</span></template
+          >
+        </MultiSelect>
+        <br />
+        <v-row class="col-md-15">
+          <v-col>
+            <v-checkbox
+              v-model="showAllPerformances"
+              label="Show All Performances"
+              hide-details
+            ></v-checkbox>
+          </v-col>
+        </v-row>
+        <br />
+        <v-row>
+          <v-col>
+            <button
+              class="btn btn-danger"
+              style="width: 100%"
+              @click="clearFilters()"
+            >
+              Clear Filters
+            </button>
+          </v-col>
+          <v-col>
+            <button
+              class="btn btn-dark"
+              style="width: 100%"
+              @click="showFilters = false"
+            >
+              Apply
+            </button>
+          </v-col>
+        </v-row>
+      </v-card> 
+    </v-dialog>
   </div>
 </template>
 
@@ -304,8 +306,6 @@ import { mapStores } from "pinia";
 import eds from "../services/EventDataService";
 import pds from "../services/PerformanceDataService";
 import feedbackDataService from "../services/FeebackDataService";
-import VueModal from "@kouts/vue-modal";
-import "@kouts/vue-modal/dist/vue-modal.css";
 import MultiSelect from "vue-multiselect";
 
 export default {
@@ -335,7 +335,6 @@ export default {
     };
   },
   components: {
-    Modal: VueModal,
     MultiSelect,
   },
   computed: {

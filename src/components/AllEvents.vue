@@ -206,49 +206,60 @@
       </div>
     </div>
 
-    <Modal title="Filters" v-model="showFilters" v-if="!userStore.isStudent">
-      <label>Event Type</label><br />
-      <MultiSelect
-        v-model="activeTypes"
-        :options="eventTypes"
-        :multiple="true"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        placeholder="Pick one or more"
+    <v-dialog 
+      title="Filters" 
+      v-model="showFilters"
+      max-width="500px"
       >
-        <template slot="selection" slot-scope="{ eventTypes, isOpen }"
-          ><span
-            class="multiselect__single"
-            v-if="eventTypes"
-            v-show="!isOpen"
-            >{{ activeTypes }}</span
-          ></template
-        >
-      </MultiSelect>
-      <br /><br />
-      <v-row>
-        <v-col>
+      <v-card style="min-height: 300px;">
+        <v-card-title>Filters</v-card-title>
+        <v-card-text>
+          <v-container class="body-1">
+            <v-row>
+                <v-col class="text-left py-0" align-self="center" cols="4">
+                    <label><strong>EventType</strong></label><br />
+                </v-col>
+            </v-row>
+            <v-row>
+                <MultiSelect
+                    v-model="activeTypes"
+                    :options="eventTypes"
+                    :multiple="true"
+                    :close-on-select="true"
+                    :clear-on-select="false"
+                    :preserve-search="true"
+                    placeholder="Pick one or more">
+                    <template slot="selection" slot-scope="{ eventTypes, isOpen }">
+                        <span
+                            class="multiselect__single"
+                            v-if="eventTypes"
+                            v-show="!isOpen"
+                        >{{ activeTypes }}</span
+                    ></template>
+                </MultiSelect>
+                <br />
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
           <button
-            class="btn btn-danger"
-            style="width: 100%"
+            class="btn btn-danger" 
             @click="clearFilters()"
-          >
-            Clear Filters
-          </button>
-        </v-col>
-        <v-col>
+            style="width: 49%"
+          >Clear Filters</button>
+          <v-spacer></v-spacer>
           <button
             class="btn btn-dark"
-            style="width: 100%"
             @click="showFilters = false"
-          >
-            Apply
-          </button>
-        </v-col>
-      </v-row>
-    </Modal>
+            style="width: 49%"
+          >Apply</button>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
   </div>
+
 </template>
 
 <script>
@@ -257,14 +268,11 @@ import pds from "../services/PerformanceDataService";
 import sds from "../services/StudentDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
-import VueModal from "@kouts/vue-modal";
-import "@kouts/vue-modal/dist/vue-modal.css";
 import MultiSelect from "vue-multiselect";
 
 export default {
   name: "all-events",
   components: {
-    Modal: VueModal,
     MultiSelect,
   },
   data() {

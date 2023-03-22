@@ -66,9 +66,9 @@ router.beforeEach((to, from, next) => {
   console.log(userStore);
   const user = userStore.name;
   console.log(user);
-  if (user === null && to.path !== "/") {
+  if (user === null && to.path !== "/login") {
     return next({
-      path: "/",
+      path: "/login",
     });
   } else {
     next();

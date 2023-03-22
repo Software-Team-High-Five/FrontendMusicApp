@@ -8,8 +8,10 @@
 
 <script>
 import AuthServices from "@/services/authServices";
-import { pinia } from "@/main";
+//import { pinia } from "@/main";
 import { useUserStore } from "@/stores/userStore";
+import { mapStores } from "pinia";
+
 // import Utils from "@/config/utils.js";
 
 export default {
@@ -21,6 +23,9 @@ export default {
       roleCounter: 0,
       user: {},
     };
+  },
+  computed: {
+    ...mapStores(useUserStore),
   },
   created() {},
   mounted() {
@@ -54,10 +59,9 @@ export default {
       };
       AuthServices.loginUser(token)
         .then((response) => {
-          const userStore = useUserStore(pinia);
-          console.log(userStore);
+          console.log(this.userStore);
           this.user = response.data;
-          useUserStore.setUser("user", this.user);
+          this.userStore.setUser(this.user);
           // this.fName = this.user.fName;
           // this.lName = this.user.lName;
           this.$router.push({ name: "home-page" });

@@ -34,15 +34,10 @@
     <v-main>
       <router-view />
     </v-main>
-<<<<<<< HEAD
 
-
-=======
-<!-- 
     <v-footer color="cyan lighten-5" class="justify-center"
       >&copy;Stay Sticky</v-footer
-    > -->
->>>>>>> 904daefdf7a105200a5dd2c10dfde8161a9b349a
+    >
   </v-app>
 </template>
 
@@ -67,8 +62,8 @@ import { mapStores } from "pinia";
             .then(res => {
                 this.users = res.data;
                 // this.user = this.users.find(u => u.id === 100); //David North Admin
-                this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-                // this.user = this.users.find(u => u.id === 300); //Jess Long Student
+                // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
+                this.user = this.users.find(u => u.id === 300); //Jess Long Student
                 // this.user = this.users.find(u => u.id === 400); //Chloe Sheasby Student/Faculty
                 // this.user = this.users.find(u => u.id === 500); //Miho Fischer Accompanist
 

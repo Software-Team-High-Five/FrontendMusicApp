@@ -21,11 +21,5 @@ class StudentDataService {
   instructorStudents(iid){
     return http.get(`students/instructor/${iid}`);
   }
-  addInstrument(studentId, instrumentId) {
-    return http.post(`/studentInstruments?studentId=${studentId}&instrumentId=${instrumentId}`);
-  }
-  removeInstrument(studentId, instrumentId) {
-    return http.delete(`/studentInstruments?studentId=${studentId}&instrumentId=${instrumentId}`);
-  }
 }
 export default new StudentDataService();

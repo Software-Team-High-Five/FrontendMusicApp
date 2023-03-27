@@ -31,7 +31,7 @@
       </router-link> -->
 
       <v-menu
-        v-if="userStore != null"
+        v-if="userStore.user != null"
         bottom
         min-width="200px"
         rounded

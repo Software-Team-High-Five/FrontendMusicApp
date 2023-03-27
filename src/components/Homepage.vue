@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div
+    <!-- <div
       class="col-md-15"
       style="border-radius: 5px; padding: 10px; margin: 10px"
     >
@@ -38,12 +38,15 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </div> -->
     <h1 class="mt-15 ml-16 text-blue" style="color:#03003f">Notifications</h1>
-    <v-container class="mt-15">
+    
+      <v-container class="mt-15">
       <v-row class="align-center">
         <v-col class="pa-5">
-          <div class="card-button align-center" style="position:relative"
+          <!-- horizontal scroll not working -->
+          <horizontal-scroll>
+            <div class="card-button align-center" style="position:relative"
               v-for="e in upcomingEvents"
               :key="e.id"
               @click="signUp(e.id)"
@@ -57,24 +60,17 @@
             </div>
             <div class="align-end" style="position:absolute; bottom:20px; left:20px;">
               <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
-                Events                              
+                View                              
               </v-btn>
             </div>
         </div>
-          <div class="card-button align-center" style="position:relative">
-            <div>
-              <h2 class="pa-5" style="color:#03003f">name of event             </h2>
-            </div>
-            <div class="align-end" style="position:absolute; bottom:20px; left:20px;">
-              <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
-                Events                              
-              </v-btn>
-            </div>
-          </div>
+          </horizontal-scroll>
+
         </v-col>
 
       </v-row>
     </v-container>
+
 
     <h1 class="mt-15 ml-16 text-blue" style="color:#03003f">Options</h1>
     <v-container class="mt-15">
@@ -144,7 +140,7 @@ import pds from "../services/PerformanceDataService";
 import sds from "../services/StudentDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
-import "@kouts/vue-modal/dist/vue-modal.css";
+// import "@kouts/vue-modal/dist/vue-modal.css";
 
 export default {
   name: "home-page",

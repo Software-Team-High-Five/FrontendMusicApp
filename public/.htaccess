@@ -7,5 +7,5 @@
   RewriteRule ^index\.html$ - [L] 
   RewriteCond %{REQUEST_FILENAME} !-f 
   RewriteCond %{REQUEST_FILENAME} !-d 
-  RewriteRule . /tutorial-frontend-vue2/index.html [L]
+  RewriteRule . /performance/t5/index.html [L]
 </IfModule>

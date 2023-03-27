@@ -63,7 +63,7 @@
                 text
                 @click="
                   if (userStore.isStudent)
-                    this.$router.push({ name: 'student-details' });
+                    $router.push({ name: 'student-details' });
                 "
               >
                 My Details
@@ -140,6 +140,8 @@ export default {
     this.resetMenu();
   },
   async mounted() {
+    // this.userStore.clearUser();
+
     // // console.log(this.user);
     // // this.user = useUserStore().user;
     // await uds

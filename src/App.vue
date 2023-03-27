@@ -23,15 +23,57 @@
         >Students</router-link
       >
       <v-spacer></v-spacer>
-      <router-link
+      <!-- <router-link
         style="text-decoration: none; color: inherit"
         :to="{ name: 'student-details' }"
       >
         {{ userStore.name }}
-        <v-btn icon>
-          <v-icon> mdi-account </v-icon>
-        </v-btn>
-      </router-link>
+      </router-link> -->
+
+      <v-menu
+        v-if="userStore != null"
+        bottom
+        min-width="200px"
+        rounded
+        offset-y
+      >
+        <template #activator="{ on, attrs }">
+          <v-btn icon x-large v-bind="attrs" v-on="on">
+            <v-avatar v-if="userStore != null" color="secondary">
+              <span class="accent--text font-weight-bold">{{ initials }}</span>
+            </v-avatar>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-list-item-content class="justify-center">
+            <div class="mx-auto text-center">
+              <v-avatar color="secondary" class="mt-2 mb-2">
+                <span class="accent--text font-weight-bold">
+                  {{ initials }}
+                </span>
+              </v-avatar>
+              <h3>{{ userStore.name }}</h3>
+              <p class="text-caption mt-1">
+                {{ userStore.user.email }}
+              </p>
+              <v-divider class="my-3"></v-divider>
+              <v-btn
+                depressed
+                rounded
+                text
+                @click="
+                  if (userStore.isStudent)
+                    this.$router.push({ name: 'student-details' });
+                "
+              >
+                My Details
+              </v-btn>
+              <br />
+              <v-btn depressed rounded text @click="logout()"> Logout </v-btn>
+            </div>
+          </v-list-item-content>
+        </v-card>
+      </v-menu>
     </v-app-bar>
 
     <v-main>
@@ -39,8 +81,8 @@
     </v-main>
 
     <v-footer color="cyan lighten-5" class="justify-center"
-      >&copy;Stay Sticky</v-footer
-    >
+      >&copy;Stay Sticky
+    </v-footer>
   </v-app>
 </template>
 
@@ -56,7 +98,7 @@ export default {
   name: "app",
   data() {
     return {
-      user: {},
+      // user: {},
       title: "Music Performance Scheduling App",
       initials: "",
       name: "",
@@ -69,13 +111,13 @@ export default {
     //...mapActions(useUserStore, ["setUser", "clearUser"]),
 
     resetMenu() {
-      this.user = null;
       // ensures that their name gets set properly from store
       // this.user = useUserStore().user;
 
-      if (this.user != null) {
-        this.initials = this.user.fName[0] + this.user.lName[0];
-        this.name = this.user.fName + " " + this.user.lName;
+      if (this.userStore.user != null) {
+        this.initials =
+          this.userStore.user.fName[0] + this.userStore.user.lName[0];
+        this.name = this.userStore.user.fName + " " + this.userStore.user.lName;
       }
     },
     logout() {
@@ -84,9 +126,10 @@ export default {
           console.log(response);
           // Utils.removeItem("user");
           // this.userStore.clearUser();
-          this.useUserStore().clearUser();
+          // this.useUserStore().clearUser();
+          this.userStore.clearUser();
           this.$router.push({ name: "login" });
-          this.$router.go();
+          // this.$router.go();
         })
         .catch((error) => {
           console.log("error", error);

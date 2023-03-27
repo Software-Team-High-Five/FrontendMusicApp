@@ -3,9 +3,11 @@ import App from "./App.vue";
 import router from "./router";
 import vuetify from "./plugins/vuetify";
 import { createPinia, PiniaVuePlugin } from "pinia";
+import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 
 Vue.use(PiniaVuePlugin);
 export const pinia = createPinia();
+pinia.use(piniaPluginPersistedState);
 
 Vue.config.productionTip = false;
 

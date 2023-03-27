@@ -64,9 +64,7 @@ router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const userStore = useUserStore(pinia);
   console.log(userStore);
-  const user = userStore.name;
-  console.log(user);
-  if (user === null && to.path !== "/login") {
+  if (userStore.user === null && to.path !== "/login") {
     return next({
       path: "/login",
     });

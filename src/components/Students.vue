@@ -6,6 +6,26 @@
 
         <div v-show="userStore.isAdmin">
             <v-card style="padding-left:30px; margin-left: 30px;" width="90%" class="center" >
+
+            <v-row>
+                <v-col>
+                    <div class="input-group mb-3">
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search by name"
+                            v-model="searchString"
+                        />
+                        <button
+                            class="btn btn-dark"
+                            @click="searchString = ''"
+                            style="margin-right: 10px; border-radius: 4px"
+                        >
+                            Clear Search
+                    </button>
+                    </div>
+                </v-col>
+            </v-row>
             <v-row>
                 <v-col>First Name</v-col>
                 <v-col>Last Name</v-col>
@@ -19,7 +39,14 @@
             >
                 <v-col>{{ u.fName }}</v-col>
                 <v-col>{{ u.lName }}</v-col>
-                <v-col>{{ u.roles.role }}</v-col>
+                <v-col>
+                    <div v-for="role in u.roles" :key="role">{{ role.role }}</div>
+                    <!-- <v-select
+                        :items="u.roles"
+                        item-text="role"
+                        item-value="id"
+                    ></v-select> -->
+                </v-col>
                 
             </v-row>
         </v-card>
@@ -31,6 +58,7 @@
                 <v-col>First Name</v-col>
                 <v-col>Last Name</v-col>
                 <v-col>Classification</v-col>
+                <v-col>Instruments</v-col>
                 <v-col></v-col>
             </v-row>
             </v-card>
@@ -42,6 +70,11 @@
                     <v-col>{{ s.user.fName }}</v-col>
                     <v-col>{{ s.user.lName }}</v-col>
                     <v-col style="text-transform: capitalize;">{{ s.classification }}</v-col>
+                    <v-col>
+                        {{ s.instrumentList }}
+                        <!-- <div v-for="instrument in s.user.instruments" :key="instrument.id">
+                        {{ instrument.instrument }}></div> -->
+                    </v-col>
                     <v-col>
                         <v-btn :to="{name: 'student-edit', params: {id: s.id}}">
                             <v-icon >mdi-pencil</v-icon>
@@ -85,8 +118,11 @@ export default{
             console.log(this.userStore.user.id)
             studentDS.instructorStudents(this.userStore.user.id)
             .then(res =>{
-                res.data.forEach(s => this.students.push(s))
-                console.log(this.students)
+                res.data.forEach(s => {
+                    s.instrumentList = s.user.instruments.map(i => i.instrument).join(', ');
+                    this.students.push(s);
+                    console.log(s)
+                })
             })
             .catch(e => console.log(e))
         }

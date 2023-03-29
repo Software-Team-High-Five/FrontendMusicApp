@@ -1,12 +1,13 @@
 <template>
   <div>
-    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css" />
+    <v-container>
+      <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css" />
     <br />
-    <v-row>
-      <v-col class="col-md-3 sticky-top" v-if="!isUpcoming">
-        <h3>&nbsp; All Events</h3>
+    <v-row class="mt-15">
+      <v-col class="col-md-3 sticky" v-if="!isUpcoming">
+        <h1 style="color:#03003f">&nbsp; All Events</h1>
       </v-col>
-      <v-col class="col-md-7 sticky-top" style="margin: 10px; padding: 10px">
+      <v-col class="col-md-7 sticky" style="margin: 10px; padding: 10px">
         <div class="input-group mb-3">
           <input
             type="text"
@@ -24,7 +25,7 @@
         </div>
       </v-col>
       <v-col
-        class="md-2 sticky top"
+        class="md-2 sticky"
         style="margin: 10px; padding: 10px; border-radius: 4px; width: 100%"
       >
         <button
@@ -258,6 +259,8 @@
         </v-card-actions>
     </v-card>
     </v-dialog>
+    </v-container>
+    
   </div>
 
 </template>

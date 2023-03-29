@@ -87,7 +87,8 @@
           <thead style="background-color: #f2f3f4">
             <tr>
               <th colspan="4" style="border-bottom: none">
-                <h4>Upcoming Events</h4>
+                <!-- upcoming events are called unregistered events now -->
+                <h4>Unregistered Events</h4>
               </th>
             </tr>
             <tr>

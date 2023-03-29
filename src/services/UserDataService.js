@@ -24,5 +24,11 @@ class UserDataService {
   removeInstrument(userId, instrumentId) {
     return http.delete(`/userInstruments?userId=${userId}&instrumentId=${instrumentId}`);
   }
+  addRole(userId, roleId) {
+    return http.post(`/userRole?userId=${userId}&roleId=${roleId}`);
+  }
+  removeRole(userId, roleId) {
+    return http.delete(`/userRole?userId=${userId}&roleId=${roleId}`);
+  }
 }
 export default new UserDataService();

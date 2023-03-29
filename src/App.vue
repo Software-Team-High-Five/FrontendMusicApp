@@ -23,13 +23,6 @@
         >Students</router-link
       >
       <v-spacer></v-spacer>
-      <!-- <router-link
-        style="text-decoration: none; color: inherit"
-        :to="{ name: 'student-details' }"
-      >
-        {{ userStore.name }}
-      </router-link> -->
-
       <v-menu
         v-if="userStore.user != null"
         bottom
@@ -79,10 +72,6 @@
     <v-main>
       <router-view />
     </v-main>
-
-    <v-footer color="cyan lighten-5" class="justify-center"
-      >&copy;Stay Sticky
-    </v-footer>
   </v-app>
 </template>
 

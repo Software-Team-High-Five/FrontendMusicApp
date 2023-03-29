@@ -1,7 +1,17 @@
 <template>
   <div class="signup-buttons">
-    <v-row justify="center">
-      <div id="parent_id" display="flex"></div>
+    <br /><br />
+    <h1 class="text-uppercase grey-text text-center font-weight-medium">
+      Music Performance System
+    </h1>
+    <h3 class="text-uppercase grey-text text-center font-weight-light">
+      Please Sign In to Continue
+    </h3>
+
+    <v-row>
+      <v-col style="display: grid">
+        <div id="parent_id" style="grid-column: 2"></div>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -53,11 +63,11 @@ export default {
         }
       );
     },
-    handleCredentialResponse(response) {
+    async handleCredentialResponse(response) {
       let token = {
         credential: response.credential,
       };
-      AuthServices.loginUser(token)
+      await AuthServices.loginUser(token)
         .then((response) => {
           console.log(this.userStore);
           this.user = response.data;

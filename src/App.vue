@@ -121,7 +121,8 @@ export default {
       }
     },
     logout() {
-      AuthServices.logoutUser(this.user)
+      console.log(this.userStore.user);
+      AuthServices.logoutUser(this.userStore.user)
         .then((response) => {
           console.log(response);
           // Utils.removeItem("user");
@@ -141,7 +142,6 @@ export default {
   },
   async mounted() {
     // this.userStore.clearUser();
-
     // // console.log(this.user);
     // // this.user = useUserStore().user;
     // await uds

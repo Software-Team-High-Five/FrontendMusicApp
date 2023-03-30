@@ -29,7 +29,7 @@
         style="margin: 10px; padding: 10px; border-radius: 4px; width: 100%"
       >
         <button
-          class="btn btn-dark btn-outline"
+          class="btn btn-dark btn-outline" v-if="!userStore.isStudent"
           @click="showFilters = !showFilters"
         >
           Filter
@@ -379,7 +379,8 @@ export default {
             (e) =>
             e.date > this.today &&
             !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
+            this.generalFilter(e) &&
+            
         );
         },
         registeredEvents() {
@@ -408,3 +409,10 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+
+.table th{
+  width: 25%
+}
+</style>

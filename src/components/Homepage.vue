@@ -5,10 +5,10 @@
       
       <v-slide-group show-arrows class="ml-n4">
         <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative"
-            v-for="e in upcomingEvents"
+            v-for="e in recentlyAddedEvents"
             :key="e.id"
             @click="signUp(e.id)"
-            v-show="upcomingEvents.length"
+            v-show="recentlyAddedEvents.length"
           >
             <v-card max-width="500">
               <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">{{ e.name }}</v-card-title>
@@ -173,14 +173,6 @@ export default {
             this.generalFilter(e)
         );
         },
-        upcomingEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date > this.today &&
-            !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
-        );
-        },
         registeredEvents() {
         return this.events.filter(
             (e) =>
@@ -195,8 +187,23 @@ export default {
             e.date == this.today &&
             !this.userPerformances.find((p) => p.eventId == e.id) &&
             this.generalFilter(e)
-        );
+        )
         },
+        recentlyAddedEvents() {
+          var todayDate = new Date()
+          var day = 60 * 60 * 24 * 1000;
+
+          var yesterdayDate = new Date(todayDate.getTime() - day);
+
+          var yesterday = yesterdayDate.toISOString().substring(0, 10);
+
+        return this.events.filter(
+            (e) =>
+            e.createdAt.substring(0, 10) <= this.today && e.createdAt.substring(0, 10) >= yesterday &&
+            !this.userPerformances.find((p) => p.eventId == e.id) &&
+            this.generalFilter(e)
+        );
+        }
     },
   mounted() {
     this.fetch();

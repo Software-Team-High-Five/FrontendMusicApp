@@ -5,83 +5,60 @@
         <br>
 
         <div v-show="userStore.isAdmin">
-            <v-card style="padding-left:30px; margin-left: 30px;" width="90%" class="center" >
-
-            <v-row>
-                <v-col>
-                    <div class="input-group mb-3">
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Search by name"
-                            v-model="searchString"
-                        />
-                        <button
-                            class="btn btn-dark"
-                            @click="searchString = ''"
-                            style="margin-right: 10px; border-radius: 4px"
-                        >
-                            Clear Search
-                    </button>
-                    </div>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col>First Name</v-col>
-                <v-col>Last Name</v-col>
-                <v-col>Role</v-col>
-            </v-row>
-        </v-card>
-        <v-card style="padding-left:30px; margin-left: 30px;" width="90%" class="center">
-            <v-row
-                v-for="u in users"
-                :key="u.id"
+            
+        <v-card>
+            <v-card-title>
+                <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+                ></v-text-field>
+            </v-card-title>
+            <v-data-table
+            :headers="userHeaders"
+            :items="users"
+            :search="search"
+            :hide-defaut-footer="true"
+            disable-pagination
+            class="elevation-1"
             >
-                <v-col>{{ u.fName }}</v-col>
-                <v-col>{{ u.lName }}</v-col>
-                <v-col>
-                    <div v-for="role in u.roles" :key="role">{{ role.role }}</div>
-                    <!-- <v-select
-                        :items="u.roles"
-                        item-text="role"
-                        item-value="id"
-                    ></v-select> -->
-                </v-col>
-                
-            </v-row>
+            <template v-slot:[`item.actions`]="{item}">
+                <v-btn icon small class="mr-2" :to="{name: 'student-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
+            </template>
+        </v-data-table>
         </v-card>
+        
+
         </div>
     
         <div v-show="userStore.isFaculty">
-            <v-card style="padding-left:30px; margin-left: 30px;" width="90%" class="center" >
-            <v-row>
-                <v-col>First Name</v-col>
-                <v-col>Last Name</v-col>
-                <v-col>Classification</v-col>
-                <v-col>Instruments</v-col>
-                <v-col></v-col>
-            </v-row>
-            </v-card>
-            <v-card style="padding-left:30px; margin-left: 30px;" width="90%" class="center">
-                <v-row
-                    v-for="s in students"
-                    :key="s.id"
-                >
-                    <v-col>{{ s.user.fName }}</v-col>
-                    <v-col>{{ s.user.lName }}</v-col>
-                    <v-col style="text-transform: capitalize;">{{ s.classification }}</v-col>
-                    <v-col>
-                        {{ s.instrumentList }}
-                        <!-- <div v-for="instrument in s.user.instruments" :key="instrument.id">
-                        {{ instrument.instrument }}></div> -->
-                    </v-col>
-                    <v-col>
-                        <v-btn :to="{name: 'student-edit', params: {id: s.id}}">
-                            <v-icon >mdi-pencil</v-icon>
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-card>
+            
+            <v-card>
+            <v-card-title>
+                <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+                ></v-text-field>
+            </v-card-title>
+            <v-data-table
+            :headers="studentHeaders"
+            :items="students"
+            :search="search"
+            :hide-defaut-footer="true"
+            disable-pagination
+            class="elevation-1"
+            >
+                <template v-slot:[`item.actions`]="{item}">
+                    <v-btn icon small class="mr-2" :to="{name: 'student-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
+                </template>
+            </v-data-table>
+        </v-card>
+
         </div>
         
     </div>
@@ -99,17 +76,95 @@ export default{
     },
     data(){
         return{
+            userHeaders:[
+                {
+                    text: 'First Name',
+                    value: 'fName',
+                    sortable: 'true'
+                },
+                {
+                    text: 'Last Name',
+                    value: 'lName',
+                    sortable: 'true'
+                },
+                {
+                    text: 'Roles',
+                    value: 'roles',
+                    sortable: 'false'
+                },
+                {
+                    text: 'Instruments',
+                    value: 'instruments',
+                    sortable: 'false'
+                },
+                { 
+                    text: "", 
+                    value: "actions", 
+                    sortable: false 
+                }
+            ],
+            studentHeaders:[
+            {
+                    text: 'First Name',
+                    value: 'fName',
+                    sortable: 'true'
+                },
+                {
+                    text: 'Last Name',
+                    value: 'lName',
+                    sortable: 'true'
+                },
+                {
+                    text: 'Classification',
+                    value: 'classification',
+                    sortable: 'false'
+                },
+                {
+                    text: 'Instruments',
+                    value: 'instruments',
+                    sortable: 'false'
+                },
+                { 
+                    text: "", 
+                    value: "actions", 
+                    sortable: false 
+                }
+            ],
+            search:'',
             students: [],
             student: {},
             users: [],
-            user: {}
+            usersCopy: [],
+            user: {},
+            nameFilter: ""
         } 
+    },
+    methods:{
+        searchByName(){
+            if(this.nameFilter == ''){
+                return this.users
+            }
+            else{
+                this.usersCopy = this.users;
+                return this.users.filter(u => u.lName.toLowerCase().indexOf(this.nameFilter.toLowerCase()) > -1)
+            }
+            
+        }
     },
     mounted(){
         if(this.userStore.isAdmin){
             userDS.getAll()
             .then(res =>{
-                res.data.forEach(u => this.users.push(u))
+                res.data.forEach(u => {
+                    this.users.push({
+                        fName: u.fName,
+                        lName: u.lName,
+                        roles: u.roles.map(r => r.role).join(', '),
+                        instruments: u.instruments.map(i => i.instrument).join(', ')
+                    })
+                }
+                 
+                )
                 console.log(this.user)
             })
             .catch(e => console.log(e))
@@ -119,9 +174,13 @@ export default{
             studentDS.instructorStudents(this.userStore.user.id)
             .then(res =>{
                 res.data.forEach(s => {
-                    s.instrumentList = s.user.instruments.map(i => i.instrument).join(', ');
-                    this.students.push(s);
-                    console.log(s)
+                    this.students.push({
+                        id: s.id,
+                        fName: s.user.fName,
+                        lName: s.user.lName,
+                        classification: s.classification,
+                        instruments: s.user.instruments.map(i => i.instrument).join(', ')
+                    })
                 })
             })
             .catch(e => console.log(e))

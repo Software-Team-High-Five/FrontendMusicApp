@@ -379,8 +379,7 @@ export default {
             (e) =>
             e.date > this.today &&
             !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e) &&
-            
+            this.generalFilter(e)            
         );
         },
         registeredEvents() {

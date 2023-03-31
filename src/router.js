@@ -57,6 +57,16 @@ const router = new Router({
       name: "login",
       component: () => import("./components/Login"),
     },
+    {
+      path: "/user"
+      ,name: "user-details"
+      ,component: () => import('./components/UserDetails')
+    },
+    {
+      path: "/user/:id"
+      ,name: "user-edit"
+      ,component: () => import('./components/UserEdit')
+    }
   ],
 });
 

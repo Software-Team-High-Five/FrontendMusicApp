@@ -55,8 +55,9 @@
                 rounded
                 text
                 @click="
-                  if (userStore.isStudent)
-                    $router.push({ name: 'student-details' });
+                  userStore.isStudent ?
+                    $router.push({ name: 'student-details' }) :
+                    $router.push({ name: 'user-details' });
                 "
               >
                 My Details

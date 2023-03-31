@@ -194,6 +194,7 @@
             this.selectedSong.title
           }}"?</v-card-title
         >
+        <!-- Delete/Cancel Actions -->
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="deleteSong"> Delete </v-btn>
@@ -310,15 +311,23 @@ export default {
   },
   mounted() {
     // Get the instructor
-    let instructorPromise = userDS
-      .get(this.userStore.user.student.instructorId)
-      .then((res) => {
-        this.instructor = `${res.data.fName} ${res.data.lName}`;
-      })
-      .catch((e) => {
-        console.log(e);
-        this.instructor = "Error: not found";
-      });
+    let instructorPromise;
+    if (this.userStore.user.student.instructorId != null) {
+      instructorPromise = userDS
+        .get(this.userStore.user.student.instructorId)
+        .then((res) => {
+          this.instructor = `${res.data.fName} ${res.data.lName}`;
+        })
+        .catch((e) => {
+          console.log(e);
+          this.instructor = "Error: not found";
+        });
+    }
+    else {
+      // if no instructor is assigned, use an empty string and promise
+      this.instructor = "";
+      instructorPromise = Promise.resolve();
+    }
     // Get the student's songs
     let songsPromise = songDS
       .getAll()
@@ -368,15 +377,6 @@ export default {
           "Unable to display page because of 1 or more errors while loading data"
         );
       });
-
-    // if(this.prevRoute.name == 'student-edit') {
-    //     window.location.reload()
-    // }
-  },
-  // ,beforeRouteEnter(to, from, next) {
-  //     next(vm => {
-  //         vm.prevRoute = from;
-  //     })
-  // }
+  }
 };
 </script>

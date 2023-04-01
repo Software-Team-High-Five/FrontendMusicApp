@@ -42,11 +42,7 @@ const router = new Router({
       name: "event-details",
       component: () => import("./components/EventDetails"),
     },
-    {
-        path: "/students"
-        ,name: "student-s"
-        ,component: () => import('./components/Students')
-    },
+ 
     {
         path: "/students"
         ,name: "student-s"

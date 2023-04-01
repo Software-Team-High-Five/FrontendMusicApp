@@ -4,7 +4,7 @@
     <h3 style="text-align: left">Create a New Performance</h3>
     <v-col></v-col>
     <v-col class="col-md">
-      <v-card>
+      <v-card style="padding: 5px">
         <br />
         <v-col class="col-md-15">
           <v-select
@@ -36,7 +36,6 @@
                   <v-text-field
                     v-model="event.date"
                     label="Date"
-                    hint="YYYY-MM-DD format"
                     persistent-hint
                     v-on="on"
                   ></v-text-field>
@@ -52,76 +51,27 @@
           </div>
           <!-- time pickers -->
           <br />
+
           <v-col class="col-md-15">
             <v-row>
-              <v-col
-                cols="11"
-                sm="5"
-                style="width: 50%; justify-content: center"
-              >
-                <v-menu
-                  ref="timeMenu1"
-                  v-model="timeMenu1"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  :return-value.sync="event.startTime"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="event.startTime"
-                      label="Start Time"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-time-picker
-                    v-if="timeMenu1"
-                    v-model="event.startTime"
-                    format="ampm"
-                    full-width
-                    @click:minute="$refs.timeMenu1.save(event.startTime)"
-                  ></v-time-picker>
-                </v-menu>
-              </v-col>
-              <v-col
-                cols="11"
-                sm="5"
-                style="width: 50%; justify-content: center"
-              >
-                <v-menu
-                  ref="timeMenu2"
-                  v-model="timeMenu2"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  :return-value.sync="event.endTime"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="event.endTime"
-                      label="End Time"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-time-picker
-                    v-if="timeMenu2"
-                    v-model="event.endTime"
-                    format="ampm"
-                    full-width
-                    @click:minute="$refs.timeMenu2.save(event.endTime)"
-                  ></v-time-picker>
-                </v-menu>
-              </v-col>
+                <v-col
+                    cols="11"
+                    sm="5"
+                    style="width: 50%; justify-content: center">
+                    <label for="startTime">Start Time: &nbsp;</label>
+                    <input type="time" id="startTime" v-model="event.startTime" />
+                    <br>
+                    <small>Format "hh:mm am/pm"</small>
+                </v-col>
+                <v-col
+                    cols="11"
+                    sm="5"
+                    style="width: 50%; justify-content: center">
+                    <label for="startTime">End Time: &nbsp;</label>
+                    <input type="time" id="startTime" v-model="event.endTime" />
+                    <br>
+                    <small>Format "hh:mm am/pm"</small>
+                </v-col>
             </v-row>
           </v-col>
           <v-row>
@@ -199,6 +149,8 @@ export default {
       if (this.eventIncomplete()) {
         return false;
       }
+      this.event.startTime += ':00';
+      this.event.endTime += ':00';
       eds
         .create({ ...this.event })
         .then((res) => {

@@ -88,7 +88,6 @@
                 <strong>Instruments</strong>
             </v-col>
             <v-col class="py-0" cols="8">
-                <!-- <div v-for="instrument in user.student.instruments" :key="instrument.id">{{ instrument.instrument }}</div> -->
                 <v-select
                     v-model="student.instrumentIds"
                     :items="allInstruments"
@@ -114,7 +113,7 @@ import instrumentDS from '@/services/InstrumentDataService';
 import studentDS from '@/services/StudentDataService';
 
 export default {
-    name: 'student-details'
+    name: 'student-edit'
     ,data() {
         return {
             student: {}
@@ -147,7 +146,7 @@ export default {
             // Remove instruments that the student no longer plays
             let instToRemove = this.student.prevInstruments.filter(i => !this.student.instrumentIds.includes(i));
             for (const inst of instToRemove) {
-                await studentDS.removeInstrument(this.student.id, inst)
+                await userDS.removeInstrument(this.student.id, inst)
                     .then(() => {
                         console.log(`${this.allInstruments.find(i => i.id == inst).instrument} removed from ${this.student.name}`);
                     })
@@ -158,7 +157,7 @@ export default {
             // Add instruments that the student now plays
             let instToAdd = this.student.instrumentIds.filter(i => !this.student.prevInstruments.includes(i));
             for (const inst of instToAdd) {
-                await studentDS.addInstrument(this.student.id, inst)
+                await userDS.addInstrument(this.student.id, inst)
                     .then(() => {
                         console.log(`${this.allInstruments.find(i => i.id == inst).instrument} added to ${this.student.name}`);
                     })
@@ -168,7 +167,8 @@ export default {
             }
             // Refresh the cached list of instruments
             this.student.prevInstruments = this.student.instrumentIds;
-            await this.$router.push({name: 'student-details'})
+
+            // await this.$router.push({name: 'student-details'})
         }
     }
     ,async mounted() {
@@ -184,7 +184,7 @@ export default {
                     ,semester: res.data.student.semester
                     ,level: res.data.student.level
                     ,instructorId: res.data.student.instructorId
-                    ,instrumentIds: res.data.student.instruments.map(i => i.id)
+                    ,instrumentIds: res.data.instruments.map(i => i.id)
                 };
                 this.student.prevInstruments = this.student.instrumentIds;
                 console.log(this.student)
@@ -195,7 +195,7 @@ export default {
         // Get all instructors data
         let instructorsPromise = userDS.getAll()
             .then(res => {
-                this.allInstructors = res.data.filter(u => u.role == 'faculty')
+                this.allInstructors = res.data.filter(u => u.roles.find(r => r.role == 'faculty'))
                     .map(u => { return { id: u.id, name: `${u.fName} ${u.lName}` } });
             })
             .catch(e => {

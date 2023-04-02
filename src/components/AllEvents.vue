@@ -1,12 +1,13 @@
 <template>
   <div>
-    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css" />
+    <v-container>
+      <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css" />
     <br />
-    <v-row>
-      <v-col class="col-md-3 sticky-top" v-if="!isUpcoming">
-        <h3>&nbsp; All Events</h3>
+    <v-row class="mt-15">
+      <v-col class="col-md-3 sticky" v-if="!isUpcoming">
+        <h1 style="color:#03003f">&nbsp; All Events</h1>
       </v-col>
-      <v-col class="col-md-7 sticky-top" style="margin: 10px; padding: 10px">
+      <v-col class="col-md-7 sticky" style="margin: 10px; padding: 10px">
         <div class="input-group mb-3">
           <input
             type="text"
@@ -24,11 +25,11 @@
         </div>
       </v-col>
       <v-col
-        class="md-2 sticky top"
+        class="md-2 sticky"
         style="margin: 10px; padding: 10px; border-radius: 4px; width: 100%"
       >
         <button
-          class="btn btn-dark btn-outline"
+          class="btn btn-dark btn-outline" v-if="!userStore.isStudent"
           @click="showFilters = !showFilters"
         >
           Filter
@@ -86,7 +87,8 @@
           <thead style="background-color: #f2f3f4">
             <tr>
               <th colspan="4" style="border-bottom: none">
-                <h4>Upcoming Events</h4>
+                <!-- upcoming events are called unregistered events now -->
+                <h4>Unregistered Events</h4>
               </th>
             </tr>
             <tr>
@@ -258,6 +260,8 @@
         </v-card-actions>
     </v-card>
     </v-dialog>
+    </v-container>
+    
   </div>
 
 </template>
@@ -375,7 +379,7 @@ export default {
             (e) =>
             e.date > this.today &&
             !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
+            this.generalFilter(e)            
         );
         },
         registeredEvents() {
@@ -404,3 +408,10 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+
+.table th{
+  width: 25%
+}
+</style>

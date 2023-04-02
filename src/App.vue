@@ -12,6 +12,13 @@
       <router-link
         style="text-decoration: none; color: inherit"
         class="mr-5"
+        :to="{ name: 'all-events' }"
+        >All Events</router-link
+      >
+
+      <router-link
+        style="text-decoration: none; color: inherit"
+        class="mr-5"
         :to="{ name: 'new-event' }"
         v-if="true"
         >New Event</router-link

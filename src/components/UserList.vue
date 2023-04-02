@@ -70,7 +70,7 @@ import { useUserStore } from '@/stores/userStore';
 import { mapStores } from 'pinia';
 
 export default{
-    name: 'student-s',
+    name: 'user-list',
     computed: {
         ...mapStores(useUserStore)
     },

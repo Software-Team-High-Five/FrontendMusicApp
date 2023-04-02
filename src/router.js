@@ -44,9 +44,9 @@ const router = new Router({
     },
  
     {
-        path: "/students"
-        ,name: "student-s"
-        ,component: () => import('./components/Students')
+        path: "/users"
+        ,name: "user-list"
+        ,component: () => import('./components/UserList')
     },
     {
       path: "/student",

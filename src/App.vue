@@ -16,22 +16,13 @@
         v-if="true"
         >New Event</router-link
       >
-      <!--<router-link style="text-decoration: none; color: inherit; " class="mr-5" :to="{name: 'home-page'}" v-if="userStore.isFaculty || userStore.isAdmin">New Critique</router-link>-->
 
       <router-link
-        v-show="userStore.isAdmin"
+        v-show="userStore.isAdmin || userStore.isFaculty"
         style="text-decoration: none; color: inherit"
         class="mr-5"
-        :to="{ name: 'student-s' }"
-        >Users</router-link
-      >
-
-      <router-link
-        v-show="userStore.isFaculty"
-        style="text-decoration: none; color: inherit"
-        class="mr-5"
-        :to="{ name: 'student-s' }"
-        >Students</router-link
+        :to="{ name: 'user-list' }"
+        >{{userStore.isAdmin ? 'Users' : 'Students'}}</router-link
       >
       <v-spacer></v-spacer>
       <v-menu

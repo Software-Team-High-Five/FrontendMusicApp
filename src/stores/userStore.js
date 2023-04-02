@@ -19,6 +19,10 @@ export const useUserStore = defineStore("user", {
       state.user.roles.find((r) => r.role === "accompanist") ? true : false,
     isStudent: (state) =>
       state.user.roles.find((r) => r.role === "student") ? true : false,
+    instrumentalist: (state) => 
+      state.user.instruments.find(i => i.isInstrument) ? true : false,
+    vocalist: (state) => 
+      state.user.instruments.find(i => !i.isInstrument) ? true : false,
   },
   actions: {
     setUser(userData) {

@@ -10,6 +10,12 @@ class EventDataService {
     }
     return http.get(path);
   }
+  getInstrumental() {
+    return http.get('/events/instrumental');
+  }
+  getVocal() {
+    return http.get('/events/vocal');
+  }
   create(data) {
     return http.post("/events", data);
   }

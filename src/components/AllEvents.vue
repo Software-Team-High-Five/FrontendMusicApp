@@ -298,13 +298,31 @@ export default {
   }
     ,methods: {
         async fetch() {
-            await eds.getAll()
+            if(this.userStore.instrumentalist && this.userStore.vocalist) {
+                await eds.getAll()
+                    .then(res => {
+                        res.data.forEach(e => {
+                            this.events.push(e);
+                        });
+                    })
+                    .catch(e => console.log(e));
+            } else if (this.userStore.instrumentalist && !this.userStore.vocalist) {
+                await eds.getInstrumental()
                 .then(res => {
                     res.data.forEach(e => {
                         this.events.push(e);
                     });
                 })
                 .catch(e => console.log(e));
+            } else {
+                await eds.getVocal()
+                    .then(res => {
+                        res.data.forEach(e => {
+                            this.events.push(e);
+                        });
+                    })
+                    .catch(e => console.log(e));
+            }
             if(this.userStore.user.role == 'student'){
                await pds.getAllForStudent(this.userStore.user.id)
                 .then(res => {
@@ -367,36 +385,36 @@ export default {
     computed: {
         ...mapStores(useUserStore),
         myPastEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date < this.today &&
-            this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
-        );
+          return this.events.filter(
+              (e) =>
+              e.date < this.today &&
+              this.userPerformances.find((p) => p.eventId == e.id) &&
+              this.generalFilter(e)
+          );
         },
         upcomingEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date > this.today &&
-            !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)            
-        );
+            return this.events.filter(
+                (e) =>
+                e.date > this.today &&
+                !this.userPerformances.find((p) => p.eventId == e.id) &&
+                this.generalFilter(e)            
+            );
         },
         registeredEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date > this.today &&
-            this.generalFilter(e) &&
-            this.userPerformances.find((p) => p.eventId == e.id)
-        );
+            return this.events.filter(
+                (e) =>
+                e.date > this.today &&
+                this.generalFilter(e) &&
+                this.userPerformances.find((p) => p.eventId == e.id)
+            );
         },
         todaysEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date == this.today &&
-            !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
-        );
+            return this.events.filter(
+                (e) =>
+                e.date == this.today &&
+                !this.userPerformances.find((p) => p.eventId == e.id) &&
+                this.generalFilter(e)
+            );
         },
     },
     mounted() {

@@ -25,7 +25,7 @@
             class="elevation-1"
             >
             <template v-slot:[`item.actions`]="{item}">
-                <v-btn icon small class="mr-2" :to="{name: 'student-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
+                <v-btn icon small class="mr-2" :to="{name: 'user-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
             </template>
         </v-data-table>
         </v-card>
@@ -157,6 +157,7 @@ export default{
             .then(res =>{
                 res.data.forEach(u => {
                     this.users.push({
+                        id: u.id,
                         fName: u.fName,
                         lName: u.lName,
                         roles: u.roles.map(r => r.role).join(', '),

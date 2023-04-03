@@ -1,12 +1,14 @@
 <template>
   <div>
-    <br /><br /><br />
-    <h3 style="text-align: left">Create a New Performance</h3>
-    <v-col></v-col>
+    <v-container>
+      <h1 class="mt-15 mb-4" style="color:#03003f">Create a New Performance</h1>
+
+      <br /><br /><br />
+    <!-- <h3 style="text-align: left">Create a New Performance</h3> -->
     <v-col class="col-md">
       <v-card style="padding: 5px">
         <br />
-        <v-col class="col-md-15">
+        <v-col>
           <v-select
             label="Select a performance type"
             :items="eventType"
@@ -14,14 +16,14 @@
           ></v-select>
         </v-col>
         <div v-show="event.type">
-          <v-col class="col-md-15">
+          <v-col>
             <v-row>
               <v-text-field v-model="event.name" label="Name"></v-text-field>
             </v-row>
           </v-col>
           <!-- date picker -->
           <div>
-            <v-col class="col-md-15">
+            <v-col>
               <v-menu
                 ref="dateMenu"
                 v-model="dateMenu"
@@ -49,10 +51,9 @@
               </v-menu>
             </v-col>
           </div>
-          <!-- time pickers -->
           <br />
 
-          <v-col class="col-md-15">
+          <v-col>
             <v-row>
                 <v-col
                     cols="11"
@@ -61,7 +62,6 @@
                     <label for="startTime">Start Time: &nbsp;</label>
                     <input type="time" id="startTime" v-model="event.startTime" />
                     <br>
-                    <small>Format "hh:mm am/pm"</small>
                 </v-col>
                 <v-col
                     cols="11"
@@ -70,12 +70,11 @@
                     <label for="startTime">End Time: &nbsp;</label>
                     <input type="time" id="startTime" v-model="event.endTime" />
                     <br>
-                    <small>Format "hh:mm am/pm"</small>
                 </v-col>
             </v-row>
           </v-col>
           <v-row>
-            <v-col class="col-md-15">
+            <v-col>
               <v-row>
                 &nbsp;
                 <v-col>
@@ -90,7 +89,7 @@
             <v-col></v-col>
             <v-col></v-col>
           </v-row>
-          <v-row class="col-md-15">
+          <v-row>
             <v-col>
               <button
                 class="btn btn-danger"
@@ -113,7 +112,7 @@
         </div>
       </v-card>
     </v-col>
-    <v-col></v-col>
+    </v-container>
   </div>
 </template>
 

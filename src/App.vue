@@ -18,10 +18,11 @@
       >
 
       <router-link
+        v-if="isLoggedIn()"  
+        v-show="userStore.isAdmin"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'new-event' }"
-        v-if="isLoggedIn()"
         >New Event</router-link
       >
       <router-link

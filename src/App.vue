@@ -10,6 +10,7 @@
       </router-link>
       <v-spacer></v-spacer>
       <router-link
+        v-if="isLoggedIn()"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'all-events' }"
@@ -20,20 +21,20 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'new-event' }"
-        v-if="true"
+        v-if="isLoggedIn()"
         >New Event</router-link
       >
-
       <router-link
-        v-show="userStore.isAdmin || userStore.isFaculty"
+        v-if="isLoggedIn()"
+        v-show="(userStore.isAdmin || userStore.isFaculty)"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'user-list' }"
-        >{{userStore.isAdmin ? 'Users' : 'Students'}}</router-link
+        >{{(isLoggedIn() && userStore.isAdmin )? 'Users' : 'Students'}}</router-link
       >
       <v-spacer></v-spacer>
       <v-menu
-        v-if="userStore.user != null"
+        v-if="isLoggedIn()"
         bottom
         min-width="200px"
         rounded
@@ -41,7 +42,7 @@
       >
         <template #activator="{ on, attrs }">
           <v-btn icon x-large v-bind="attrs" v-on="on">
-            <v-avatar v-if="userStore != null" color="secondary">
+            <v-avatar v-if="isLoggedIn()" color="secondary">
               <span class="accent--text font-weight-bold">{{ initials }}</span>
             </v-avatar>
           </v-btn>
@@ -135,6 +136,9 @@ export default {
           console.log("error", error);
         });
     },
+    isLoggedIn() {
+      return this.userStore.user ? true : false;
+    }
   },
   async created() {
     this.resetMenu();

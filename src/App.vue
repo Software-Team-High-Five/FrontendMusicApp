@@ -11,6 +11,7 @@
       </router-link>
       <v-spacer></v-spacer>
       <router-link
+        v-if="isLoggedIn()"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'all-events' }"
@@ -21,20 +22,20 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'new-event' }"
-        v-if="true"
+        v-if="isLoggedIn()"
         >New Event</router-link
       >
-
       <router-link
-        v-show="userStore.isAdmin || userStore.isFaculty"
+        v-if="isLoggedIn()"
+        v-show="(userStore.isAdmin || userStore.isFaculty)"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'user-list' }"
-        >{{userStore.isAdmin ? 'Users' : 'Students'}}</router-link
+        >{{(isLoggedIn() && userStore.isAdmin) ? 'Users' : 'Students'}}</router-link
       >
       <v-spacer></v-spacer>
       <v-menu
-        v-if="userStore.user != null"
+        v-if="isLoggedIn()"
         bottom
         min-width="200px"
         rounded
@@ -42,7 +43,7 @@
       >
         <template #activator="{ on, attrs }">
           <v-btn icon x-large v-bind="attrs" v-on="on">
-            <v-avatar v-if="userStore != null" color="secondary">
+            <v-avatar v-if="isLoggedIn()" color="secondary">
               <span class="accent--text font-weight-bold">{{ initials }}</span>
             </v-avatar>
           </v-btn>
@@ -87,18 +88,14 @@
 </template>
 
 <script>
-// import uds from "../src/services/UserDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
-// import { mapStores, mapActions } from "pinia";
 import AuthServices from "@/services/authServices";
-// import Utils from "@/config/utils.js";
 
 export default {
   name: "app",
   data() {
     return {
-      // user: {},
       title: "Music Performance Scheduling App",
       initials: "",
       name: "",
@@ -108,13 +105,9 @@ export default {
     ...mapStores(useUserStore),
   },
   methods: {
-    //...mapActions(useUserStore, ["setUser", "clearUser"]),
 
     resetMenu() {
-      // ensures that their name gets set properly from store
-      // this.user = useUserStore().user;
-
-      if (this.userStore.user != null) {
+       if (this.userStore.user != null) {
         this.initials =
           this.userStore.user.fName[0] + this.userStore.user.lName[0];
         this.name = this.userStore.user.fName + " " + this.userStore.user.lName;
@@ -125,40 +118,19 @@ export default {
       AuthServices.logoutUser(this.userStore.user)
         .then((response) => {
           console.log(response);
-          // Utils.removeItem("user");
-          // this.userStore.clearUser();
-          // this.useUserStore().clearUser();
           this.userStore.clearUser();
           this.$router.push({ name: "login" });
-          // this.$router.go();
         })
         .catch((error) => {
           console.log("error", error);
         });
     },
+    isLoggedIn() {
+      return this.userStore.user ? true : false;
+    }
   },
   async created() {
     this.resetMenu();
-  },
-  async mounted() {
-    // this.userStore.clearUser();
-    // // console.log(this.user);
-    // // this.user = useUserStore().user;
-    // await uds
-    //   .getAll()
-    //   .then((res) => {
-    //     this.users = res.data;
-    //     this.user = this.users.find((u) => u.id === 100); //David North Admin
-    //     // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-    //     // this.user = this.users.find(u => u.id === 300); //Jess Long Student
-    //     // this.user = this.users.find(u => u.id === 400); //Chloe Sheasby Student & Faculty
-    //     // this.user = this.users.find((u) => u.id === 500); //Miho Fischer Accompanist
-    //     this.userStore.setUser(this.user);
-    //     console.log(this.user);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
   },
 };
 </script>

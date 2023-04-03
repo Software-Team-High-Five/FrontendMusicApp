@@ -1,4 +1,5 @@
 
+
 <template>
   <v-app>
     <v-app-bar flat app color="cyan lighten-5">
@@ -82,13 +83,6 @@
     <v-main>
       <router-view />
     </v-main>
-<<<<<<< HEAD
-
-    <v-footer color="cyan lighten-5" class="justify-center"
-      >&copy;Stay Sticky</v-footer
-    >
-=======
->>>>>>> 322bef9bad814ffd8f24d9480b136f08ec9cb490
   </v-app>
 </template>
 
@@ -100,28 +94,6 @@ import { mapStores } from "pinia";
 import AuthServices from "@/services/authServices";
 // import Utils from "@/config/utils.js";
 
-<<<<<<< HEAD
-  export default {
-    name: "app",
-    data() {
-        return {
-            user: {},
-        };
-    },
-    computed: {
-        ...mapStores(useUserStore),
-    },
-    methods: {  },
-    async mounted() {
-        await uds.getAll()
-            .then(res => {
-                this.users = res.data;
-                // this.user = this.users.find(u => u.id === 100); //David North Admin
-                // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-                this.user = this.users.find(u => u.id === 300); //Jess Long Student
-                // this.user = this.users.find(u => u.id === 400); //Chloe Sheasby Student/Faculty
-                // this.user = this.users.find(u => u.id === 500); //Miho Fischer Accompanist
-=======
 export default {
   name: "app",
   data() {
@@ -137,7 +109,6 @@ export default {
   },
   methods: {
     //...mapActions(useUserStore, ["setUser", "clearUser"]),
->>>>>>> 322bef9bad814ffd8f24d9480b136f08ec9cb490
 
     resetMenu() {
       // ensures that their name gets set properly from store

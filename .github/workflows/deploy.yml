@@ -13,20 +13,20 @@ jobs:
           VUE_APP_CLIENT_ID: ${{secrets.VUE_APP_CLIENT_ID}}
           VUE_APP_API_URL: ${{secrets.VUE_APP_API_URL}}
         steps:
-            - uses: actions/checkout@v2
-              with:
-                ref: Main
-            - uses: actions/setup-node@v2
-              with: 
-                node-version: 16
-            - run: npm install
-            - run: npm run build
-            - name: Deploy to Server
-              uses: easingthemes/ssh-deploy@v2.1.1
-              env:
-                    SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-                    ARGS: "-rltgoDzvO --delete"
-                    SOURCE: "dist/"
-                    REMOTE_HOST: "perform.eaglesoftwareteam.com"
-                    REMOTE_USER: ubuntu
-                    TARGET: "/var/www/html/performance/t5"
+          - uses: actions/checkout@v3
+            with:
+              ref: Main
+          - uses: actions/setup-node@v3
+            with: 
+              node-version: 16
+          - run: npm install
+          - run: npm run build
+          - name: Deploy to Server
+            uses: easingthemes/ssh-deploy@v2.1.1
+            env:
+              SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+              ARGS: "-rltgoDzvO --delete"
+              SOURCE: "dist/"
+              REMOTE_HOST: "perform.eaglesoftwareteam.com"
+              REMOTE_USER: ubuntu
+              TARGET: "/var/www/html/performance/t5"

@@ -30,7 +30,7 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'user-list' }"
-        >{{(isLoggedIn() && userStore.isAdmin )? 'Users' : 'Students'}}</router-link
+        >{{(isLoggedIn() && userStore.isAdmin) ? 'Users' : 'Students'}}</router-link
       >
       <v-spacer></v-spacer>
       <v-menu

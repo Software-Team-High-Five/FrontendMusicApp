@@ -87,18 +87,14 @@
 </template>
 
 <script>
-// import uds from "../src/services/UserDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
-// import { mapStores, mapActions } from "pinia";
 import AuthServices from "@/services/authServices";
-// import Utils from "@/config/utils.js";
 
 export default {
   name: "app",
   data() {
     return {
-      // user: {},
       title: "Music Performance Scheduling App",
       initials: "",
       name: "",
@@ -108,13 +104,9 @@ export default {
     ...mapStores(useUserStore),
   },
   methods: {
-    //...mapActions(useUserStore, ["setUser", "clearUser"]),
 
     resetMenu() {
-      // ensures that their name gets set properly from store
-      // this.user = useUserStore().user;
-
-      if (this.userStore.user != null) {
+       if (this.userStore.user != null) {
         this.initials =
           this.userStore.user.fName[0] + this.userStore.user.lName[0];
         this.name = this.userStore.user.fName + " " + this.userStore.user.lName;
@@ -125,12 +117,8 @@ export default {
       AuthServices.logoutUser(this.userStore.user)
         .then((response) => {
           console.log(response);
-          // Utils.removeItem("user");
-          // this.userStore.clearUser();
-          // this.useUserStore().clearUser();
           this.userStore.clearUser();
           this.$router.push({ name: "login" });
-          // this.$router.go();
         })
         .catch((error) => {
           console.log("error", error);
@@ -142,26 +130,6 @@ export default {
   },
   async created() {
     this.resetMenu();
-  },
-  async mounted() {
-    // this.userStore.clearUser();
-    // // console.log(this.user);
-    // // this.user = useUserStore().user;
-    // await uds
-    //   .getAll()
-    //   .then((res) => {
-    //     this.users = res.data;
-    //     this.user = this.users.find((u) => u.id === 100); //David North Admin
-    //     // this.user = this.users.find(u => u.id === 200); //Kyle Pullen Faculty
-    //     // this.user = this.users.find(u => u.id === 300); //Jess Long Student
-    //     // this.user = this.users.find(u => u.id === 400); //Chloe Sheasby Student & Faculty
-    //     // this.user = this.users.find((u) => u.id === 500); //Miho Fischer Accompanist
-    //     this.userStore.setUser(this.user);
-    //     console.log(this.user);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
   },
 };
 </script>

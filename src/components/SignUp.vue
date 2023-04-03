@@ -42,11 +42,11 @@
                                 </template>
                             </v-calendar>
                         </v-card>
-                        <v-row v-if="!userStore.user.student" :align="'center'" style="padding-top: 15px;">
+                        <v-row v-if="!userStore.isStudent" :align="'center'" style="padding-top: 15px;">
                             <button class="btn btn-dark" @click="facultySubmit">Submit</button>
                         </v-row>
                     </v-col>    
-                    <v-col v-if="userStore.user.student">
+                    <v-col v-if="userStore.isStudent">
                         <br>
                         <v-container>
                             <!-- Add an accompanist to the performance -->

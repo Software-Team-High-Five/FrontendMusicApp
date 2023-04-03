@@ -9,6 +9,9 @@ on:
 jobs:
     aws-deploy:
         runs-on: ubuntu-latest
+        env:
+          VUE_APP_CLIENT_ID: ${{secrets.VUE_APP_CLIENT_ID}}
+          VUE_APP_API_URL: ${{secrets.VUE_APP_API_URL}}
         steps:
             - uses: actions/checkout@v2
               with:

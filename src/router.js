@@ -1,10 +1,13 @@
 /* eslint-disable */
 import Vue from "vue";
 import Router from "vue-router";
+import { pinia } from "@/main";
+import { useUserStore } from "@/stores/userStore";
 Vue.use(Router);
 
 // deploy test #4
-export default new Router({
+// export default new Router({
+const router = new Router({
   base: process.env.NODE_ENV === "development" ? "/" : "/performance/t5",
   mode: "history",
   routes: [
@@ -39,15 +42,51 @@ export default new Router({
       name: "event-details",
       component: () => import("./components/EventDetails"),
     },
+ 
     {
-      path: "/student"
-      ,name: "student-details"
-      ,component: () => import('./components/StudentDetails')
+        path: "/users"
+        ,name: "user-list"
+        ,component: () => import('./components/UserList')
     },
     {
-      path: "/student/:id"
-      ,name: "student-edit"
-      ,component: () => import('./components/StudentEdit')
+      path: "/student",
+      name: "student-details",
+      component: () => import("./components/StudentDetails"),
     },
+    {
+      path: "/student/:id",
+      name: "student-edit",
+      component: () => import("./components/StudentEdit"),
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import("./components/Login"),
+    },
+    {
+      path: "/user"
+      ,name: "user-details"
+      ,component: () => import('./components/UserDetails')
+    },
+    {
+      path: "/user/:id"
+      ,name: "user-edit"
+      ,component: () => import('./components/UserEdit')
+    }
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const userStore = useUserStore(pinia);
+  console.log(userStore);
+  if (userStore.user === null && to.path !== "/login") {
+    return next({
+      path: "/login",
+    });
+  } else {
+    next();
+  }
+});
+
+export default router;

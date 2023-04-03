@@ -16,7 +16,7 @@
                   <v-card-subtitle style="color:#03003f">{{ e.date }}</v-card-subtitle>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" @click="functionName()" :to="{name: 'all-events'}">
+                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'sign-up', params: {eventId: e.id}}">
                         View
                     </v-btn>
                   </v-card-actions>

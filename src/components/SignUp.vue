@@ -242,7 +242,7 @@ export default {
             
             
             // Get user song list
-            if(this.userStore.user.student){
+            if(this.userStore.isStudent){
                 await songDS.getAll()
                     .then(res => {
                         this.allSongs = res.data.filter(song => song.studentId === this.userStore.user.student.id).map(song => {
@@ -272,7 +272,7 @@ export default {
 
 
             // get signup times that have already been taken for students only
-            if(this.userStore.user.student) {
+            if(this.userStore.isStudent) {
                 await PerformanceDS.getTakenTimes(this.$route.params.eventId)
                 .then(res => {
                     res.data.forEach(p => {
@@ -290,12 +290,12 @@ export default {
             }
 
             //get instructor availability
-            if(this.userStore.user.student) {
+            if(this.userStore.isStudent) {
                 this.getEventAvailability(this.userStore.user.student.instructorId);
             }
 
             //set up for edit
-            if(this.$route.query.editing && this.userStore.user.student){
+            if(this.$route.query.editing && this.userStore.isStudent){
                 await PerformanceDS.editPerformance(this.userStore.user.student.id, this.$route.params.eventId)
                 .then(res => {
                     this.accompanist = res.data.accompanist ? res.data.accompanist : 'none';
@@ -341,16 +341,17 @@ export default {
         ,selectTimeSlot({ event: timeSlot }) {
             // allows students to select one time slot
             if(timeSlot.available) {
-                if(this.userStore.user.student) {
+                if(this.userStore.isStudent) {
                     this.selectedTime = timeSlot;
                 // allows for faculty to select multiple time slots
                 } else {
                     timeSlot.available = false;
+                    console.log(timeSlot.name.split(" ").pop())
                     this.selectedTime[timeSlot.name.split(" ").pop()] = timeSlot;
                 }
             // support for removing time slots for faculty
             } else {
-                if(!this.userStore.user.student) {
+                if(!this.userStore.isStudent) {
                     delete this.selectedTime[timeSlot.name.split(" ").pop()];
                     timeSlot.available = true;
                 }
@@ -486,6 +487,7 @@ export default {
                     })
                     .catch((e) =>{console.log('error: ', e || 'unknown')})
             })
+            this.$router.push({ name: 'home-page' });
         }
         ,combineConsecutive() {
             let timeSlots = []
@@ -516,7 +518,7 @@ export default {
     }
     ,mounted() {
         this.initializeData();
-        if(this.userStore.user.student){
+        if(this.userStore.isStudent){
             this.selectedTime = null;
         } else {
             this.selectedTime = {};

@@ -197,14 +197,10 @@ export default {
             var day = 60 * 60 * 24 * 1000;
 
             var yesterdayDate = new Date(todayDate.getTime() - day);
-            console.log('yesterday', yesterdayDate);
-
             var yesterday = yesterdayDate.toISOString().substring(0, 10);
-            console.log('yesterDtat', yesterday);
-
-            this.events.forEach(e => {
-                console.log(e.createdAt);
-            })
+            // this.events.forEach(e => {
+            //     console.log(e.createdAt);
+            // })
 
             return this.events.filter(
                 (e) =>

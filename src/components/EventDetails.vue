@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <v-container class="body-1" v-if="loaded">
     <link
       rel="stylesheet"
       href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css"
     />
-    <br />
+     <br />
     <h2>&nbsp; {{ event.name }} ({{ event.date }})</h2>
     <br />
     <v-row>
-      <v-col class="col-md-3 sticky-top">
+      <v-col class="col-md-3">
         <h3>&nbsp; Performances</h3>
       </v-col>
-      <v-col class="col-md-7 sticky-top" style="margin: 10px; padding: 10px">
+      <v-col class="col-md-7" style="margin: 10px; padding: 10px">
         <div class="input-group mb-3">
           <input
             type="text"
@@ -52,7 +52,7 @@
               <th>Name</th>
               <th>Songs</th>
               <th>Instrument</th>
-              <th>Accompanist</th>
+              <!-- <th>Accompanist</th> -->
               <th>Time</th>
               <th>Level</th>
               <th></th>
@@ -67,8 +67,8 @@
             >
               <td>{{ p.student.user.fName }} {{ p.student.user.lName }}</td>
               <td>{{ songsString(p) }}</td>
-              <td>{{ p.instrument.instrument }}</td>
-              <td>{{ p.accompanist }}</td>
+              <td>{{ instrumentString(p) }}</td>
+              <!-- <td>{{ p.accompanist ?? 'no Accompanist'}}</td> -->
               <td>{{ p.startTime }} - {{ p.endTime }}</td>
               <td>{{ p.student.level }}</td>
               <td>
@@ -87,54 +87,13 @@
       </div>
     </div>
     <br />
-    <div
-      class="col-md-15"
-      style="border-radius: 5px; padding: 10px; margin: 10px"
-      v-show="showAllPerformances"
-    >
-      <div class="card">
-        <table class="table" style="margin-bottom: 0px">
-          <thead style="background-color: #f2f3f4">
-            <tr colspan="6">
-              <th>All Performances</th>
-            </tr>
-            <tr>
-              <th>Name</th>
-              <th>Event</th>
-              <th>Songs</th>
-              <th>Instrument</th>
-              <th>Accompanist</th>
-              <th>Time</th>
-              <th>Level</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              class="table-group-item"
-              v-for="perform in allPerformances"
-              :key="perform.id"
-              @click="performanceDetails(perform)"
-            >
-              <td>
-                {{ perform.student.user.fName }}
-                {{ perform.student.user.lName }}
-              </td>
-              <td>{{ perform.event.name }} ({{ perform.event.date }})</td>
-              <td>{{ songsString(perform) }}</td>
-              <td>{{ perform.instrument.instrument }}</td>
-              <td>{{ perform.accompanist }}</td>
-              <td>{{ perform.startTime }} - {{ perform.endTime }}</td>
-              <td>{{ perform.student.level }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
     <v-dialog
       v-model="showPerformanceDetails"
       :title="user.fName + ' ' + user.lName + '\n (' + event.date + ')'"
       width="70%"
+      v-if="performanceLoaded"
     >
+    <v-card style="padding: 15px;">
       <v-row>
         <v-col><strong>Event</strong></v-col>
         <v-col><strong>Instrument</strong></v-col>
@@ -142,8 +101,8 @@
       </v-row>
       <v-row>
         <v-col>{{ event.name }}</v-col>
-        <v-col>{{ instrument.instrument }}</v-col>
-        <v-col>{{ student.level }}</v-col>
+        <v-col>{{ instrumentString(performance) }}</v-col>
+        <v-col>{{ performance.student.level }}</v-col>
       </v-row>
       <br /><br />
       <v-row
@@ -154,157 +113,180 @@
         <v-col><strong>Translation</strong></v-col>
         <v-col><strong>Composer</strong></v-col>
       </v-row>
-      <v-row v-for="s in songs" :key="s.id">
+      <v-row v-for="s in performance.songs" :key="s.id">
         <v-col>{{ s.title }}</v-col>
         <v-col>{{ s.translation || "No translation available" }}</v-col>
         <v-col>{{ getComposerFullName(s.composer) }}</v-col>
       </v-row>
       <br /><br />
-      <v-row
-        ><h4><strong>Feedback</strong></h4></v-row
-      >
-      <v-row>
-        <v-col class="col-xs"><strong>Judge</strong></v-col>
-      </v-row>
+      <v-container>
+        <v-row>
+            <h4><strong>Feedback</strong></h4>
+        </v-row>
+        <v-row>
+            <v-col class="col-xs"><strong>Judge</strong></v-col>
+        </v-row>
 
-      <v-row v-for="f in performance.feedbacks" :key="f.id + 'f'">
-        <v-col class="col-sm">{{ f.judge.fName }} {{ f.judge.lName }}</v-col>
-        <v-row>
-          <v-col class="col-lg"><strong>Notes</strong></v-col>
+        <v-row v-for="f in performance.feedbacks" :key="f.id + 'f'" v-if="performance.feedbacks.length">
+            <v-col class="col-sm">{{ f.judge.fName }} {{ f.judge.lName }}</v-col>
+            <v-row>
+                <v-col class="col-lg"><strong>Notes</strong></v-col>
+            </v-row>
+            <v-row>
+                <v-textarea
+                    solo
+                    label="Label"
+                    outline="true"
+                    v-model="f.notes"
+                    :disabled="f.judgeId != userStore.user.id"
+                ></v-textarea>
+            </v-row>
         </v-row>
-        <v-row>
-          <v-textarea
-            solo
-            label="Label"
-            outline="true"
-            v-model="f.notes"
-          ></v-textarea>
+        <v-row v-if="!judgeFeedback(performance)">
+            <v-col class="col-xs"><strong>{{ userStore.name }}</strong></v-col>
+            <v-row>
+                <v-col class="col-lg">Notes</v-col>
+            </v-row>
+            <v-row>
+                <v-textarea
+                    solo
+                    outline="true"
+                    v-model="newNotes"
+                ></v-textarea>
+            </v-row>
         </v-row>
-      </v-row>
+      </v-container>
       <br /><br />
       <v-row>
-        <button class="btn btn-dark" @click="saveCritique()">Close</button>
+        <v-col style="display: flex;">
+            <button 
+                class="btn btn-dark" 
+                style="width: 98%"
+                @click="showPerformanceDetails = false"
+            >Close</button>
+        </v-col>
+        <v-col>
+            <button 
+                class="btn btn-primary" 
+                style="width: 98%;" 
+                @click="saveCritique()"
+            >{{ !judgeFeedback(performance) ? 'Add Critique' : 'Save'  }}</button>
+        </v-col>
       </v-row>
+    </v-card>
     </v-dialog>
     <v-dialog title="Filters" v-model="showFilters">
-      <v-card>
-        <label>Select composers</label>
-        <MultiSelect
-          v-model="activeComposers"
-          :options="composers"
-          :multiple="true"
-          :close-on-select="true"
-          :clear-on-select="false"
-          :preserve-search="true"
-          placeholder="Pick one or more"
-        >
-          <template slot="selection" slot-scope="{ composers, isOpen }"
-            ><span
-              class="multiselect__single"
-              v-if="composers"
-              v-show="!isOpen"
-              >{{ activeComposers }}</span
-            ></template
-          >
-        </MultiSelect>
-        <br />
-        <label>Select instruments</label>
-        <MultiSelect
-          v-model="activeInstruments"
-          :options="instruments"
-          :multiple="true"
-          :close-on-select="true"
-          :clear-on-select="false"
-          :preserve-search="true"
-          placeholder="Pick one or more"
-        >
-          <template slot="selection" slot-scope="{ instruments, isOpen }"
-            ><span
-              class="multiselect__single"
-              v-if="instruments"
-              v-show="!isOpen"
-              >{{ activeInstruments }}</span
-            ></template
-          >
-        </MultiSelect>
-        <br />
-        <label>Select accompanists</label>
-        <MultiSelect
-          v-model="activeAccompanists"
-          :options="accompanists"
-          :multiple="true"
-          :close-on-select="true"
-          :clear-on-select="false"
-          :preserve-search="true"
-          placeholder="Pick one or more"
-        >
-          <template slot="selection" slot-scope="{ accompanists, isOpen }"
-            ><span
-              class="multiselect__single"
-              v-if="accompanists"
-              v-show="!isOpen"
-              >{{ activeAccompanists }}</span
-            ></template
-          >
-        </MultiSelect>
-        <br />
-        <label>Level</label>
-        <MultiSelect
-          v-model="activeLevels"
-          :options="levels"
-          :multiple="true"
-          :close-on-select="true"
-          :clear-on-select="false"
-          :preserve-search="true"
-          placeholder="select one or more"
-        >
-          <template slot="selection" slot-scope="{ levels, isOpen }"
-            ><span class="multiselect__single" v-if="levels" v-show="!isOpen">{{
-              activeLevels
-            }}</span></template
-          >
-        </MultiSelect>
-        <br />
-        <v-row class="col-md-15">
-          <v-col>
-            <v-checkbox
-              v-model="showAllPerformances"
-              label="Show All Performances"
-              hide-details
-            ></v-checkbox>
-          </v-col>
-        </v-row>
-        <br />
-        <v-row>
-          <v-col>
-            <button
-              class="btn btn-danger"
-              style="width: 100%"
-              @click="clearFilters()"
+        <v-container>
+        <v-card style="padding: 15px;">
+            <label>Select composers</label>
+            <MultiSelect
+            v-model="activeComposers"
+            :options="composers"
+            :multiple="true"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Pick one or more"
             >
-              Clear Filters
-            </button>
-          </v-col>
-          <v-col>
-            <button
-              class="btn btn-dark"
-              style="width: 100%"
-              @click="showFilters = false"
+            <template slot="selection" slot-scope="{ composers, isOpen }"
+                ><span
+                class="multiselect__single"
+                v-if="composers"
+                v-show="!isOpen"
+                >{{ activeComposers }}</span
+                ></template
             >
-              Apply
-            </button>
-          </v-col>
-        </v-row>
-      </v-card> 
+            </MultiSelect>
+            <br />
+            <label>Select instruments</label>
+            <MultiSelect
+            v-model="activeInstruments"
+            :options="instruments"
+            :multiple="true"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Pick one or more"
+            >
+            <template slot="selection" slot-scope="{ instruments, isOpen }"
+                ><span
+                class="multiselect__single"
+                v-if="instruments"
+                v-show="!isOpen"
+                >{{ activeInstruments }}</span
+                ></template
+            >
+            </MultiSelect>
+            <br />
+            <label>Select accompanists</label>
+            <MultiSelect
+            v-model="activeAccompanists"
+            :options="accompanists"
+            :multiple="true"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Pick one or more"
+            >
+            <template slot="selection" slot-scope="{ accompanists, isOpen }"
+                ><span
+                class="multiselect__single"
+                v-if="accompanists"
+                v-show="!isOpen"
+                >{{ activeAccompanists }}</span
+                ></template
+            >
+            </MultiSelect>
+            <br />
+            <label>Level</label>
+            <MultiSelect
+            v-model="activeLevels"
+            :options="levels"
+            :multiple="true"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="select one or more"
+            >
+            <template slot="selection" slot-scope="{ levels, isOpen }"
+                ><span class="multiselect__single" v-if="levels" v-show="!isOpen">{{
+                activeLevels
+                }}</span></template
+            >
+            </MultiSelect>
+            <br />
+            <br />
+            <v-row>
+            <v-col>
+                <button
+                class="btn btn-danger"
+                style="width: 100%"
+                @click="clearFilters()"
+                >
+                Clear Filters
+                </button>
+            </v-col>
+            <v-col>
+                <button
+                class="btn btn-dark"
+                style="width: 100%"
+                @click="showFilters = false"
+                >
+                Apply
+                </button>
+            </v-col>
+            </v-row>
+        </v-card> 
+    </v-container>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
 import eds from "../services/EventDataService";
-import pds from "../services/PerformanceDataService";
+// import pds from "../services/PerformanceDataService";
 import feedbackDataService from "../services/FeebackDataService";
 import MultiSelect from "vue-multiselect";
 
@@ -331,7 +313,10 @@ export default {
       activeInstruments: [],
       activeAccompanists: [],
       activeLevels: [],
-      showAllPerformances: false,
+      showMyStudents: false,
+      loaded: false,
+      performanceLoaded: false,
+      newNotes: ''
     };
   },
   components: {
@@ -340,6 +325,7 @@ export default {
   computed: {
     ...mapStores(useUserStore),
     filteredPerformances() {
+        console.log(this.event.performances);
       if (this.searchString == "") {
         if (
           !this.activeAccompanists.length &&
@@ -358,7 +344,7 @@ export default {
                 this.getComposerFullName(s.composer)
               );
             }) ||
-            this.activeLevels.includes(p.student.level)
+            this.activeLevels.includes(p.student.level) 
         );
       } else {
         const ss = this.searchString.toLowerCase();
@@ -382,23 +368,27 @@ export default {
     },
   },
   methods: {
-    async getEventDetails() {
-      await eds
-        .get(this.$route.params.eventId)
-        .then((res) => {
-          this.event = { ...res.data };
-          this.event.performances.forEach((p) => this.students.push(p.student));
-          this.setFilters();
-        })
-        .catch((e) => console.log(e));
+    async fetch() {
+        let eventPromise = eds.get(this.$route.params.eventId)
+            .then((res) => {
+                this.event = { ...res.data };
+                this.event.performances.forEach((p) => this.students.push(p.student));
+                this.setFilters();
+            })
+        Promise.all([eventPromise])
+            .then(() => {
+                this.loaded = true;
+            })
+            .catch((e) => console.log(error));
     },
     performanceDetails(p) {
       this.performance = p;
-      this.student = p.student;
-      this.user = p.student.user;
-      this.songs = p.songs;
-      this.instrument = p.instrument;
       this.showPerformanceDetails = true;
+      this.performanceLoaded = true;
+    },
+    instrumentString(performance) {
+        const insId = performance.instrumentId;
+        return performance.student.user.instruments.filter((i) => (i.id == insId))[0].instrument;
     },
     songsString(performance) {
       var songs = "";
@@ -425,8 +415,9 @@ export default {
       );
       this.composers = Array.from(c);
       var i = new Set();
-      this.event.performances.forEach((p) => i.add(p.instrument.instrument));
+      this.event.performances.forEach((p) => i.add(p.instrumentId));
       this.instruments = Array.from(i);
+      console.log(this.instruments);
     },
     clearFilters() {
       this.activeAccompanists = [];
@@ -436,14 +427,24 @@ export default {
       this.showFilters = false;
     },
     saveCritique() {
-      //   pds
-      //     .update({this.event.performance.id, this.event.performance})
-      //     .then((res) => {
-      //       console.log(res.data);
-      //     })
-      //     .catch((e) => {
-      //       console.log(e);
-      //     });
+        if(this.newNotes.length){
+            const newCritique = {
+                notes: this.newNotes
+                ,performanceId: this.performance.id
+                ,judge: this.userStore.user.id
+                ,userId: this.performance.student.id
+            }
+            feedbackDataService.create(newCritique) 
+                .then((res) => {
+                    console.log('new critique successfully made', res.data);
+                    this.showPerformanceDetails = false;
+                    this.performanceLoaded = false;
+                })
+                .catch((err) => {
+                    console.log(err || 'unknown error creating feedback')
+                })
+                return
+        }
       for (let i = 0; i < this.performance.feedbacks.length; i++) {
         let tempCritique = {
           id: this.performance.feedbacks[i].id,
@@ -462,28 +463,31 @@ export default {
           });
       }
       this.showPerformanceDetails = false;
+      this.performanceLoaded = false;
     },
     getComposerFullName(c) {
       return c.fName + " " + c.mName + " " + c.lName;
     },
-    async getAllPerformances() {
-      if (this.userStore.user.role == "student") {
-        await pds
-          .getAllForStudent()
-          .then((res) => {
-            res.data.forEach((p) => this.allPerformances.push(p));
-          })
-          .catch((e) => console.log(e));
-      } else {
-        await pds.getAllForInstructor().then((res) => {
-          res.data.forEach((p) => this.allPerformances.push(p));
-        });
-      }
+        // async getAllPerformances() {
+        //   if (this.userStore.user.role == "student") {
+        //     await pds
+        //       .getAllForStudent()
+        //       .then((res) => {
+        //         res.data.forEach((p) => this.allPerformances.push(p));
+        //       })
+        //       .catch((e) => console.log(e));
+        //   } else {
+        //     await pds.getAllForInstructor().then((res) => {
+        //       res.data.forEach((p) => this.allPerformances.push(p));
+        //     });
+        //   }
+        // },
+    judgeFeedback(performance) {
+        return performance.feedbacks.find((f) => f.judgeId == this.userStore.user.id) ? true : false
     },
   },
   mounted() {
-    this.getEventDetails();
-    this.getAllPerformances();
+    this.fetch();
   },
 };
 </script>

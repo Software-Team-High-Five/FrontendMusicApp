@@ -41,7 +41,7 @@
         </v-col>
         <v-col  v-show="userStore.isAdmin">
           <v-card class="card-button align-center" max-width="500">
-            <v-card-title class="text-h5 font-weight-medium" style="color:#03003f">Create a new event-details</v-card-title>
+            <v-card-title class="text-h5 font-weight-medium" style="color:#03003f">Create a new event</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'new-event'}">

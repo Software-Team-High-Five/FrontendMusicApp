@@ -255,15 +255,6 @@
             >
             </MultiSelect>
             <br />
-            <!-- <v-row class="col-md-15">
-            <v-col>
-                <v-checkbox
-                v-model="showMyStudents"
-                label="Show My Studnets Only"
-                hide-details
-                ></v-checkbox>
-            </v-col>
-            </v-row> -->
             <br />
             <v-row>
             <v-col>
@@ -447,6 +438,7 @@ export default {
                 .then((res) => {
                     console.log('new critique successfully made', res.data);
                     this.showPerformanceDetails = false;
+                    this.performanceLoaded = false;
                 })
                 .catch((err) => {
                     console.log(err || 'unknown error creating feedback')
@@ -471,6 +463,7 @@ export default {
           });
       }
       this.showPerformanceDetails = false;
+      this.performanceLoaded = false;
     },
     getComposerFullName(c) {
       return c.fName + " " + c.mName + " " + c.lName;

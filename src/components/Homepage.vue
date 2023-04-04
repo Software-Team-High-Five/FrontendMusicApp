@@ -198,9 +198,9 @@ export default {
 
             var yesterdayDate = new Date(todayDate.getTime() - day);
             var yesterday = yesterdayDate.toISOString().substring(0, 10);
-            this.events.forEach(e => {
-                console.log(e.createdAt);
-            })
+            // this.events.forEach(e => {
+            //     console.log(e.createdAt);
+            // })
 
             return this.events.filter(
                 (e) =>

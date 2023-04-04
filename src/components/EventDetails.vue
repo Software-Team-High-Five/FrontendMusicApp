@@ -431,7 +431,7 @@ export default {
             const newCritique = {
                 notes: this.newNotes
                 ,performanceId: this.performance.id
-                ,judge: this.userStore.user.id
+                ,judgeId: this.userStore.user.id
                 ,userId: this.performance.student.id
             }
             feedbackDataService.create(newCritique) 

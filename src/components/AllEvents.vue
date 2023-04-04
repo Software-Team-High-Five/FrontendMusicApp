@@ -303,9 +303,10 @@ export default {
                     res.data.forEach(e => {
                         this.events.push(e);
                     });
+                    console.log(this.events);
                 })
                 .catch(e => console.log(e));
-            if(this.userStore.user.role == 'student'){
+            if(this.userStore.isStudent){
                await pds.getAllForStudent(this.userStore.user.id)
                 .then(res => {
                     res.data.forEach(p => {
@@ -367,36 +368,37 @@ export default {
     computed: {
         ...mapStores(useUserStore),
         myPastEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date < this.today &&
-            this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
-        );
+            return this.events.filter(
+                (e) =>
+                e.date < this.today &&
+                this.userPerformances.find((p) => p.eventId == e.id) &&
+                this.generalFilter(e)
+            );
         },
         upcomingEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date > this.today &&
-            !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)            
-        );
+            return this.events.filter(
+                (e) =>
+                e.date > this.today &&
+                !this.userPerformances.find((p) => p.eventId == e.id) && 
+                !e.availabilities.find(a => a.userId == this.userStore.user.id) && 
+                this.generalFilter(e)            
+            );
         },
         registeredEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date > this.today &&
-            this.generalFilter(e) &&
-            this.userPerformances.find((p) => p.eventId == e.id)
-        );
+            return this.events.filter(
+                (e) =>
+                e.date > this.today &&
+                this.generalFilter(e) &&
+                (this.userPerformances.find((p) => p.eventId == e.id) || (e.availabilities.find(a => a.userId == this.userStore.user.id)))
+            );
         },
         todaysEvents() {
-        return this.events.filter(
-            (e) =>
-            e.date == this.today &&
-            !this.userPerformances.find((p) => p.eventId == e.id) &&
-            this.generalFilter(e)
-        );
+            return this.events.filter(
+                (e) =>
+                e.date == this.today &&
+                !this.userPerformances.find((p) => p.eventId == e.id) &&
+                this.generalFilter(e)
+            );
         },
     },
     mounted() {

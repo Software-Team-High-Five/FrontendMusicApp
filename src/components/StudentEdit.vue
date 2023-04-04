@@ -2,7 +2,7 @@
     <v-container class="body-1" v-if="loaded">
         <!-- Name -->
         <v-row>
-            <v-col class="text-right py-0" cols="4">
+            <v-col class="text-left py-0" cols="4">
                 <strong>Name</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -11,7 +11,7 @@
         </v-row>
         <!-- Email -->
         <v-row>
-            <v-col class="text-right py-0" cols="4">
+            <v-col class="text-left py-0" cols="4">
                 <strong>Email</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -21,7 +21,7 @@
         <v-row><v-col></v-col></v-row>
         <!-- Major -->
         <v-row>
-            <v-col class="text-right py-0" align-self="center" cols="4">
+            <v-col class="text-left py-0" align-self="center" cols="4">
                 <strong>Major</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -33,7 +33,7 @@
         </v-row>
         <!-- Classification -->
         <v-row>
-            <v-col class="text-right py-0" align-self="center" cols="4">
+            <v-col class="text-left py-0" align-self="center" cols="4">
                 <strong>Classification</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -45,7 +45,7 @@
         </v-row>
         <!-- Semester -->
         <v-row>
-            <v-col class="text-right py-0" align-self="center" cols="4">
+            <v-col class="text-left py-0" align-self="center" cols="4">
                 <strong>Semester</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -57,7 +57,7 @@
         </v-row>
         <!-- Level -->
         <v-row>
-            <v-col class="text-right py-0" align-self="center" cols="4">
+            <v-col class="text-left py-0" align-self="center" cols="4">
                 <strong>Level</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -69,7 +69,7 @@
         </v-row>
         <!-- Instructor -->
         <v-row>
-            <v-col class="text-right py-0" align-self="center" cols="4">
+            <v-col class="text-left py-0" align-self="center" cols="4">
                 <strong>Instructor</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -84,7 +84,7 @@
         </v-row>
         <!-- Instruments -->
         <v-row>
-            <v-col class="text-right py-0" align-self="center" cols="4">
+            <v-col class="text-left py-0" align-self="center" cols="4">
                 <strong>Instruments</strong>
             </v-col>
             <v-col class="py-0" cols="8">
@@ -168,7 +168,7 @@ export default {
             // Refresh the cached list of instruments
             this.student.prevInstruments = this.student.instrumentIds;
 
-            // await this.$router.push({name: 'student-details'})
+            if(this.userStore.isFaculty || this.userStore.isAdmin) await this.$router.push({name: 'user-list'})
         }
     }
     ,async mounted() {

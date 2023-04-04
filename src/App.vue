@@ -1,5 +1,3 @@
-
-
 <template>
   <v-app>
     <v-app-bar flat app color="cyan lighten-5">
@@ -19,7 +17,7 @@
       >
 
       <router-link
-        v-if="isLoggedIn()"  
+        v-if="isLoggedIn()"
         v-show="userStore.isAdmin"
         style="text-decoration: none; color: inherit"
         class="mr-5"
@@ -28,32 +26,30 @@
       >
       <router-link
         v-if="isLoggedIn()"
-        v-show="(userStore.isAdmin || userStore.isFaculty)"
+        v-show="userStore.isAdmin || userStore.isFaculty"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'user-list' }"
-        >{{(isLoggedIn() && userStore.isAdmin) ? 'Users' : 'Students'}}</router-link
+        >{{
+          isLoggedIn() && userStore.isAdmin ? "Users" : "Students"
+        }}</router-link
       >
       <v-spacer></v-spacer>
-      <v-menu
-        v-if="isLoggedIn()"
-        bottom
-        min-width="200px"
-        rounded
-        offset-y
-      >
+      <v-menu v-if="isLoggedIn()" bottom min-width="275px" rounded offset-y>
         <template #activator="{ on, attrs }">
           <v-btn icon x-large v-bind="attrs" v-on="on">
-            <v-avatar v-if="isLoggedIn()" color="secondary">
-              <span class="accent--text font-weight-bold">{{ initials }}</span>
+            <v-avatar v-if="isLoggedIn()" color="#03003f">
+              <span class="font-weight-bold" style="color: #ffffff">{{
+                initials
+              }}</span>
             </v-avatar>
           </v-btn>
         </template>
         <v-card>
           <v-list-item-content class="justify-center">
             <div class="mx-auto text-center">
-              <v-avatar color="secondary" class="mt-2 mb-2">
-                <span class="accent--text font-weight-bold">
+              <v-avatar color="#03003f" class="mt-2 mb-2">
+                <span class="font-weight-bold" style="color: #ffffff">
                   {{ initials }}
                 </span>
               </v-avatar>
@@ -67,9 +63,9 @@
                 rounded
                 text
                 @click="
-                  userStore.isStudent ?
-                    $router.push({ name: 'student-details' }) :
-                    $router.push({ name: 'user-details' });
+                  userStore.isStudent
+                    ? $router.push({ name: 'student-details' })
+                    : $router.push({ name: 'user-details' })
                 "
               >
                 My Details
@@ -106,9 +102,8 @@ export default {
     ...mapStores(useUserStore),
   },
   methods: {
-
     resetMenu() {
-       if (this.userStore.user != null) {
+      if (this.userStore.user != null) {
         this.initials =
           this.userStore.user.fName[0] + this.userStore.user.lName[0];
         this.name = this.userStore.user.fName + " " + this.userStore.user.lName;
@@ -128,7 +123,7 @@ export default {
     },
     isLoggedIn() {
       return this.userStore.user ? true : false;
-    }
+    },
   },
   async created() {
     this.resetMenu();

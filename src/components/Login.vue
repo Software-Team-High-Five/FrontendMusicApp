@@ -1,10 +1,23 @@
 <template>
+  <!-- <div
+    class="signup-buttons"
+    style="
+      background-image: url('https://www.oc.edu/uploads/images/_1366xAUTO_crop_center-center_none/Bass-orchestra.jpg');
+      background-image: url('https://www.oc.edu/uploads/images/_1366x1024_crop_center-center_none/band_20190415_0029.jpg');
+      background-image: url('https://www.oc.edu/uploads/images/_1900x1425_crop_center-center_none/1-Cover-Photo_-Chorale-Fall-Grand-Concert-30.jpg');
+      https://www.oc.edu/uploads/images/_1900x1425_crop_center-center_none/1-Cover-Photo_-Chorale-Fall-Grand-Concert-30.jpg
+      height: 100vh;
+    "
+  > -->
   <div class="signup-buttons">
     <br /><br />
-    <h1 class="text-uppercase grey-text text-center font-weight-medium">
-      Music Performance System
+    <h1
+      class="white-text text-center font-weight-medium"
+      style="color: #03003f"
+    >
+      Welcome to the OC Music Performance System!
     </h1>
-    <h3 class="text-uppercase grey-text text-center font-weight-light">
+    <h3 class="white-text text-center font-weight-light" style="color: #03003f">
       Please Sign In to Continue
     </h3>
 

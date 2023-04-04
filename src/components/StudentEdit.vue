@@ -168,7 +168,7 @@ export default {
             // Refresh the cached list of instruments
             this.student.prevInstruments = this.student.instrumentIds;
 
-            // await this.$router.push({name: 'student-details'})
+            if(this.userStore.isFaculty || this.userStore.isAdmin) await this.$router.push({name: 'user-list'})
         }
     }
     ,async mounted() {

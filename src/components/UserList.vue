@@ -1,66 +1,64 @@
 <template>
     <div>
-        <h1 class="mt-15 ml-16 text-blue" style="color:#03003f" v-show="userStore.isFaculty">Students</h1>
-        <h1 class="mt-15 ml-16 text-blue" style="color:#03003f" v-show="userStore.isAdmin">Users</h1>
-        <br>
-
-        <div v-show="userStore.isAdmin">
-            
-        <v-card>
-            <v-card-title>
-                <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-                ></v-text-field>
-            </v-card-title>
-            <v-data-table
-            :headers="userHeaders"
-            :items="users"
-            :search="search"
-            :hide-defaut-footer="true"
-            disable-pagination
-            class="elevation-1"
-            >
-            <template v-slot:[`item.actions`]="{item}">
-                <v-btn icon small class="mr-2" :to="{name: 'user-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
-            </template>
-        </v-data-table>
-        </v-card>
-        
-
-        </div>
-    
-        <div v-show="userStore.isFaculty">
+        <v-container>
+            <h1 class="mt-15 text-blue" style="color:#03003f" v-show="userStore.isFaculty">Students</h1>
+            <h1 class="mt-15 text-blue" style="color:#03003f" v-show="userStore.isAdmin">Users</h1>
+            <br>
+            <div v-show="userStore.isAdmin">
             
             <v-card>
-            <v-card-title>
-                <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-                ></v-text-field>
-            </v-card-title>
-            <v-data-table
-            :headers="studentHeaders"
-            :items="students"
-            :search="search"
-            :hide-defaut-footer="true"
-            disable-pagination
-            class="elevation-1"
-            >
+                <v-card-title>
+                    <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                    ></v-text-field>
+                </v-card-title>
+                <v-data-table
+                :headers="userHeaders"
+                :items="users"
+                :search="search"
+                :hide-defaut-footer="true"
+                disable-pagination
+                class="elevation-1"
+                >
                 <template v-slot:[`item.actions`]="{item}">
-                    <v-btn icon small class="mr-2" :to="{name: 'student-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
+                    <v-btn icon small class="mr-2" :to="{name: 'user-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
                 </template>
             </v-data-table>
-        </v-card>
-
-        </div>
-        
+            </v-card>
+            
+            </div>
+            <div v-show="userStore.isFaculty">
+            
+                <v-card>
+                <v-card-title>
+                    <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                    ></v-text-field>
+                </v-card-title>
+                <v-data-table
+                :headers="studentHeaders"
+                :items="students"
+                :search="search"
+                :hide-defaut-footer="true"
+                disable-pagination
+                class="elevation-1"
+                >
+                    <template v-slot:[`item.actions`]="{item}">
+                        <v-btn icon small class="mr-2" :to="{name: 'student-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
+                    </template>
+                </v-data-table>
+            </v-card>
+            </div>
+            
+        </v-container>
     </div>
 </template>
 <script>

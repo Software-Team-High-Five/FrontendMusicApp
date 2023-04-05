@@ -3,27 +3,25 @@
     <v-container>
       <h1 class="mt-15 mb-4" style="color:#03003f">Create a New Performance</h1>
 
-      <br /><br /><br />
-    <!-- <h3 style="text-align: left">Create a New Performance</h3> -->
-    <v-col class="col-md">
-      <v-card style="padding: 5px">
-        <br />
-        <v-col>
-          <v-select
-            label="Select a performance type"
-            :items="eventType"
-            v-model="event.type"
-          ></v-select>
-        </v-col>
-        <div v-show="event.type">
-          <v-col>
+      <br /><!--<br /><br />-->
+      <v-col class="col-md">
+        <v-card style="padding: 20px">
+          <!-- <br /> -->
+          <v-row>
+              <v-select
+                label="Select a performance type"
+                :items="eventType"
+                v-model="event.type"
+              ></v-select>
+          </v-row>
+          <div v-show="event.type">
+            <!-- Event Name -->
             <v-row>
-              <v-text-field v-model="event.name" label="Name"></v-text-field>
+                <v-text-field v-model="event.name" label="Name"></v-text-field>
             </v-row>
-          </v-col>
-          <!-- date picker -->
-          <div>
-            <v-col>
+
+            <!-- Event Date -->
+            <v-row>
               <v-menu
                 ref="dateMenu"
                 v-model="dateMenu"
@@ -38,7 +36,8 @@
                   <v-text-field
                     v-model="event.date"
                     label="Date"
-                    persistent-hint
+                    readonly
+                    dense
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -49,69 +48,67 @@
                   :allowed-dates="disablePastDates"
                 ></v-date-picker>
               </v-menu>
-            </v-col>
-          </div>
-          <br />
-
-          <v-col>
-            <v-row>
-                <v-col
-                    cols="11"
-                    sm="5"
-                    style="width: 50%; justify-content: center">
-                    <label for="startTime">Start Time: &nbsp;</label>
-                    <input type="time" id="startTime" v-model="event.startTime" />
-                    <br>
-                </v-col>
-                <v-col
-                    cols="11"
-                    sm="5"
-                    style="width: 50%; justify-content: center">
-                    <label for="startTime">End Time: &nbsp;</label>
-                    <input type="time" id="startTime" v-model="event.endTime" />
-                    <br>
-                </v-col>
             </v-row>
-          </v-col>
-          <v-row>
-            <v-col>
-              <v-row>
-                &nbsp;
-                <v-col>
-                  <v-checkbox
-                    v-model="event.openForSignup"
-                    label="Open For Signup"
-                    hide-details
-                  ></v-checkbox>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col></v-col>
-            <v-col></v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <button
-                class="btn btn-danger"
-                @click="clearEvent()"
-                style="width: 100%; padding-left: 10px; margin-left: 10px"
-              >
-                Cancel
-              </button>
-            </v-col>
-            <v-col>
-              <button
-                class="btn btn-success"
-                @click="createEvent()"
-                style="width: 100%; padding-right: 10px; margin-right: 10px"
-              >
-                Create Event
-              </button>
-            </v-col>
-          </v-row>
-        </div>
-      </v-card>
-    </v-col>
+
+            <!-- Time Pickers -->
+            <v-row justify="center">
+              <!-- Start Time -->
+              <v-col
+                cols="11"
+                sm="5"
+                style="width: 50%; justify-content: center"
+                >
+                  <label for="startTime">Start Time: &nbsp;</label>
+                  <input type="time" id="startTime" v-model="event.startTime" />
+              </v-col>
+              <!-- End Time -->
+              <v-col
+                cols="11"
+                sm="5"
+                style="width: 50%; justify-content: center"
+                >
+                  <label for="endTime">End Time: &nbsp;</label>
+                  <input type="time" id="endTime" v-model="event.endTime" />
+              </v-col>
+            </v-row>
+
+            <!-- Open for Signup -->
+            <v-row>
+              <v-col>
+                <v-checkbox
+                  v-model="event.openForSignup"
+                  label="Open For Signup"
+                  hide-details
+                ></v-checkbox>
+              </v-col>
+            </v-row>
+
+            <!-- Action Buttons -->
+            <v-row>
+              <!-- Cancel Button -->
+              <v-col>
+                <button
+                  class="btn btn-danger"
+                  @click="clearEvent()"
+                  style="width: 100%; padding-left: 10px; margin-left: 10px"
+                >
+                  Cancel
+                </button>
+              </v-col>
+              <!-- Create Button -->
+              <v-col>
+                <button
+                  class="btn btn-success"
+                  @click="createEvent()"
+                  style="width: 100%; padding-right: 10px; margin-right: 10px"
+                >
+                  Create Event
+                </button>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card>
+      </v-col>
     </v-container>
   </div>
 </template>

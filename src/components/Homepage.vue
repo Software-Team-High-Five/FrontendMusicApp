@@ -1,29 +1,24 @@
 <template>
   <div>
     <v-container>
-      <div v-if="recentlyAddedEvents.length">
+      <!-- <div v-if="recentlyAddedEvents.length"> -->
           <h1 class="mt-15 mb-4" style="color:#03003f">Notifications</h1>
           
           <v-slide-group show-arrows class="ml-n4">
-            <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative"
-                v-for="e in recentlyAddedEvents"
-                :key="e.id"
-                @click="signUp(e.id)"
-                v-show="recentlyAddedEvents.length"
-              >
+            <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
                 <v-card max-width="500">
-                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">{{ e.name }}</v-card-title>
-                  <v-card-subtitle style="color:#03003f">{{ e.date }}</v-card-subtitle>
+                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Name of Notification</v-card-title>
+                  <v-card-subtitle style="color:#03003f">Date of thing</v-card-subtitle>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'sign-up', params: {eventId: e.id}}">
-                        View
+                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
+                        Action
                     </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-slide-item>
           </v-slide-group>
-      </div>
+      <!-- </div> -->
 
     <h1 class="mt-15 mb-4" style="color:#03003f">Options</h1>
       <v-row class="align-center">

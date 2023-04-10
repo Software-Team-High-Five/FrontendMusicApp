@@ -13,7 +13,7 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'all-events' }"
-        >All Events</router-link
+        ><v-btn>All Events</v-btn></router-link
       >
 
       <router-link
@@ -22,7 +22,7 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'new-event' }"
-        >New Event</router-link
+        ><v-btn>New Event</v-btn></router-link
       >
       <router-link
         v-if="isLoggedIn()"
@@ -30,11 +30,11 @@
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'user-list' }"
-        >{{
-          isLoggedIn() && userStore.isAdmin ? "Users" : "Students"
-        }}</router-link
+        ><v-btn>
+          {{ isLoggedIn() && userStore.isAdmin ? "Users" : "Students" }}
+        </v-btn></router-link
       >
-      <v-spacer></v-spacer>
+      <!-- <v-spacer></v-spacer> -->
       <v-menu v-if="isLoggedIn()" bottom min-width="275px" rounded offset-y>
         <template #activator="{ on, attrs }">
           <v-btn icon x-large v-bind="attrs" v-on="on">

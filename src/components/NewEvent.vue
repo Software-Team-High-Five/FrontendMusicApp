@@ -1,23 +1,25 @@
 <template>
   <div>
     <v-container>
-      <h1 class="mt-15 mb-4" style="color:#03003f">Create a New Performance</h1>
+      <h1 class="mt-15 mb-4" style="color: #03003f">
+        Create a New Performance
+      </h1>
 
       <br /><!--<br /><br />-->
       <v-col class="col-md">
         <v-card style="padding: 20px">
           <!-- <br /> -->
           <v-row>
-              <v-select
-                label="Select a performance type"
-                :items="eventType"
-                v-model="event.type"
-              ></v-select>
+            <v-select
+              label="Select a performance type"
+              :items="eventType"
+              v-model="event.type"
+            ></v-select>
           </v-row>
           <div v-show="event.type">
             <!-- Event Name -->
             <v-row>
-                <v-text-field v-model="event.name" label="Name"></v-text-field>
+              <v-text-field v-model="event.name" label="Name"></v-text-field>
             </v-row>
 
             <!-- Event Date -->
@@ -57,18 +59,18 @@
                 cols="11"
                 sm="5"
                 style="width: 50%; justify-content: center"
-                >
-                  <label for="startTime">Start Time: &nbsp;</label>
-                  <input type="time" id="startTime" v-model="event.startTime" />
+              >
+                <label for="startTime">Start Time: &nbsp;</label>
+                <input type="time" id="startTime" v-model="event.startTime" />
               </v-col>
               <!-- End Time -->
               <v-col
                 cols="11"
                 sm="5"
                 style="width: 50%; justify-content: center"
-                >
-                  <label for="endTime">End Time: &nbsp;</label>
-                  <input type="time" id="endTime" v-model="event.endTime" />
+              >
+                <label for="endTime">End Time: &nbsp;</label>
+                <input type="time" id="endTime" v-model="event.endTime" />
               </v-col>
             </v-row>
 
@@ -110,6 +112,16 @@
         </v-card>
       </v-col>
     </v-container>
+    <!-- Snack Bar -->
+    <v-snackbar v-model="snackbar" :timeout="timeout" color="red accent-2">
+      {{ this.text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar = false">
+          <strong>Close</strong>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -135,6 +147,9 @@ export default {
       dateMenu: 0,
       timeMenu1: 0,
       timeMenu2: 0,
+      snackbar: false,
+      text: "Please fill out all fields",
+      timeout: 8000,
     };
   },
   methods: {
@@ -143,10 +158,11 @@ export default {
     },
     createEvent() {
       if (this.eventIncomplete()) {
+        this.snackbar = true;
         return false;
       }
-      this.event.startTime += ':00';
-      this.event.endTime += ':00';
+      this.event.startTime += ":00";
+      this.event.endTime += ":00";
       eds
         .create({ ...this.event })
         .then((res) => {
@@ -172,7 +188,9 @@ export default {
       this.timeMenu2 = 0;
     },
     eventIncomplete() {
-      return !!Object.values(this.event).find((e) => !e);
+      let incomplete = Object.values(this.event).some((e) => e !== 0 && !e);
+      console.log(incomplete);
+      return incomplete;
     },
   },
   computed: { ...mapStores(useUserStore) },

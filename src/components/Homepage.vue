@@ -6,59 +6,73 @@
           
           <v-slide-group show-arrows class="ml-n4">
             <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
-                <v-card max-width="500">
-                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Name of Notification</v-card-title>
-                  <v-card-subtitle style="color:#03003f">Date of thing</v-card-subtitle>
+                <v-card max-width="350">
+                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">New Event Posted: <br>Recital Hearing</v-card-title>
+                  <v-card-subtitle style="color:#03003f">Wednesday 4/19/2023</v-card-subtitle>
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
-                        Action
+                      Mark Availability
                     </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-slide-item>
+              <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
+                <v-card max-width="350">
+                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Review Composer <br>Submissions</v-card-title>
+                  <v-card-subtitle style="color:#03003f">Friday 4/21/2023</v-card-subtitle>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
+                        Review
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-slide-item>
+
           </v-slide-group>
       <!-- </div> -->
 
-    <h1 class="mt-15 mb-4" style="color:#03003f">Options</h1>
-      <v-row class="align-center">
-        <v-col>
-
-          <v-card class="card-button align-center" max-width="500">
-            <v-card-title class="text-h5 font-weight-medium" style="color:#03003f">View all events</v-card-title>
+    <h1 class="mt-15 mb-4" style="color:#03003f">Actions</h1>
+    <v-slide-group show-arrows class="ml-n4">
+      <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
+        <v-card max-width="350">
+          <v-card-title  class="text-h4 font-weight-medium" style="color:#03003f">View all Events</v-card-title>
+            <v-card-subtitle style="color:#03003f">View all Registered, Unregistered, and Past Events.</v-card-subtitle>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
                 Events                               
-                          </v-btn>
+              </v-btn>
             </v-card-actions>
-          </v-card>
-        </v-col>
-        <v-col  v-show="userStore.isAdmin">
-          <v-card class="card-button align-center" max-width="500">
-            <v-card-title class="text-h5 font-weight-medium" style="color:#03003f">Create a new event</v-card-title>
+        </v-card>
+      </v-slide-item>
+      <v-slide-item v-show="userStore.isAdmin" class="card-button align-center ml-4 mr-4" style="position:relative">
+        <v-card max-width="350">
+          <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Create a New Event</v-card-title>
+            <v-card-subtitle style="color:#03003f">Select a time and date for a new Recital Hearing, Jury, or Audition.</v-card-subtitle>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'new-event'}">
-                Create                               
-                          </v-btn>
+
+              <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
+                New Event                                
+              </v-btn>
             </v-card-actions>
-          </v-card>
-        </v-col>
-        <v-col >
-          <v-card class="card-button align-center" max-width="500">
-            <v-card-title class="text-h5 font-weight-medium" style="color:#03003f">Sign up for an event</v-card-title>
+        </v-card>
+      </v-slide-item>
+      <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
+        <v-card max-width="350">
+          <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Manage Users</v-card-title>
+            <v-card-subtitle style="color:#03003f">Manage any faculty, student, or accompanist information.</v-card-subtitle>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="#03003f" elevation="5" style="color:#ffffff"                 
-              :to="{name: 'all-events', query: {'upcoming': 1}}"
-              >
-                Sign Up                               
-                          </v-btn>
+              <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
+                Users                               
+              </v-btn>
             </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
+        </v-card>
+      </v-slide-item>
+    </v-slide-group>
     </v-container>
   </div>
 </template>

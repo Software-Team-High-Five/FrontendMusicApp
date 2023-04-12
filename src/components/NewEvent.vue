@@ -19,9 +19,15 @@
           <div v-show="event.type">
             <!-- Event Name -->
             <v-row>
-              <v-text-field v-model="event.name" label="Name"></v-text-field>
+              <v-text-field
+                v-model="event.name"
+                label="Name"
+                :rules="rules"
+                hide-details="auto"
+              ></v-text-field>
             </v-row>
-
+            <br />
+            <br />
             <!-- Event Date -->
             <v-row>
               <v-menu
@@ -38,6 +44,8 @@
                   <v-text-field
                     v-model="event.date"
                     label="Date"
+                    :rules="rules"
+                    hide-details="auto"
                     readonly
                     dense
                     v-on="on"
@@ -114,8 +122,8 @@
     </v-container>
     <!-- Snack Bar -->
     <v-snackbar v-model="snackbar" :timeout="timeout" color="red accent-2">
+      <v-icon dark left> mdi-alert-circle </v-icon>
       {{ this.text }}
-
       <template v-slot:action="{ attrs }">
         <v-btn text v-bind="attrs" @click="snackbar = false">
           <strong>Close</strong>
@@ -148,8 +156,12 @@ export default {
       timeMenu1: 0,
       timeMenu2: 0,
       snackbar: false,
-      text: "Please fill out all fields",
+      text: "Please fill out all fields.",
       timeout: 8000,
+      rules: [
+        (value) => !!value || "Required.",
+        (value) => (value && value.length >= 0) || "Cannot be empty",
+      ],
     };
   },
   methods: {

@@ -116,6 +116,7 @@
         </v-row>
         <!-- Snack Bar -->
         <v-snackbar v-model="snackbar" :timeout="timeout" color="red accent-2">
+          <v-icon dark left> mdi-alert-circle </v-icon>
           {{ this.text }}
 
           <template v-slot:action="{ attrs }">

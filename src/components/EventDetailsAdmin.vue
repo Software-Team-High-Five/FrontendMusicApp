@@ -348,7 +348,7 @@ export default {
   computed: {
     ...mapStores(useUserStore),
     filteredPerformances() {
-        console.log(this.event.performances);
+      console.log(this.event.performances);
       if (this.searchString == "") {
         if (
           !this.activeAccompanists.length &&
@@ -397,7 +397,7 @@ export default {
           this.event = { ...res.data };
           this.event.performances.forEach((p) => this.students.push(p.student));
           this.setFilters();
-        })
+        });
       let instPromise = ids.getAll()
         .then((res) => {
           this.allInstruments = res.data;

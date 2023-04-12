@@ -15,34 +15,38 @@ const router = new Router({
       path: "/",
       alias: "/home",
       name: "home-page",
-      component: () => import("./components/Homepage"),
+      component: () => import("./components/Homepage")
     },
     {
       path: "/newevent",
       name: "new-event",
-      component: () => import("./components/NewEvent"),
+      component: () => import("./components/NewEvent")
     },
     {
       path: "/events/:eventId/signup",
       name: "sign-up",
-      component: () => import("./components/SignUp"),
+      component: () => import("./components/SignUp")
     },
     {
       path: "/performance/:performanceId",
       name: "view-performance",
-      component: () => import("./components/ViewPerformance"),
+      component: () => import("./components/ViewPerformance")
     },
     {
       path: "/allevents",
       name: "all-events",
-      component: () => import("./components/AllEvents"),
+      component: () => import("./components/AllEvents")
     },
     {
       path: "/event/:eventId",
       name: "event-details",
-      component: () => import("./components/EventDetails"),
+      component: () => import("./components/EventDetails")
     },
- 
+    {
+      path: "/event/:eventId/admin",
+      name: "event-details-admin",
+      component: () => import("./components/EventDetailsAdmin")
+    },
     {
         path: "/users"
         ,name: "user-list"
@@ -51,17 +55,17 @@ const router = new Router({
     {
       path: "/student",
       name: "student-details",
-      component: () => import("./components/StudentDetails"),
+      component: () => import("./components/StudentDetails")
     },
     {
       path: "/student/:id",
       name: "student-edit",
-      component: () => import("./components/StudentEdit"),
+      component: () => import("./components/StudentEdit")
     },
     {
       path: "/login",
       name: "login",
-      component: () => import("./components/Login"),
+      component: () => import("./components/Login")
     },
     {
       path: "/user"

@@ -1,38 +1,6 @@
 <template>
   <div>
     <v-container>
-      <!-- <div v-if="recentlyAddedEvents.length"> -->
-          <h1 class="mt-15 mb-4" style="color:#03003f">Notifications</h1>
-          
-          <v-slide-group show-arrows class="ml-n4">
-            <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
-                <v-card max-width="350">
-                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">New Event Posted: <br>Recital Hearing</v-card-title>
-                  <v-card-subtitle style="color:#03003f">Wednesday 4/19/2023</v-card-subtitle>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
-                      Mark Availability
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-slide-item>
-              <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
-                <v-card max-width="350">
-                  <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Review Composer <br>Submissions</v-card-title>
-                  <v-card-subtitle style="color:#03003f">Friday 4/21/2023</v-card-subtitle>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="#03003f" elevation="5" style="color:#ffffff" :to="{name: 'all-events'}">
-                        Review
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-slide-item>
-
-          </v-slide-group>
-      <!-- </div> -->
-
     <h1 class="mt-15 mb-4" style="color:#03003f">Actions</h1>
     <v-slide-group show-arrows class="ml-n4">
       <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">

@@ -56,27 +56,20 @@
           {{ userStore.user.student.level }}
         </v-col>
       </v-row>
-      <!-- Instructor -->
-      <v-row>
-        <v-col class="text-right py-0" align-self="center" cols="5">
-          <strong>Instructor</strong>
+      <v-row class="py-0">
+        <v-col>
+          <strong>Instructor{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
-        <v-col class="py-0" cols="7">
-          {{ instructor }}
+        <v-col>
+          <strong>Instrument{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
       </v-row>
-      <!-- Instruments -->
-      <v-row>
-        <v-col class="text-right py-0" cols="5">
-          <strong>Instruments</strong>
+      <v-row v-for="i in userStore.user.user_instruments" :key="i.instrumentId">
+        <v-col>
+          {{ i.instructor.fName }} {{ i.instructor.lName }}
         </v-col>
-        <v-col class="py-0" cols="7">
-          <div
-            v-for="instrument in userStore.user.user_instruments"
-            :key="instrument.instrumentId"
-          >
-            {{ instrument.instrument.instrument }}
-          </div>
+        <v-col>
+          {{ i.instrument.instrument }}
         </v-col>
       </v-row>
       <!-- Repertoire -->

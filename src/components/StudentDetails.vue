@@ -72,10 +72,10 @@
         </v-col>
         <v-col class="py-0" cols="7">
           <div
-            v-for="instrument in userStore.user.instruments"
-            :key="instrument.id"
+            v-for="instrument in userStore.user.user_instruments"
+            :key="instrument.instrumentId"
           >
-            {{ instrument.instrument }}
+            {{ instrument.instrument.instrument }}
           </div>
         </v-col>
       </v-row>
@@ -151,9 +151,9 @@
               <v-col class="py-0" cols="8">
                 <v-select
                   v-model="selectedSong.instrumentId"
-                  :items="userStore.user.instruments"
-                  item-text="instrument"
-                  item-value="id"
+                  :items="userStore.user.user_instruments"
+                  :item-text="instrument => instrument.instrument.instrument"
+                  item-value="instrumentId"
                   dense
                 ></v-select>
               </v-col>
@@ -221,7 +221,7 @@ export default {
       songHeaders: [
         { text: "Title", value: "title" },
         { text: "Composer", value: "composer" },
-        { text: "Instrument", value: "instrument" },
+        { text: "Instrument", value: "instrument.instrument" },
         // ,{ text: 'Semester', value: 'semester' }
         { text: "Actions", value: "actions", sortable: false },
       ],
@@ -232,6 +232,7 @@ export default {
       songDialog: false,
       deleteDialog: false,
       prevRoute: null,
+      instruments: []
     };
   },
   computed: {
@@ -264,8 +265,8 @@ export default {
           song.composer = this.allComposers.find(
             (c) => c.id == song.composerId
           ).name;
-          song.instrument = this.userStore.user.instruments.find(
-            (i) => i.id == res.data.instrumentId
+          song.instrument = this.userStore.user.user_instruments.find(
+            (i) => i.instrumentId == res.data.instrumentId
           ).instrument;
           this.allSongs.push(song);
           this.songDialog = false;
@@ -287,8 +288,8 @@ export default {
           this.selectedSong.composer = this.allComposers.find(
             (c) => c.id == this.selectedSong.composerId
           ).name;
-          this.selectedSong.instrument = this.userStore.user.instruments.find(
-            (i) => i.id == this.selectedSong.instrumentId
+          this.selectedSong.instrument = this.userStore.user.user_instruments.find(
+            (i) => i.instrumentId == this.selectedSong.instrumentId
           ).instrument;
           Object.assign(this.allSongs[this.songIndex], this.selectedSong);
           this.songDialog = false;
@@ -342,8 +343,8 @@ export default {
             ]
               .filter(Boolean)
               .join(" ");
-            song.instrument = this.userStore.user.instruments.find(
-              (i) => i.id == song.instrumentId
+            song.instrument = this.userStore.user.user_instruments.find(
+              (i) => i.instrumentId == song.instrumentId
             ).instrument;
             return song;
           });

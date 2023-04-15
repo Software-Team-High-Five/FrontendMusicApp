@@ -26,8 +26,8 @@
                     <strong>Instruments</strong>
                 </v-col>
                 <v-col class="py-0" cols="7">
-                    <div v-for="instrument in userStore.user.instruments" :key="instrument.id">
-                        {{ instrument.instrument }}
+                    <div v-for="ui in userStore.user.user_instruments" :key="ui.instrumentId">
+                        {{ ui.instrument.instrument }}
                     </div>
                 </v-col>
             </v-row>
@@ -40,6 +40,11 @@ import { mapStores } from 'pinia';
 
 export default {
     name: 'user-details'
+    ,data() {
+        return {
+            instruments: []
+        }
+    }
     ,computed: {
         ...mapStores(useUserStore)
     }

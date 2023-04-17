@@ -40,6 +40,20 @@
             </v-card-actions>
         </v-card>
       </v-slide-item>
+      <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
+        <v-card max-width="350">
+            <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Sign up for an event</v-card-title>
+            <v-card-subtitle style="color:#03003f">Sign up or submit avaliable time for a jury or recital hearing.</v-card-subtitle>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="#03003f" elevation="5" style="color:#ffffff"                 
+              :to="{name: 'all-events', query: {'upcoming': 1}}"
+              >
+                Sign Up                               
+                          </v-btn>
+            </v-card-actions>
+          </v-card>
+      </v-slide-item>
     </v-slide-group>
     </v-container>
   </div>

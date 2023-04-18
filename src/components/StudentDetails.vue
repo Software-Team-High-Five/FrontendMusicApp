@@ -133,7 +133,7 @@
               <v-col class="text-right py-0" align-self="center" cols="4">
                 <strong>Composer</strong>
               </v-col>
-              <v-col class="py-0" cols="8">
+              <v-col class="py-0" cols="6">
                 <v-select
                   v-model="selectedSong.composerId"
                   :items="allComposers"
@@ -141,6 +141,9 @@
                   item-value="id"
                   dense
                 ></v-select>
+              </v-col>
+              <v-col cols="2">
+                <v-btn @click="openComposerDialog({}, true)"> Add </v-btn>
               </v-col>
             </v-row>
             <!-- Instrument -->
@@ -186,6 +189,87 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!--Add New Composer-->
+    <v-dialog v-model="composerDialog" max-width="1000px">
+      <v-card>
+        <v-card-title>Add Composer</v-card-title>
+        <v-card-text>
+          <v-container class="body-1">
+            <!-- firstName -->
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>First Name *</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field v-model="selectedComposer.fName" dense></v-text-field>
+              </v-col>
+            </v-row>
+            <!--Middle Name-->
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Middle Name</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field v-model="selectedComposer.mName" dense></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Last Name *</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field v-model="selectedComposer.lName" dense></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Birth Date *</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field 
+                  v-model="selectedComposer.bDate" dense
+                  hint="yyyy-mm-dd"
+                  persistant-hint
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Death Date</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field 
+                  v-model="selectedComposer.dDate" dense 
+                  hint="yyyy-mm-dd"
+                  persistant-hint>
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <p class="text-center">Contact the <a href="mailto: cheryl.snyder@oc.edu?subject= Composer Approval">admin</a> to request composer approval</p>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <p class="text-center">*required field</p>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <!-- Save/Cancel Actions -->
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="addComposer()">
+            Add
+          </v-btn>
+          <v-btn @click="composerDialog = false"> Cancel </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Delete Song Dialog Box -->
     <v-dialog v-model="deleteDialog" max-width="700px">
       <v-card>
@@ -231,6 +315,10 @@ export default {
       addingSong: true,
       songDialog: false,
       deleteDialog: false,
+      composerDialog: false,
+      addingComposer: false,
+      selectedComposer: {},
+      composerIndex: -1,
       prevRoute: null,
     };
   },
@@ -248,6 +336,13 @@ export default {
       this.songIndex = this.allSongs.indexOf(song);
       this.selectedSong = Object.assign({}, song);
       this.deleteDialog = true;
+    },
+    openComposerDialog(composer, composerAction) {
+      this.composerIndex = this.allComposers.indexOf(composer)
+      this.selectedComposer = Object.assign({}, composer);
+      this.selectedComposer.mName = ''
+      this.addingComposer = composerAction;
+      this.composerDialog = true;
     },
     addSong() {
       songDS
@@ -273,6 +368,30 @@ export default {
         .catch((e) => {
           console.log(e);
         });
+    },
+    addComposer(){
+      composerDS
+        .create({
+          fName: this.selectedComposer.fName,
+          mName: this.selectedComposer.mName,
+          lName: this.selectedComposer.lName,
+          bDate: this.selectedComposer.bDate,
+          dDate: this.selectedComposer.dDate,
+          isApproved: 0
+        })
+        .then((res) => {
+          let composer = res.data
+          composer.name = [composer.fName, composer.mName, composer.lName]
+              .filter(Boolean)
+              .join(" ")
+          this.allComposers.push(composer)
+          this.selectedSong.composerId = composer.id
+          console.log(this.selectedSong)
+          this.composerDialog = false
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     },
     editSong() {
       songDS
@@ -361,6 +480,7 @@ export default {
             name: [composer.fName, composer.mName, composer.lName]
               .filter(Boolean)
               .join(" "),
+            isApproved: composer.isApproved
           };
         });
       })
@@ -370,6 +490,10 @@ export default {
     // Mark page as loaded when all data is loaded
     Promise.all([instructorPromise, songsPromise, composersPromise])
       .then(() => {
+        this.allComposers = this.allComposers.filter(c => 
+          c.isApproved || 
+          this.allSongs.some(s => s.composerId == c.id))
+
         this.loaded = true;
       })
       .catch(() => {

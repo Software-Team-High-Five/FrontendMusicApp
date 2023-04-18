@@ -56,19 +56,21 @@
           {{ userStore.user.student.level }}
         </v-col>
       </v-row>
-      <v-row class="py-0">
-        <v-col>
+      <br>
+      <br>
+      <v-row>
+        <v-col class="text-right py-0" align-self="center" cols="5">
           <strong>Instructor{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
-        <v-col>
+        <v-col class="py-0" cols="7">
           <strong>Instrument{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
       </v-row>
       <v-row v-for="i in userStore.user.user_instruments" :key="i.instrumentId">
-        <v-col>
-          {{ i.instructor.fName }} {{ i.instructor.lName }}
+        <v-col class="text-right py-0" align-self="center" cols="5">
+          {{ i.instructor ? `${i.instructor.fName} ${i.instructor.lName}` : 'No Instructor' }}
         </v-col>
-        <v-col>
+        <v-col class="py-0" cols="7">
           {{ i.instrument.instrument }}
         </v-col>
       </v-row>
@@ -305,23 +307,23 @@ export default {
   },
   mounted() {
     // Get the instructor
-    let instructorPromise;
-    if (this.userStore.user.student.instructorId != null) {
-      instructorPromise = userDS
-        .get(this.userStore.user.student.instructorId)
-        .then((res) => {
-          this.instructor = `${res.data.fName} ${res.data.lName}`;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.instructor = "Error: not found";
-        });
-    }
-    else {
-      // if no instructor is assigned, use an empty string and promise
-      this.instructor = "";
-      instructorPromise = Promise.resolve();
-    }
+    // let instructorPromise;
+    // if (this.userStore.user.student.instructorId != null) {
+    //   instructorPromise = userDS
+    //     .get(this.userStore.user.student.instructorId)
+    //     .then((res) => {
+    //       this.instructor = `${res.data.fName} ${res.data.lName}`;
+    //     })
+    //     .catch((e) => {
+    //       console.log(e);
+    //       this.instructor = "Error: not found";
+    //     });
+    // }
+    // else {
+    //   // if no instructor is assigned, use an empty string and promise
+    //   this.instructor = "";
+    //   instructorPromise = Promise.resolve();
+    // }
     // Get the student's songs
     let songsPromise = songDS
       .getAll()
@@ -362,7 +364,8 @@ export default {
         console.log(e);
       });
     // Mark page as loaded when all data is loaded
-    Promise.all([instructorPromise, songsPromise, composersPromise])
+    // Promise.all([instructorPromise, songsPromise, composersPromise])
+    Promise.all([songsPromise, composersPromise])
       .then(() => {
         this.loaded = true;
       })

@@ -282,6 +282,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="composerRequested" timeout="1500" class="text-xs-center" >
+      Composer Requested!
+    </v-snackbar>
   </div>
 </template>
 <script>
@@ -315,7 +318,8 @@ export default {
       selectedComposer: {},
       composerIndex: -1,
       prevRoute: null,
-      instruments: []
+      instruments: [],
+      composerRequested: false
     };
   },
   computed: {
@@ -383,7 +387,9 @@ export default {
           this.allComposers.push(composer)
           this.selectedSong.composerId = composer.id
           console.log(this.selectedSong)
-          this.composerDialog = false
+          this.composerDialog = false;
+          this.songDialog = false;
+          this.composerRequested = true;
         })
         .catch((e) => {
           console.log(e)
@@ -425,25 +431,6 @@ export default {
     },
   },
   mounted() {
-    // Get the instructor
-    // let instructorPromise;
-    // if (this.userStore.user.student.instructorId != null) {
-    //   instructorPromise = userDS
-    //     .get(this.userStore.user.student.instructorId)
-    //     .then((res) => {
-    //       this.instructor = `${res.data.fName} ${res.data.lName}`;
-    //     })
-    //     .catch((e) => {
-    //       console.log(e);
-    //       this.instructor = "Error: not found";
-    //     });
-    // }
-    // else {
-    //   // if no instructor is assigned, use an empty string and promise
-    //   this.instructor = "";
-    //   instructorPromise = Promise.resolve();
-    // }
-    // Get the student's songs
     let songsPromise = songDS
       .getAll()
       .then((res) => {

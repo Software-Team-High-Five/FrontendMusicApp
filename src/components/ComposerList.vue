@@ -116,9 +116,7 @@ export default{
     methods:{
          async approveComposer(c){
             this.composer = c
-            console.log(this.composer)
             this.composer.isApproved = true
-            console.log(this.composer)
             await composerDS.update(this.composer.id,
             {
                 fName: this.composer.fName,
@@ -131,9 +129,9 @@ export default{
             .then(() => {
                     console.log('Composer updated');
                 })
-                .catch(e => {
-                    console.log(e);
-                });
+            .catch(e => {
+                console.log(e);
+            });
             this.getComposers()
         },
         async deleteComposer(c){
@@ -151,44 +149,38 @@ export default{
             this.composers = []
             this.unapprovedComposers = []
             if(this.userStore.isAdmin){
-            composerDS.getAll()
-            .then(res =>{
-                res.data.forEach(c => {
-                    if(c.isApproved == 1){
-                        this.composers.push({
-                        id: c.id,
-                        fName: c.fName,
-                        mName: c.mName,
-                        lName: c.lName,
-                        bDate: c.bDate,
-                        dDate: c.dDate,
-                        isApproved: c.isApproved
-                        // roles: u.roles.map(r => r.role).join(', '),
-                        // instruments: u.instruments.map(i => i.instrument).join(', ')
+                composerDS.getAll()
+                .then(res =>{
+                    res.data.forEach(c => {
+                        if(c.isApproved == 1){
+                            this.composers.push({
+                                id: c.id,
+                                fName: c.fName,
+                                mName: c.mName,
+                                lName: c.lName,
+                                bDate: c.bDate,
+                                dDate: c.dDate,
+                                isApproved: c.isApproved
+                                // roles: u.roles.map(r => r.role).join(', '),
+                                // instruments: u.instruments.map(i => i.instrument).join(', ')
+                            })
+                        } else {
+                            this.unapprovedComposers.push({
+                                id: c.id,
+                                fName: c.fName,
+                                mName: c.mName,
+                                lName: c.lName,
+                                bDate: c.bDate,
+                                dDate: c.dDate,
+                                isApproved: c.isApproved
+                                // roles: u.roles.map(r => r.role).join(', '),
+                                // instruments: u.instruments.map(i => i.instrument).join(', ')
+                            })
+                        }  
                     })
-                    }
-                    else{
-                        this.unapprovedComposers.push({
-                        id: c.id,
-                        fName: c.fName,
-                        mName: c.mName,
-                        lName: c.lName,
-                        bDate: c.bDate,
-                        dDate: c.dDate,
-                        isApproved: c.isApproved
-                        // roles: u.roles.map(r => r.role).join(', '),
-                        // instruments: u.instruments.map(i => i.instrument).join(', ')
-                    })
-                    }
-                    
-                }
-                 
-                )
-                console.log(this.unapprovedComposers)
-                console.log(this.composer)
-            })
-            .catch(e => console.log(e))
-        }
+                })
+                .catch(e => console.log(e))
+            }
         }
     },
     mounted(){

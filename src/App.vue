@@ -34,6 +34,14 @@
           isLoggedIn() && userStore.isAdmin ? "Users" : "Students"
         }}</router-link
       >
+      <router-link
+        v-if="isLoggedIn()"
+        v-show="userStore.isAdmin"
+        style="text-decoration: none; color: inherit"
+        class="mr-5"
+        :to="{ name: 'composer-list' }"
+        >Composers</router-link
+      >
       <v-spacer></v-spacer>
       <v-menu v-if="isLoggedIn()" bottom min-width="275px" rounded offset-y>
         <template #activator="{ on, attrs }">

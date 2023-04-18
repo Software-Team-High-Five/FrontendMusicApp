@@ -72,7 +72,17 @@ const router = new Router({
       path: "/user/:id"
       ,name: "user-edit"
       ,component: () => import('./components/UserEdit')
-    }
+    },
+    {
+      path: "/composers"
+      ,name: "composer-list"
+      ,component: () => import('./components/ComposerList')
+  },
+  {
+    path: "/composer/:id",
+    name: "composer-edit",
+    component: () => import("./components/ComposerEdit"),
+  }
   ],
 });
 

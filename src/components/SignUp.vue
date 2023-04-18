@@ -161,13 +161,13 @@
 </template>
 
 <script>
-import eventDS from '../services/EventDataService';
-import songDS from '../services/SongDataService';
-import PerformanceDS from '../services/PerformanceDataService';
-import AvailabilityDS from '../services/AvailabilityDataService';
-import UserDS from '../services/UserDataService';
-import { useUserStore } from '@/stores/userStore';
-import { mapStores } from 'pinia';
+import eventDS from "../services/EventDataService";
+import songDS from "../services/SongDataService";
+import PerformanceDS from "../services/PerformanceDataService";
+import AvailabilityDS from "../services/AvailabilityDataService";
+import UserDS from "../services/UserDataService";
+import { useUserStore } from "@/stores/userStore";
+import { mapStores } from "pinia";
 
 export default {
     name: 'sign-up'
@@ -227,19 +227,20 @@ export default {
                 .then(res => {
                     this.event = res.data;
 
-                    // Set calendar size
-                    let temp = this.event.startTime.split(':');
-                    let start = {
-                        hours: temp[0]
-                        ,minutes: temp[1]
-                    };
-                    temp = this.event.endTime.split(':');
-                    let end = {
-                        hours: temp[0]
-                        ,minutes: temp[1]
-                    };
-                    this.calAtts.fIndex = start.hours * 12 + start.minutes / 5;
-                    this.calAtts.iCount = end.hours * 12 + end.minutes / 5 - this.calAtts.fIndex;
+          // Set calendar size
+          let temp = this.event.startTime.split(":");
+          let start = {
+            hours: temp[0],
+            minutes: temp[1],
+          };
+          temp = this.event.endTime.split(":");
+          let end = {
+            hours: temp[0],
+            minutes: temp[1],
+          };
+          this.calAtts.fIndex = start.hours * 12 + start.minutes / 5;
+          this.calAtts.iCount =
+            end.hours * 12 + end.minutes / 5 - this.calAtts.fIndex;
 
                     // Generate calendar time slots
                     let startI = this.calAtts.fIndex;

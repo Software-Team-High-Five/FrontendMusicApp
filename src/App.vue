@@ -36,12 +36,15 @@
       >
       <router-link
         v-if="isLoggedIn()"
-        v-show="userStore.isAdmin"
+        v-show="userStore.isAdmin || userStore.isFaculty"
         style="text-decoration: none; color: inherit"
         class="mr-5"
         :to="{ name: 'composer-list' }"
-        >Composers</router-link
+        ><v-btn>
+          {{ isLoggedIn() && userStore.isAdmin ? "Composers" : "Students" }}
+        </v-btn></router-link
       >
+
       <v-spacer></v-spacer>
       <v-menu v-if="isLoggedIn()" bottom min-width="275px" rounded offset-y>
         <template #activator="{ on, attrs }">

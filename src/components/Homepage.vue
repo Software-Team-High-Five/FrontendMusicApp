@@ -64,7 +64,8 @@
             </v-card-actions>
         </v-card>
       </v-slide-item>
-      <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative">
+      <!-- only show students -->
+      <v-slide-item class="card-button align-center ml-4 mr-4" style="position:relative" v-show="userStore.isStudent">
         <v-card max-width="350">
             <v-card-title class="text-h4 font-weight-medium" style="color:#03003f">Sign up for an event</v-card-title>
             <v-card-subtitle style="color:#03003f">Sign up or submit avaliable time for a jury or recital hearing.</v-card-subtitle>

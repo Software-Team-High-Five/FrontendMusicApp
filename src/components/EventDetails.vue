@@ -67,7 +67,7 @@
             >
               <td>{{ p.student.user.fName }} {{ p.student.user.lName }}</td>
               <td>{{ songsString(p) }}</td>
-              <td>{{ instrumentString(p) }}</td>
+              <td>{{ p.instrument.instrument }}</td>
               <!-- <td>{{ p.accompanist ?? 'no Accompanist'}}</td> -->
               <td>{{ p.startTime }} - {{ p.endTime }}</td>
               <td>{{ p.student.level }}</td>
@@ -387,8 +387,8 @@ export default {
       this.performanceLoaded = true;
     },
     instrumentString(performance) {
-        const insId = performance.instrumentId;
-        return performance.student.user.instruments.filter((i) => (i.id == insId))[0].instrument;
+        // const insId = performance.instrumentId;
+        return performance.instrument.instrument;
     },
     songsString(performance) {
       var songs = "";

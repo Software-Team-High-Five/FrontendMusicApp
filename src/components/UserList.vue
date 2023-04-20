@@ -159,7 +159,7 @@ export default{
                         fName: u.fName,
                         lName: u.lName,
                         roles: u.roles.map(r => r.role).join(', '),
-                        instruments: u.instruments.map(i => i.instrument).join(', ')
+                        instruments: u.user_instruments.map(i => i.instrument.instrument).join(', ')
                     })
                 }
                  
@@ -167,20 +167,22 @@ export default{
                 console.log(this.user)
             })
             .catch(e => console.log(e))
-        }
-        else{
-            console.log(this.userStore.user.id)
+        } else {
             studentDS.instructorStudents(this.userStore.user.id)
             .then(res =>{
+                console.log(res.data);
                 res.data.forEach(s => {
+                    console.log(s);
                     this.students.push({
                         id: s.id,
                         fName: s.user.fName,
                         lName: s.user.lName,
                         classification: s.classification,
-                        instruments: s.user.instruments.map(i => i.instrument).join(', ')
+                        instruments: s.user.user_instruments.map(i => i.instrument.instrument).join(', ')
                     })
                 })
+                console.log(this.students);
+
             })
             .catch(e => console.log(e))
         }

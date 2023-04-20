@@ -98,7 +98,7 @@ export default {
                     ,dDate: this.composer.dDate
                 })
                 .then(() => {
-                    console.log('Composer updated');
+                    this.$router.push({name: 'composer-list'});
                 })
                 .catch(e => {
                     console.log(e);

@@ -346,18 +346,12 @@ export default {
             }
         }
         ,generalFilter(event) {
-            if(this.searchString == ''){
-                if(!this.activeTypes.length){
+            if(this.searchString == '' && (!this.activeTypes.length || this.activeTypes.includes(event.types)) ) {
+                return true;
+            } else if(this.searchString != '') {
+                if(event.name.toLowerCase().indexOf(this.searchString.toLowerCase()) > -1 && (this.activeTypes.includes(event.type) || !this.activeTypes.length)){
                     return true;
                 }
-                if(this.activeTypes.includes(event.type)){
-                    return true
-                }
-            } else {
-                if(event.name.toLowerCase().indexOf(this.searchString.toLowerCase()) > -1 || this.activeTypes.includes(event.type)){
-                    return true;
-                }
-                return false;
             }
             return false;
         }

@@ -56,27 +56,22 @@
           {{ userStore.user.student.level }}
         </v-col>
       </v-row>
-      <!-- Instructor -->
+      <br>
+      <br>
       <v-row>
         <v-col class="text-right py-0" align-self="center" cols="5">
-          <strong>Instructor</strong>
+          <strong>Instructor{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
         <v-col class="py-0" cols="7">
-          {{ instructor }}
+          <strong>Instrument{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
       </v-row>
-      <!-- Instruments -->
-      <v-row>
-        <v-col class="text-right py-0" cols="5">
-          <strong>Instruments</strong>
+      <v-row v-for="i in userStore.user.user_instruments" :key="i.instrumentId">
+        <v-col class="text-right py-0" align-self="center" cols="5">
+          {{ i.instructor ? `${i.instructor.fName} ${i.instructor.lName}` : 'No Instructor' }}
         </v-col>
         <v-col class="py-0" cols="7">
-          <div
-            v-for="instrument in userStore.user.instruments"
-            :key="instrument.id"
-          >
-            {{ instrument.instrument }}
-          </div>
+          {{ i.instrument.instrument }}
         </v-col>
       </v-row>
       <!-- Repertoire -->
@@ -154,9 +149,9 @@
               <v-col class="py-0" cols="8">
                 <v-select
                   v-model="selectedSong.instrumentId"
-                  :items="userStore.user.instruments"
-                  item-text="instrument"
-                  item-value="id"
+                  :items="userStore.user.user_instruments"
+                  :item-text="instrument => instrument.instrument.instrument"
+                  item-value="instrumentId"
                   dense
                 ></v-select>
               </v-col>
@@ -287,6 +282,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="composerRequested" timeout="1500" class="text-xs-center" >
+      Composer Requested!
+    </v-snackbar>
   </div>
 </template>
 <script>
@@ -305,7 +303,7 @@ export default {
       songHeaders: [
         { text: "Title", value: "title" },
         { text: "Composer", value: "composer" },
-        { text: "Instrument", value: "instrument" },
+        { text: "Instrument", value: "instrument.instrument" },
         // ,{ text: 'Semester', value: 'semester' }
         { text: "Actions", value: "actions", sortable: false },
       ],
@@ -320,6 +318,8 @@ export default {
       selectedComposer: {},
       composerIndex: -1,
       prevRoute: null,
+      instruments: [],
+      composerRequested: false
     };
   },
   computed: {
@@ -359,8 +359,8 @@ export default {
           song.composer = this.allComposers.find(
             (c) => c.id == song.composerId
           ).name;
-          song.instrument = this.userStore.user.instruments.find(
-            (i) => i.id == res.data.instrumentId
+          song.instrument = this.userStore.user.user_instruments.find(
+            (i) => i.instrumentId == res.data.instrumentId
           ).instrument;
           this.allSongs.push(song);
           this.songDialog = false;
@@ -387,7 +387,9 @@ export default {
           this.allComposers.push(composer)
           this.selectedSong.composerId = composer.id
           console.log(this.selectedSong)
-          this.composerDialog = false
+          this.composerDialog = false;
+          this.songDialog = false;
+          this.composerRequested = true;
         })
         .catch((e) => {
           console.log(e)
@@ -406,8 +408,8 @@ export default {
           this.selectedSong.composer = this.allComposers.find(
             (c) => c.id == this.selectedSong.composerId
           ).name;
-          this.selectedSong.instrument = this.userStore.user.instruments.find(
-            (i) => i.id == this.selectedSong.instrumentId
+          this.selectedSong.instrument = this.userStore.user.user_instruments.find(
+            (i) => i.instrumentId == this.selectedSong.instrumentId
           ).instrument;
           Object.assign(this.allSongs[this.songIndex], this.selectedSong);
           this.songDialog = false;
@@ -429,25 +431,6 @@ export default {
     },
   },
   mounted() {
-    // Get the instructor
-    let instructorPromise;
-    if (this.userStore.user.student.instructorId != null) {
-      instructorPromise = userDS
-        .get(this.userStore.user.student.instructorId)
-        .then((res) => {
-          this.instructor = `${res.data.fName} ${res.data.lName}`;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.instructor = "Error: not found";
-        });
-    }
-    else {
-      // if no instructor is assigned, use an empty string and promise
-      this.instructor = "";
-      instructorPromise = Promise.resolve();
-    }
-    // Get the student's songs
     let songsPromise = songDS
       .getAll()
       .then((res) => {
@@ -461,8 +444,8 @@ export default {
             ]
               .filter(Boolean)
               .join(" ");
-            song.instrument = this.userStore.user.instruments.find(
-              (i) => i.id == song.instrumentId
+            song.instrument = this.userStore.user.user_instruments.find(
+              (i) => i.instrumentId == song.instrumentId
             ).instrument;
             return song;
           });
@@ -488,7 +471,8 @@ export default {
         console.log(e);
       });
     // Mark page as loaded when all data is loaded
-    Promise.all([instructorPromise, songsPromise, composersPromise])
+    // Promise.all([instructorPromise, songsPromise, composersPromise])
+    Promise.all([songsPromise, composersPromise])
       .then(() => {
         this.allComposers = this.allComposers.filter(c => 
           c.isApproved || 

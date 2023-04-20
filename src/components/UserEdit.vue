@@ -60,6 +60,7 @@
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
 import userDS from "@/services/UserDataService";
+import userInstDS from "@/services/User_InstrumentDataService";
 import roleDS from "@/services/RoleDataService";
 import instrumentDS from "@/services/InstrumentDataService";
 
@@ -134,7 +135,7 @@ export default {
       );
       for (const inst of instToRemove) {
         promises.push(
-          userDS.removeInstrument(this.user.id, inst).then(() => {
+          userInstDS.delete(this.user.id, inst).then(() => {
             console.log(
               `${
                 this.allInstruments.find((i) => i.id == inst).instrument
@@ -149,7 +150,7 @@ export default {
       );
       for (const inst of instToAdd) {
         promises.push(
-          userDS.addInstrument(this.user.id, inst).then(() => {
+          userInstDS.create({ userId: this.user.id, instrumentId: inst }).then(() => {
             console.log(
               `${
                 this.allInstruments.find((i) => i.id == inst).instrument
@@ -178,7 +179,7 @@ export default {
         name: `${res.data.fName} ${res.data.lName}`,
         email: res.data.email,
         roleIds: res.data.roles.map((r) => r.id),
-        instrumentIds: res.data.instruments.map((i) => i.id),
+        instrumentIds: res.data.user_instruments.map((i) => i.instrumentId),
       };
       this.user.prevRoles = this.user.roleIds;
       this.user.prevInstruments = this.user.instrumentIds;

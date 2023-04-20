@@ -68,7 +68,7 @@
                 sm="5"
                 style="width: 50%; justify-content: center"
               >
-                <vuetify-time-select v-model="event.startTime" :minuteGroups="[0, 15, 30, 45]">
+                <vuetify-time-select v-model="event.startTime" :minuteGroups="[0, 10, 20, 30, 40, 50]">
                 </vuetify-time-select>
               </v-col>
               <!-- End Time -->
@@ -77,7 +77,7 @@
                 sm="5"
                 style="width: 50%; justify-content: center"
               >
-              <vuetify-time-select v-model="event.endTime" :minuteGroups="[0, 15, 30, 45]">
+              <vuetify-time-select v-model="event.endTime" :minuteGroups="[0, 10, 20, 30, 40, 50]">
                 </vuetify-time-select>
               </v-col>
             </v-row>

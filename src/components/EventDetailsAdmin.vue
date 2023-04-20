@@ -6,171 +6,127 @@
     />
     <br />
     
-    <!-- Event Name & Date -->
-    <h2>&nbsp; {{ event.name }} ({{ event.date }})</h2>
-    <br />
-
-    <!-- Search and Filter -->
+    <!-- Event Details & Edit Button -->
     <v-row>
-      <v-col class="col-md-3">
-        <h3>&nbsp; Performances</h3>
+      <v-col>
+        <h2>&nbsp; {{ event.name }} ({{ event.date }})</h2>
       </v-col>
-      <!-- Search Bar -->
-      <v-col class="col-md-7" style="margin: 10px; padding: 10px">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search by name, song, etc"
-            v-model="searchString"
-          />
-          <button
-            class="btn btn-dark"
-            @click="searchString = ''"
-            style="margin-right: 10px; border-radius: 4px"
-          >
-            Clear Search
-          </button>
-        </div>
-      </v-col>
-      <!-- Filter Popup Button -->
-      <v-col
-        class="md-2 sticky top"
-        style="margin: 10px; padding: 10px; border-radius: 4px; width: 100%"
-      >
+      <v-col>
         <button
-          class="btn btn-dark btn-outline"
-          @click="showFilters = !showFilters"
+          class="btn btn-dark"
+          style="float: right;"
+          @click="openEditEvent"
         >
-          Filter
+          Edit Event
         </button>
       </v-col>
     </v-row>
     <br />
 
-    <!-- Performance List -->
-    <div
-      class="col-md-15"
-      style="border-radius: 5px; padding: 10px; margin: 10px"
-    >
-      <div class="card">
-        <table class="table" style="margin-bottom: 0px">
-          <!-- Table Headers -->
-          <thead style="background-color: #f2f3f4">
-            <tr>
-              <th>Name</th>
-              <th>Songs</th>
-              <th>Instrument</th>
-              <!-- <th>Accompanist</th> -->
-              <th>Time</th>
-              <th>Level</th>
-              <th></th>
-            </tr>
-          </thead>
-          <!-- Table Rows -->
-          <tbody>
-            <tr
-              class="table-group-item"
-              v-for="p in filteredPerformances"
-              :key="p.id"
-              @click="performanceDetails(p)"
-            >
-              <td>{{ p.student.user.fName }} {{ p.student.user.lName }}</td>
-              <td>{{ songsString(p) }}</td>
-              <td>{{ instrumentString(p) }}</td>
-              <!-- <td>{{ p.accompanist ?? 'no Accompanist'}}</td> -->
-              <td>{{ p.startTime }} - {{ p.endTime }}</td>
-              <td>{{ p.student.level }}</td>
-              <td>
-                <button
-                  class="btn btn-dark"
-                  @click="performanceDetails(p)"
-                  style="margin-right: 10px; border-radius: 4px"
-                >
-                  Critique
-                  <!--Replace with pen icon later-->
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Faculty Table with availability -->
+    <v-card>
+      <v-card-title style="background-color:#f2f3f4">
+        Availabilities for Faculty/Accompanists
+      </v-card-title>
+      <v-data-table
+        :headers="availabilityHeaders"
+        :items="availabilities"
+        no-data-text="No Faculty/Accompanists Available"
+        @click:row="avail => clickAvailability(avail)"
+      >
+      </v-data-table>
+    </v-card>
+    <br />
+
+    <!-- Student Table with signups/performances -->
+    <v-card>
+      <v-card-title style="background-color:#f2f3f4;">
+        Student Performances
+      </v-card-title>
+      <v-data-table
+        :headers="performanceHeaders"
+        :items="filteredPerformances"
+        no-data-text="No Students Signed Up"
+        @click:row="perf => performanceDetails(perf)"
+      ></v-data-table>
+    </v-card>
     <br />
 
     <!-- Performance Details Dialog Box -->
     <v-dialog
       v-model="showPerformanceDetails"
-      :title="user.fName + ' ' + user.lName + '\n (' + event.date + ')'"
       width="70%"
       v-if="performanceLoaded"
     >
       <v-card style="padding: 15px;">
-        <!-- Event Details -->
-        <v-row>
-          <v-col><strong>Event</strong></v-col>
-          <v-col><strong>Instrument</strong></v-col>
-          <v-col><strong>Level</strong></v-col>
-        </v-row>
-        <v-row>
-          <v-col>{{ event.name }}</v-col>
-          <v-col>{{ instrumentString(performance) }}</v-col>
-          <v-col>{{ performance.student.level }}</v-col>
-        </v-row>
-        <br /><br />
+        <v-card-title class="text-h5">
+          <!-- Event Details -->
+          {{ event.name }} ({{ event.date }})
+        </v-card-title>
 
-        <!-- Performance Song Details -->
-        <v-row>
-          <h4><strong>Songs</strong></h4>
-        </v-row>
-        <v-row>
-          <v-col><strong>Title</strong></v-col>
-          <v-col><strong>Translation</strong></v-col>
-          <v-col><strong>Composer</strong></v-col>
-        </v-row>
-        <v-row v-for="s in performance.songs" :key="s.id">
-          <v-col>{{ s.title }}</v-col>
-          <v-col>{{ s.translation || "No translation available" }}</v-col>
-          <v-col>{{ getComposerFullName(s.composer) }}</v-col>
-        </v-row>
-        <br /><br />
-
-        <!-- Feedbacks -->
-        <v-row>
-          <h4><strong>Feedback</strong></h4>
-        </v-row>
-        <!-- Existing Feedbacks -->
-        <v-row v-for="f in performance.feedbacks" :key="f.id + 'f'" v-if="performance.feedbacks.length">
-          <v-col class="col-sm">
-            <strong>Judge:</strong> {{ f.judge.fName }} {{ f.judge.lName }}
-          </v-col>
+        <v-card-text class="body-1" style="color:black">
+          <!-- Student Details -->
           <v-row>
-            <v-textarea
-              solo
-              label="Label"
-              outline="true"
-              v-model="f.notes"
-              :disabled="f.judgeId != userStore.user.id"
-            ></v-textarea>
-          </v-row>
-        </v-row>
-        <!-- New Feedback -->
-        <v-row v-if="!judgeFeedback(performance)">
-          <v-col class="col-xs">
-            <strong>Judge:</strong> {{ userStore.name }}
-          </v-col>
-          <v-row>
-            <v-col class="col-lg">Notes</v-col>
+            <v-col cols="2" class="text-right"><v-spacer /><strong>Instrument</strong></v-col>
+            <v-col>{{ instrumentString(performance) }}</v-col>
           </v-row>
           <v-row>
-            <v-textarea
-              solo
-              outline="true"
-              v-model="newNotes"
-            ></v-textarea>
+            <v-col cols="2" class="text-right"><strong>Level</strong></v-col>
+            <v-col>{{ performance.student.level }}</v-col>
           </v-row>
-        </v-row>
-        <br /><br />
+          
+          <!-- Performance Song Details -->
+          <v-row>
+            <h4><strong>Songs</strong></h4>
+          </v-row>
+          <v-row>
+            <v-col><strong>Title</strong></v-col>
+            <v-col><strong>Translation</strong></v-col>
+            <v-col><strong>Composer</strong></v-col>
+          </v-row>
+          <v-row v-for="s in performance.songs" :key="s.id">
+            <v-col>{{ s.title }}</v-col>
+            <v-col>{{ s.translation || "No translation available" }}</v-col>
+            <v-col>{{ getComposerFullName(s.composer) }}</v-col>
+          </v-row>
+          <br /><br />
+          <!-- Feedbacks -->
+          <v-row>
+            <h4><strong>Feedback</strong></h4>
+          </v-row>
+          <!-- Existing Feedbacks -->
+          <v-row v-for="f in performance.feedbacks" :key="f.id + 'f'" v-if="performance.feedbacks.length">
+            <v-col class="col-sm">
+              <strong>Judge:</strong> {{ f.judge.fName }} {{ f.judge.lName }}
+            </v-col>
+            <v-row>
+              <v-textarea
+                solo
+                label="Label"
+                outline="true"
+                v-model="f.notes"
+                :disabled="f.judgeId != userStore.user.id"
+              ></v-textarea>
+            </v-row>
+          </v-row>
+          <!-- New Feedback -->
+          <v-row v-if="userStore.isFaculty && !judgeFeedback(performance)">
+            <v-col class="col-xs">
+              <strong>Judge:</strong> {{ userStore.name }}
+            </v-col>
+            <v-row>
+              <v-col class="col-lg">Notes</v-col>
+            </v-row>
+            <v-row>
+              <v-textarea
+                solo
+                outline="true"
+                v-model="newNotes"
+              ></v-textarea>
+            </v-row>
+          </v-row>
+          <br /><br />
+        </v-card-text>
 
         <!-- Action Buttons -->
         <v-row>
@@ -183,7 +139,7 @@
               Close
             </button>
           </v-col>
-          <v-col>
+          <v-col v-if="userStore.isFaculty">
             <button 
               class="btn btn-primary" 
               style="width: 98%;" 
@@ -196,10 +152,95 @@
       </v-card>
     </v-dialog>
 
+    <!-- Edit Event Dialog Box -->
+    <v-dialog v-model="showEditEvent" maxWidth="1400" persistent>
+      <v-card>
+        <v-card-title class="text-h4">
+          Edit Event
+        </v-card-title>
+        <v-card-text>
+          <!-- Event Time and Name -->
+          <v-select
+            label="Performance Type"
+            :items="eventTypes"
+            v-model="editEvent.type"
+          ></v-select>
+          <v-text-field
+            label="Name"
+            v-model="editEvent.name"
+          ></v-text-field>
+          <!-- Date Picker -->
+          <v-menu
+            ref="showEditEventDate"
+            v-model="showEditEventDate"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            max-width="290px"
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="editEvent.date"
+                label="Date"
+                readonly
+                dense
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="editEvent.date"
+              no-title
+              @input="showEditEventDate = false"
+            ></v-date-picker>
+          </v-menu>
+          <!-- Time Pickers -->
+          <v-row>  
+            <!-- Start Time -->
+            <v-col>
+              <label for="startTime">Start Time: &nbsp;</label>
+              <input type="time" id="startTime" v-model="editEvent.startTime" />
+            </v-col>
+            <!-- End Time -->
+            <v-col>
+              <label for="endTime">End Time: &nbsp;</label>
+              <input type="time" id="endTime" v-model="editEvent.endTime" />
+            </v-col>
+          </v-row>
+          <!-- Open for Signup -->
+          <v-checkbox
+            v-model="editEvent.openForSignup"
+            label="Open For Signup"
+            hide-details
+          ></v-checkbox>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <button
+            class="btn btn-danger"
+            style="width: 100%; padding-left: 10px; margin-left: 10px"
+            @click="showEditEvent = false"
+          >
+            Cancel
+          </button>
+          <div class="mx-6"></div>
+          <button
+            class="btn btn-success"
+            style="width: 100%; padding-right: 10px; margin-right: 10px"
+            @click="updateEvent"
+          >
+            Save
+          </button>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Filter Dialog Box -->
     <v-dialog title="Filters" v-model="showFilters">
-      <v-container>
-        <v-card style="padding: 15px;">
+      <v-card style="padding: 15px;">
+        <v-container>
           <!-- Composer Filter -->
           <label>Select composers</label>
           <MultiSelect
@@ -298,8 +339,8 @@
               </button>
             </v-col>
           </v-row>
-        </v-card> 
-      </v-container>
+        </v-container>
+      </v-card> 
     </v-dialog>
   </v-container>
 </template>
@@ -307,9 +348,10 @@
 <script>
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
-import eds from "../services/EventDataService";
-import ids from "../services/InstrumentDataService";
-import feedbackDataService from "../services/FeebackDataService";
+import eventDS from "../services/EventDataService";
+import instrumentDS from "../services/InstrumentDataService";
+import availabilityDS from "../services/AvailabilityDataService";
+import feedbackDS from "../services/FeebackDataService";
 import MultiSelect from "vue-multiselect";
 
 export default {
@@ -319,13 +361,8 @@ export default {
       event: {},
       allInstruments: [],
       allPerformances: {},
-      students: [],
       showPerformanceDetails: false,
       performance: {},
-      student: {},
-      user: {},
-      instrument: {},
-      songs: {},
       searchString: "",
       showFilters: false,
       accompanists: [],
@@ -336,10 +373,23 @@ export default {
       activeInstruments: [],
       activeAccompanists: [],
       activeLevels: [],
-      showMyStudents: false,
       loaded: false,
       performanceLoaded: false,
-      newNotes: ''
+      newNotes: '',
+
+      showEditEvent: false,
+      editEvent: {},
+      eventTypes: ["Recital Hearing", "Jury", "Audition"],
+      showEditEventDate: false,
+      availabilityHeaders: [{text: "Name", value: "name"}, {text: "Available Times", value: "availability"}],
+      availabilities: [],
+      performanceHeaders: [
+        {text: "Name", value: "studentName"},
+        {text: "Songs", value: "songsString"},
+        {text: "Instrument", value: "instrument"},
+        {text: "Time", value: "time"},
+        {text: "Level", value: "student.level"}
+      ]
     };
   },
   components: {
@@ -376,7 +426,7 @@ export default {
             p.student.user.fName.toLowerCase().indexOf(ss) > -1 ||
             p.student.user.lName.toLowerCase().indexOf(ss) > -1 ||
             p.accompanist.toLowerCase().indexOf(ss) > -1 ||
-            this.songsString(p).toLowerCase().indexOf(ss) > -1 ||
+            this.songsString(p.songs).toLowerCase().indexOf(ss) > -1 ||
             //filters
             this.activeAccompanists.includes(p.accompanist) ||
             this.activeInstruments.includes(p.instrument.instrument) ||
@@ -392,21 +442,72 @@ export default {
   },
   methods: {
     async fetch() {
-      let eventPromise = eds.get(this.$route.params.eventId)
+      let eventPromise = eventDS.get(this.$route.params.eventId)
         .then((res) => {
-          this.event = { ...res.data };
-          this.event.performances.forEach((p) => this.students.push(p.student));
+          this.event = res.data;
           this.setFilters();
         });
-      let instPromise = ids.getAll()
+      let instrumentPromise = instrumentDS.getAll()
         .then((res) => {
           this.allInstruments = res.data;
         });
-      Promise.all([eventPromise, instPromise])
+      let availabilitiesPromise = availabilityDS.getForEvent(null, this.$route.params.eventId)
+        .then((res) => {
+          res.data.forEach((avail) => {
+            let userAvail = this.availabilities.find((a) => a.userId === avail.userId);
+            let time = `${this.convertTime(avail.startTime)} - ${this.convertTime(avail.endTime)}`;
+            if (!userAvail)
+              this.availabilities.push({
+                userId: avail.userId,
+                name: `${avail.user.fName} ${avail.user.lName}`,
+                availability: time
+              });
+            else
+              userAvail.availability += `, ${time}`;
+          });
+        });
+      
+      Promise.all([eventPromise, instrumentPromise, availabilitiesPromise])
         .then(() => {
+          this.event.performances = this.event.performances.map((p) => { return {
+            ...p,
+            studentName: `${p.student.user.fName} ${p.student.user.lName}`,
+            songsString: this.songsString(p.songs),
+            instrument: this.instrumentString(p),
+            time: `${this.convertTime(p.startTime)} - ${this.convertTime(p.endTime)}`
+          }});
           this.loaded = true;
         })
-        .catch((e) => console.log(error));
+        .catch((e) => console.log(e));
+    },
+    convertTime(militaryTime) {
+      let [ hours, minutes ] = militaryTime.split(':');
+      if (hours > 12)
+        return `${parseInt(hours) - 12}:${minutes}PM`;
+      else
+        return `${parseInt(hours)}:${minutes}AM`;
+    },
+    openEditEvent() {
+      this.editEvent = Object.assign({}, this.event);
+      this.showEditEvent = true;
+    },
+    updateEvent() {
+      eventDS.update(this.event.id, this.editEvent)
+        .then(() => {
+          this.event = this.editEvent;
+          this.showEditEvent = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    clickAvailability(avail) {
+      this.$router.push({
+        name: "sign-up-admin",
+        params: {
+          eventId: this.$route.params.eventId,
+          userId: avail.userId
+        }});
     },
     performanceDetails(p) {
       this.performance = p;
@@ -416,18 +517,8 @@ export default {
     instrumentString(performance) {
       return this.allInstruments.find((i) => i.id == performance.instrumentId).instrument;
     },
-    songsString(performance) {
-      var songs = "";
-      if (performance.songs.length > 1) {
-        performance.songs.forEach((s) => {
-          songs += s.title + ", ";
-        });
-        return songs;
-      } else if (performance.songs.length == 1) {
-        return performance.songs[0].title;
-      } else {
-        return "No Songs";
-      }
+    songsString(songs) {
+      return songs.length === 0 ? "No Songs" : songs.map((s) => s.title).join(", ");
     },
     setFilters() {
       var a = new Set();
@@ -460,7 +551,7 @@ export default {
           ,judgeId: this.userStore.user.id
           ,userId: this.performance.student.id
         }
-        feedbackDataService.create(newCritique) 
+        feedbackDS.create(newCritique) 
           .then((res) => {
             console.log('new critique successfully made', res.data);
             this.showPerformanceDetails = false;
@@ -479,7 +570,7 @@ export default {
           judgeId: this.performance.feedbacks[i].judgeId,
           userId: this.performance.feedbacks[i].userId,
         };
-        feedbackDataService
+        feedbackDS
           .update(tempCritique.id, tempCritique)
           .then((res) => {
             console.log(res.data);
@@ -494,20 +585,6 @@ export default {
     getComposerFullName(c) {
       return c.fName + " " + c.mName + " " + c.lName;
     },
-    // async getAllPerformances() {
-    //   if (this.userStore.user.role == "student") {
-    //     await pds
-    //       .getAllForStudent()
-    //       .then((res) => {
-    //           res.data.forEach((p) => this.allPerformances.push(p));
-    //       })
-    //       .catch((e) => console.log(e));
-    //   } else {
-    //       await pds.getAllForInstructor().then((res) => {
-    //       res.data.forEach((p) => this.allPerformances.push(p));
-    //       });
-    //   }
-    // },
     judgeFeedback(performance) {
         return performance.feedbacks.find((f) => f.judgeId == this.userStore.user.id) ? true : false
     },

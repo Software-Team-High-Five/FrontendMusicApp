@@ -68,8 +68,8 @@
                 sm="5"
                 style="width: 50%; justify-content: center"
               >
-                <label for="startTime">Start Time: &nbsp;</label>
-                <input type="time" id="startTime" v-model="event.startTime" />
+                <vuetify-time-select v-model="event.startTime" :minuteGroups="[0, 10, 20, 30, 40, 50]">
+                </vuetify-time-select>
               </v-col>
               <!-- End Time -->
               <v-col
@@ -77,8 +77,8 @@
                 sm="5"
                 style="width: 50%; justify-content: center"
               >
-                <label for="endTime">End Time: &nbsp;</label>
-                <input type="time" id="endTime" v-model="event.endTime" />
+              <vuetify-time-select v-model="event.endTime" :minuteGroups="[0, 10, 20, 30, 40, 50]">
+                </vuetify-time-select>
               </v-col>
             </v-row>
 
@@ -137,8 +137,13 @@
 import eds from "../services/EventDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
+import VuetifyTimeSelect from 'vuetify-time-select';
+
 
 export default {
+  components: {
+    VuetifyTimeSelect
+  },
   name: "new-event",
   data() {
     return {
@@ -162,6 +167,7 @@ export default {
         (value) => !!value || "Required.",
         (value) => (value && value.length >= 0) || "Cannot be empty",
       ],
+      time: '20:30' // specified in HH:MM format
     };
   },
   methods: {

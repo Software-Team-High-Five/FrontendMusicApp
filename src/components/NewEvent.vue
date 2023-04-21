@@ -1,29 +1,35 @@
 <template>
   <div>
     <v-container>
-      <h1 class="mt-15 mb-4" style="color:#03003f">Create a New Performance</h1>
+      <h1 class="mt-15 mb-4" style="color: #03003f">
+        Create a New Performance
+      </h1>
 
-      <br /><br /><br />
-    <!-- <h3 style="text-align: left">Create a New Performance</h3> -->
-    <v-col class="col-md">
-      <v-card style="padding: 5px">
-        <br />
-        <v-col>
-          <v-select
-            label="Select a performance type"
-            :items="eventType"
-            v-model="event.type"
-          ></v-select>
-        </v-col>
-        <div v-show="event.type">
-          <v-col>
+      <br /><!--<br /><br />-->
+      <v-col class="col-md">
+        <v-card style="padding: 20px">
+          <!-- <br /> -->
+          <v-row>
+            <v-select
+              label="Select a performance type"
+              :items="eventType"
+              v-model="event.type"
+            ></v-select>
+          </v-row>
+          <div v-show="event.type">
+            <!-- Event Name -->
             <v-row>
-              <v-text-field v-model="event.name" label="Name"></v-text-field>
+              <v-text-field
+                v-model="event.name"
+                label="Name"
+                :rules="rules"
+                hide-details="auto"
+              ></v-text-field>
             </v-row>
-          </v-col>
-          <!-- date picker -->
-          <div>
-            <v-col>
+            <br />
+            <br />
+            <!-- Event Date -->
+            <v-row>
               <v-menu
                 ref="dateMenu"
                 v-model="dateMenu"
@@ -38,7 +44,10 @@
                   <v-text-field
                     v-model="event.date"
                     label="Date"
-                    persistent-hint
+                    :rules="rules"
+                    hide-details="auto"
+                    readonly
+                    dense
                     v-on="on"
                   ></v-text-field>
                 </template>
@@ -49,70 +58,78 @@
                   :allowed-dates="disablePastDates"
                 ></v-date-picker>
               </v-menu>
-            </v-col>
-          </div>
-          <br />
-
-          <v-col>
-            <v-row>
-                <v-col
-                    cols="11"
-                    sm="5"
-                    style="width: 50%; justify-content: center">
-                    <label for="startTime">Start Time: &nbsp;</label>
-                    <input type="time" id="startTime" v-model="event.startTime" />
-                    <br>
-                </v-col>
-                <v-col
-                    cols="11"
-                    sm="5"
-                    style="width: 50%; justify-content: center">
-                    <label for="startTime">End Time: &nbsp;</label>
-                    <input type="time" id="startTime" v-model="event.endTime" />
-                    <br>
-                </v-col>
             </v-row>
-          </v-col>
-          <v-row>
-            <v-col>
-              <v-row>
-                &nbsp;
-                <v-col>
-                  <v-checkbox
-                    v-model="event.openForSignup"
-                    label="Open For Signup"
-                    hide-details
-                  ></v-checkbox>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col></v-col>
-            <v-col></v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <button
-                class="btn btn-danger"
-                @click="clearEvent()"
-                style="width: 100%; padding-left: 10px; margin-left: 10px"
+
+            <!-- Time Pickers -->
+            <v-row justify="center">
+              <!-- Start Time -->
+              <v-col
+                cols="11"
+                sm="5"
+                style="width: 50%; justify-content: center"
               >
-                Cancel
-              </button>
-            </v-col>
-            <v-col>
-              <button
-                class="btn btn-success"
-                @click="createEvent()"
-                style="width: 100%; padding-right: 10px; margin-right: 10px"
+                <vuetify-time-select v-model="event.startTime" :minuteGroups="[0, 10, 20, 30, 40, 50]">
+                </vuetify-time-select>
+              </v-col>
+              <!-- End Time -->
+              <v-col
+                cols="11"
+                sm="5"
+                style="width: 50%; justify-content: center"
               >
-                Create Event
-              </button>
-            </v-col>
-          </v-row>
-        </div>
-      </v-card>
-    </v-col>
+              <vuetify-time-select v-model="event.endTime" :minuteGroups="[0, 10, 20, 30, 40, 50]">
+                </vuetify-time-select>
+              </v-col>
+            </v-row>
+
+            <!-- Open for Signup -->
+            <v-row>
+              <v-col>
+                <v-checkbox
+                  v-model="event.openForSignup"
+                  label="Open For Signup"
+                  hide-details
+                ></v-checkbox>
+              </v-col>
+            </v-row>
+
+            <!-- Action Buttons -->
+            <v-row>
+              <!-- Cancel Button -->
+              <v-col>
+                <button
+                  class="btn btn-danger"
+                  @click="clearEvent()"
+                  style="width: 100%; padding-left: 10px; margin-left: 10px"
+                >
+                  Cancel
+                </button>
+              </v-col>
+              <!-- Create Button -->
+              <v-col>
+                <button
+                  class="btn btn-success"
+                  @click="createEvent()"
+                  style="width: 100%; padding-right: 10px; margin-right: 10px"
+                >
+                  Create Event
+                </button>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card>
+      </v-col>
     </v-container>
+    <!-- Snack Bar -->
+    <v-snackbar v-model="snackbar" :timeout="timeout" color="red accent-2">
+      <v-icon dark left> mdi-alert-circle </v-icon>
+      {{ this.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar = false">
+          <strong>Close</strong>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -120,8 +137,13 @@
 import eds from "../services/EventDataService";
 import { useUserStore } from "@/stores/userStore";
 import { mapStores } from "pinia";
+import VuetifyTimeSelect from 'vuetify-time-select';
+
 
 export default {
+  components: {
+    VuetifyTimeSelect
+  },
   name: "new-event",
   data() {
     return {
@@ -138,6 +160,14 @@ export default {
       dateMenu: 0,
       timeMenu1: 0,
       timeMenu2: 0,
+      snackbar: false,
+      text: "Please fill out all fields.",
+      timeout: 8000,
+      rules: [
+        (value) => !!value || "Required.",
+        (value) => (value && value.length >= 0) || "Cannot be empty",
+      ],
+      time: '20:30' // specified in HH:MM format
     };
   },
   methods: {
@@ -146,10 +176,11 @@ export default {
     },
     createEvent() {
       if (this.eventIncomplete()) {
+        this.snackbar = true;
         return false;
       }
-      this.event.startTime += ':00';
-      this.event.endTime += ':00';
+      this.event.startTime += ":00";
+      this.event.endTime += ":00";
       eds
         .create({ ...this.event })
         .then((res) => {
@@ -175,7 +206,9 @@ export default {
       this.timeMenu2 = 0;
     },
     eventIncomplete() {
-      return !!Object.values(this.event).find((e) => !e);
+      let incomplete = Object.values(this.event).some((e) => e !== 0 && !e);
+      console.log(incomplete);
+      return incomplete;
     },
   },
   computed: { ...mapStores(useUserStore) },

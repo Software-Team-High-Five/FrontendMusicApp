@@ -1,63 +1,67 @@
 <template>
     <div>
         <v-container>
-            <h1 class="mt-15 text-blue" style="color:#03003f" v-show="userStore.isFaculty">Students</h1>
-            <h1 class="mt-15 text-blue" style="color:#03003f" v-show="userStore.isAdmin">Users</h1>
-            <br>
             <div v-show="userStore.isAdmin">
-            
-            <v-card>
-                <v-card-title>
-                    <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Search"
-                    single-line
-                    hide-details
-                    ></v-text-field>
-                </v-card-title>
-                <v-data-table
-                :headers="userHeaders"
-                :items="users"
-                :search="search"
-                :hide-defaut-footer="true"
-                disable-pagination
-                class="elevation-1"
-                >
-                <template v-slot:[`item.actions`]="{item}">
-                    <v-btn icon small class="mr-2" :to="{name: 'user-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
-                </template>
-            </v-data-table>
-            </v-card>
-            
-            </div>
-            <div v-show="userStore.isFaculty">
-            
                 <v-card>
-                <v-card-title>
-                    <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="Search"
-                    single-line
-                    hide-details
-                    ></v-text-field>
-                </v-card-title>
-                <v-data-table
-                :headers="studentHeaders"
-                :items="students"
-                :search="search"
-                :hide-defaut-footer="true"
-                disable-pagination
-                class="elevation-1"
-                >
-                    <template v-slot:[`item.actions`]="{item}">
-                        <v-btn icon small class="mr-2" :to="{name: 'student-edit', params: {id: item.id}}"><v-icon small>mdi-pencil</v-icon></v-btn>
-                    </template>
-                </v-data-table>
-            </v-card>
+                    <v-card-title style="background-color:#f2f3f4">
+                        <v-row>
+                            <v-col>
+                                <h1 class="ma-0 mt-2 pl-5" style="color:#03003f">Users</h1>
+                            </v-col>
+                            <v-col>
+                                <v-text-field
+                                    v-model="search"
+                                    append-icon="mdi-magnify"
+                                    label="Search"
+                                    single-line
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-card-title>
+                    <v-data-table
+                        :headers="userHeaders"
+                        :items="users"
+                        :search="search"
+                        :hide-defaut-footer="true"
+                        disable-pagination
+                        class="elevation-1"
+                        @click:row="user => $router.push({ name: 'user-edit', params: {id: user.id} })"
+                    ></v-data-table>
+                </v-card>
+                <br>
             </div>
-            
+
+            <div v-show="userStore.isFaculty">
+                <v-card>
+                    <v-card-title style="background-color:#f2f3f4">
+                        <v-row>
+                            <v-col>
+                                <h1 class="ma-0 mt-2 pl-5" style="color:#03003f">Students</h1>
+                            </v-col>
+                            <v-col>
+                                <v-text-field
+                                    v-model="search"
+                                    append-icon="mdi-magnify"
+                                    label="Search"
+                                    single-line
+                                    hide-details
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-card-title>
+                    <v-data-table
+                        :headers="studentHeaders"
+                        :items="students"
+                        :search="search"
+                        :hide-defaut-footer="true"
+                        disable-pagination
+                        class="elevation-1"
+                        @click:row="student => $router.push({ name: 'student-edit', params: {id: student.id} })"
+                    ></v-data-table>
+                </v-card>
+            </div>
+
         </v-container>
     </div>
 </template>
@@ -150,39 +154,39 @@ export default{
         }
     },
     mounted(){
-        if(this.userStore.isAdmin){
+        if(this.userStore.isAdmin) {
             userDS.getAll()
-            .then(res =>{
-                res.data.forEach(u => {
-                    this.users.push({
-                        id: u.id,
-                        fName: u.fName,
-                        lName: u.lName,
-                        roles: u.roles.map(r => r.role).join(', '),
-                        instruments: u.instruments.map(i => i.instrument).join(', ')
-                    })
-                }
-                 
-                )
-                console.log(this.user)
-            })
-            .catch(e => console.log(e))
-        }
-        else{
-            console.log(this.userStore.user.id)
-            studentDS.instructorStudents(this.userStore.user.id)
-            .then(res =>{
-                res.data.forEach(s => {
-                    this.students.push({
-                        id: s.id,
-                        fName: s.user.fName,
-                        lName: s.user.lName,
-                        classification: s.classification,
-                        instruments: s.user.instruments.map(i => i.instrument).join(', ')
-                    })
+                .then(res => {
+                    res.data.forEach(u => {
+                        this.users.push({
+                            id: u.id,
+                            fName: u.fName,
+                            lName: u.lName,
+                            roles: u.roles.map(r => r.role).join(', '),
+                            instruments: u.user_instruments.map(i => i.instrument.instrument).join(', ')
+                        })
+                    });
+                    console.log(this.user)
                 })
-            })
-            .catch(e => console.log(e))
+                .catch(e => console.log(e));
+        }
+        if(this.userStore.isFaculty) {
+            studentDS.instructorStudents(this.userStore.user.id)
+                .then(res =>{
+                    console.log(res.data);
+                    res.data.forEach(s => {
+                        console.log(s);
+                        this.students.push({
+                            id: s.id,
+                            fName: s.user.fName,
+                            lName: s.user.lName,
+                            classification: s.classification,
+                            instruments: s.user.user_instruments.map(i => i.instrument.instrument).join(', ')
+                        })
+                    });
+                    console.log(this.students);
+                })
+                .catch(e => console.log(e));
         }
     }
 }

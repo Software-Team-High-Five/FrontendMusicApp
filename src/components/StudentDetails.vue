@@ -56,27 +56,22 @@
           {{ userStore.user.student.level }}
         </v-col>
       </v-row>
-      <!-- Instructor -->
+      <br>
+      <br>
       <v-row>
         <v-col class="text-right py-0" align-self="center" cols="5">
-          <strong>Instructor</strong>
+          <strong>Instructor{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
         <v-col class="py-0" cols="7">
-          {{ instructor }}
+          <strong>Instrument{{ userStore.user.user_instruments.length > 1 ? 's' : ''}}</strong>
         </v-col>
       </v-row>
-      <!-- Instruments -->
-      <v-row>
-        <v-col class="text-right py-0" cols="5">
-          <strong>Instruments</strong>
+      <v-row v-for="i in userStore.user.user_instruments" :key="i.instrumentId">
+        <v-col class="text-right py-0" align-self="center" cols="5">
+          {{ i.instructor ? `${i.instructor.fName} ${i.instructor.lName}` : 'No Instructor' }}
         </v-col>
         <v-col class="py-0" cols="7">
-          <div
-            v-for="instrument in userStore.user.instruments"
-            :key="instrument.id"
-          >
-            {{ instrument.instrument }}
-          </div>
+          {{ i.instrument.instrument }}
         </v-col>
       </v-row>
       <!-- Repertoire -->
@@ -133,7 +128,7 @@
               <v-col class="text-right py-0" align-self="center" cols="4">
                 <strong>Composer</strong>
               </v-col>
-              <v-col class="py-0" cols="8">
+              <v-col class="py-0" cols="6">
                 <v-select
                   v-model="selectedSong.composerId"
                   :items="allComposers"
@@ -141,6 +136,9 @@
                   item-value="id"
                   dense
                 ></v-select>
+              </v-col>
+              <v-col cols="2">
+                <v-btn @click="openComposerDialog({}, true)"> Add </v-btn>
               </v-col>
             </v-row>
             <!-- Instrument -->
@@ -151,9 +149,9 @@
               <v-col class="py-0" cols="8">
                 <v-select
                   v-model="selectedSong.instrumentId"
-                  :items="userStore.user.instruments"
-                  item-text="instrument"
-                  item-value="id"
+                  :items="userStore.user.user_instruments"
+                  :item-text="instrument => instrument.instrument.instrument"
+                  item-value="instrumentId"
                   dense
                 ></v-select>
               </v-col>
@@ -186,6 +184,87 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!--Add New Composer-->
+    <v-dialog v-model="composerDialog" max-width="1000px">
+      <v-card>
+        <v-card-title>Add Composer</v-card-title>
+        <v-card-text>
+          <v-container class="body-1">
+            <!-- firstName -->
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>First Name *</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field v-model="selectedComposer.fName" dense></v-text-field>
+              </v-col>
+            </v-row>
+            <!--Middle Name-->
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Middle Name</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field v-model="selectedComposer.mName" dense></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Last Name *</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field v-model="selectedComposer.lName" dense></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Birth Date *</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field 
+                  v-model="selectedComposer.bDate" dense
+                  hint="yyyy-mm-dd"
+                  persistant-hint
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="text-right py-0" align-self="center" cols="4">
+                <strong>Death Date</strong>
+              </v-col>
+              <v-col class="py-0" cols="8">
+                <v-text-field 
+                  v-model="selectedComposer.dDate" dense 
+                  hint="yyyy-mm-dd"
+                  persistant-hint>
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <p class="text-center">Contact the <a href="mailto: cheryl.snyder@oc.edu?subject= Composer Approval">admin</a> to request composer approval</p>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <p class="text-center">*required field</p>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <!-- Save/Cancel Actions -->
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="addComposer()">
+            Add
+          </v-btn>
+          <v-btn @click="composerDialog = false"> Cancel </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Delete Song Dialog Box -->
     <v-dialog v-model="deleteDialog" max-width="700px">
       <v-card>
@@ -203,6 +282,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="composerRequested" timeout="1500" class="text-xs-center" >
+      Composer Requested!
+    </v-snackbar>
   </div>
 </template>
 <script>
@@ -221,7 +303,7 @@ export default {
       songHeaders: [
         { text: "Title", value: "title" },
         { text: "Composer", value: "composer" },
-        { text: "Instrument", value: "instrument" },
+        { text: "Instrument", value: "instrument.instrument" },
         // ,{ text: 'Semester', value: 'semester' }
         { text: "Actions", value: "actions", sortable: false },
       ],
@@ -231,7 +313,13 @@ export default {
       addingSong: true,
       songDialog: false,
       deleteDialog: false,
+      composerDialog: false,
+      addingComposer: false,
+      selectedComposer: {},
+      composerIndex: -1,
       prevRoute: null,
+      instruments: [],
+      composerRequested: false
     };
   },
   computed: {
@@ -249,6 +337,13 @@ export default {
       this.selectedSong = Object.assign({}, song);
       this.deleteDialog = true;
     },
+    openComposerDialog(composer, composerAction) {
+      this.composerIndex = this.allComposers.indexOf(composer)
+      this.selectedComposer = Object.assign({}, composer);
+      this.selectedComposer.mName = ''
+      this.addingComposer = composerAction;
+      this.composerDialog = true;
+    },
     addSong() {
       songDS
         .create({
@@ -264,8 +359,8 @@ export default {
           song.composer = this.allComposers.find(
             (c) => c.id == song.composerId
           ).name;
-          song.instrument = this.userStore.user.instruments.find(
-            (i) => i.id == res.data.instrumentId
+          song.instrument = this.userStore.user.user_instruments.find(
+            (i) => i.instrumentId == res.data.instrumentId
           ).instrument;
           this.allSongs.push(song);
           this.songDialog = false;
@@ -273,6 +368,32 @@ export default {
         .catch((e) => {
           console.log(e);
         });
+    },
+    addComposer(){
+      composerDS
+        .create({
+          fName: this.selectedComposer.fName,
+          mName: this.selectedComposer.mName,
+          lName: this.selectedComposer.lName,
+          bDate: this.selectedComposer.bDate,
+          dDate: this.selectedComposer.dDate,
+          isApproved: 0
+        })
+        .then((res) => {
+          let composer = res.data
+          composer.name = [composer.fName, composer.mName, composer.lName]
+              .filter(Boolean)
+              .join(" ")
+          this.allComposers.push(composer)
+          this.selectedSong.composerId = composer.id
+          console.log(this.selectedSong)
+          this.composerDialog = false;
+          this.songDialog = false;
+          this.composerRequested = true;
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     },
     editSong() {
       songDS
@@ -287,8 +408,8 @@ export default {
           this.selectedSong.composer = this.allComposers.find(
             (c) => c.id == this.selectedSong.composerId
           ).name;
-          this.selectedSong.instrument = this.userStore.user.instruments.find(
-            (i) => i.id == this.selectedSong.instrumentId
+          this.selectedSong.instrument = this.userStore.user.user_instruments.find(
+            (i) => i.instrumentId == this.selectedSong.instrumentId
           ).instrument;
           Object.assign(this.allSongs[this.songIndex], this.selectedSong);
           this.songDialog = false;
@@ -310,25 +431,6 @@ export default {
     },
   },
   mounted() {
-    // Get the instructor
-    let instructorPromise;
-    if (this.userStore.user.student.instructorId != null) {
-      instructorPromise = userDS
-        .get(this.userStore.user.student.instructorId)
-        .then((res) => {
-          this.instructor = `${res.data.fName} ${res.data.lName}`;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.instructor = "Error: not found";
-        });
-    }
-    else {
-      // if no instructor is assigned, use an empty string and promise
-      this.instructor = "";
-      instructorPromise = Promise.resolve();
-    }
-    // Get the student's songs
     let songsPromise = songDS
       .getAll()
       .then((res) => {
@@ -342,8 +444,8 @@ export default {
             ]
               .filter(Boolean)
               .join(" ");
-            song.instrument = this.userStore.user.instruments.find(
-              (i) => i.id == song.instrumentId
+            song.instrument = this.userStore.user.user_instruments.find(
+              (i) => i.instrumentId == song.instrumentId
             ).instrument;
             return song;
           });
@@ -361,6 +463,7 @@ export default {
             name: [composer.fName, composer.mName, composer.lName]
               .filter(Boolean)
               .join(" "),
+            isApproved: composer.isApproved
           };
         });
       })
@@ -368,8 +471,13 @@ export default {
         console.log(e);
       });
     // Mark page as loaded when all data is loaded
-    Promise.all([instructorPromise, songsPromise, composersPromise])
+    // Promise.all([instructorPromise, songsPromise, composersPromise])
+    Promise.all([songsPromise, composersPromise])
       .then(() => {
+        this.allComposers = this.allComposers.filter(c => 
+          c.isApproved || 
+          this.allSongs.some(s => s.composerId == c.id))
+
         this.loaded = true;
       })
       .catch(() => {

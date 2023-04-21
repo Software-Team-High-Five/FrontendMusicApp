@@ -15,53 +15,52 @@ const router = new Router({
       path: "/",
       alias: "/home",
       name: "home-page",
-      component: () => import("./components/Homepage"),
-    },
-    {
-      path: "/newevent",
-      name: "new-event",
-      component: () => import("./components/NewEvent"),
-    },
-    {
-      path: "/events/:eventId/signup",
-      name: "sign-up",
-      component: () => import("./components/SignUp"),
-    },
-    {
-      path: "/performance/:performanceId",
-      name: "view-performance",
-      component: () => import("./components/ViewPerformance"),
-    },
-    {
-      path: "/allevents",
-      name: "all-events",
-      component: () => import("./components/AllEvents"),
-    },
-    {
-      path: "/event/:eventId",
-      name: "event-details",
-      component: () => import("./components/EventDetails"),
-    },
- 
-    {
-        path: "/users"
-        ,name: "user-list"
-        ,component: () => import('./components/UserList')
-    },
-    {
-      path: "/student",
-      name: "student-details",
-      component: () => import("./components/StudentDetails"),
-    },
-    {
-      path: "/student/:id",
-      name: "student-edit",
-      component: () => import("./components/StudentEdit"),
+      component: () => import("./components/Homepage")
     },
     {
       path: "/login",
       name: "login",
-      component: () => import("./components/Login"),
+      component: () => import("./components/Login")
+    },
+    {
+      path: "/newevent",
+      name: "new-event",
+      component: () => import("./components/NewEvent")
+    },
+    {
+      path: "/events/:eventId/signup",
+      name: "sign-up",
+      component: () => import("./components/SignUp")
+    },
+    {
+      path: "/events/:eventId/signup/:userId",
+      name: "sign-up-admin",
+      component: () => import("./components/SignUp") //UPDATE
+    },
+    {
+      path: "/performances/:performanceId",
+      name: "view-performance",
+      component: () => import("./components/ViewPerformance")
+    },
+    {
+      path: "/events",
+      name: "all-events",
+      component: () => import("./components/AllEvents")
+    },
+    {
+      path: "/events/:eventId",
+      name: "event-details",
+      component: () => import("./components/EventDetails")
+    },
+    {
+      path: "/events/:eventId/admin",
+      name: "event-details-admin",
+      component: () => import("./components/EventDetailsAdmin")
+    },
+    {
+        path: "/users"
+        ,name: "user-list"
+        ,component: () => import('./components/UserList')
     },
     {
       path: "/user"
@@ -69,9 +68,29 @@ const router = new Router({
       ,component: () => import('./components/UserDetails')
     },
     {
-      path: "/user/:id"
+      path: "/student",
+      name: "student-details",
+      component: () => import("./components/StudentDetails")
+    },
+    {
+      path: "/users/:id"
       ,name: "user-edit"
       ,component: () => import('./components/UserEdit')
+    },
+    {
+      path: "/students/:id",
+      name: "student-edit",
+      component: () => import("./components/StudentEdit")
+    },
+    {
+      path: "/composers"
+      ,name: "composer-list"
+      ,component: () => import('./components/ComposerList')
+    },
+    {
+      path: "/composers/:id",
+      name: "composer-edit",
+      component: () => import("./components/ComposerEdit"),
     }
   ],
 });

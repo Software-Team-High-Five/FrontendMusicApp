@@ -4,7 +4,9 @@ class AvailabilityDataService {
     return http.get("/availabilities");
   }
   getForEvent(uid, eid) {
-    return http.get(`/availabilities/event/${uid}/${eid}`);
+    let path = `/availabilities/event/${eid}`;
+    if (uid) path += `?userId=${uid}`;
+    return http.get(path);
   }
   get(id) {
     return http.get(`/availabilities/${id}`);

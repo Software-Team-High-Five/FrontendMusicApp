@@ -1,5 +1,7 @@
 <template>
   <v-container class="body-1" v-if="loaded">
+    <h1 class="text-center">User Edit</h1>
+    <br>
     <!-- Name -->
     <v-row>
       <v-col class="text-left py-0" cols="4">
@@ -52,7 +54,16 @@
       </v-col>
     </v-row>
     <v-row class="mx-12">
-      <v-btn @click="Save"> Save Changes </v-btn>
+      <v-btn color="#03003f" elevation="5" style="color:#ffffff" @click="Save"> Save Changes </v-btn>
+    </v-row>
+    <v-row class="mx-12 mt-10"
+      v-show="user.roleIds.includes(allRoles.find(r => r.role == 'student').id)"
+    >
+      <v-btn class="ml-auto mr-auto" width="220px"
+        @click="$router.push({ name: 'student-edit', params: {id: user.id} })"
+      >
+        Go To Student Edit
+      </v-btn>
     </v-row>
   </v-container>
 </template>

@@ -7,6 +7,14 @@
         </v-row>
         <div v-if="loaded">
             <div v-if="!error">
+                <v-btn
+                    v-show="userStore.isAdmin"
+                    class="float-right ma-6 mr-15"
+                    style="display: flex;"
+                    @click="$router.push({ name: 'event-details-admin', params: {id: event.id} })"
+                >
+                    Go to Event Details
+                </v-btn>
                 <v-row :align="'center'">
                     <v-col style="width:min-content">
                         <h4 class='text-right'>Event Details</h4>
@@ -15,7 +23,6 @@
                         <div><span class="font-weight-medium">Type:</span> {{ event.type }}</div>
                         <div><span class="font-weight-medium">Date:</span> {{ event.date }}</div>
                         <div><span class="font-weight-medium">Time:</span> {{ displayTime(event.startTime) }} - {{ displayTime(event.endTime) }}</div>
-
                     </v-col>
                 </v-row>
                 <v-row>
@@ -227,20 +234,20 @@ export default {
                 .then(res => {
                     this.event = res.data;
 
-          // Set calendar size
-          let temp = this.event.startTime.split(":");
-          let start = {
-            hours: temp[0],
-            minutes: temp[1],
-          };
-          temp = this.event.endTime.split(":");
-          let end = {
-            hours: temp[0],
-            minutes: temp[1],
-          };
-          this.calAtts.fIndex = start.hours * 12 + start.minutes / 5;
-          this.calAtts.iCount =
-            end.hours * 12 + end.minutes / 5 - this.calAtts.fIndex;
+                    // Set calendar size
+                    let temp = this.event.startTime.split(":");
+                    let start = {
+                        hours: temp[0],
+                        minutes: temp[1],
+                    };
+                    temp = this.event.endTime.split(":");
+                    let end = {
+                        hours: temp[0],
+                        minutes: temp[1],
+                    };
+                    this.calAtts.fIndex = start.hours * 12 + start.minutes / 5;
+                    this.calAtts.iCount =
+                        end.hours * 12 + end.minutes / 5 - this.calAtts.fIndex;
 
                     // Generate calendar time slots
                     let startI = this.calAtts.fIndex;

@@ -27,6 +27,12 @@
     <v-card>
       <v-card-title style="background-color:#f2f3f4">
         Availabilities for Faculty/Accompanists
+        <v-btn class="ml-auto"
+          v-show="(userStore.isFaculty || userStore.isAccompanist) && !availabilities.some(a => a.userId == userStore.user.id)"
+          @click="$router.push({ name: 'sign-up', params: { eventId: event.id } })"
+        >
+          Mark My Availability
+        </v-btn>
       </v-card-title>
       <v-data-table
         :headers="availabilityHeaders"
@@ -132,7 +138,7 @@
         <v-row>
           <v-col style="display: flex;">
             <button 
-              class="btn btn-dark" 
+              class="btn btn-dark"
               style="width: 98%"
               @click="showPerformanceDetails = false"
             >
@@ -502,12 +508,12 @@ export default {
         });
     },
     clickAvailability(avail) {
-      this.$router.push({
-        name: "sign-up-admin",
-        params: {
-          eventId: this.$route.params.eventId,
-          userId: avail.userId
-        }});
+      // this.$router.push({
+      //   name: "sign-up-admin",
+      //   params: {
+      //     eventId: this.$route.params.eventId,
+      //     userId: avail.userId
+      //   }});
     },
     performanceDetails(p) {
       this.performance = p;

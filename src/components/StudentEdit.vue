@@ -1,5 +1,7 @@
 <template>
     <v-container class="body-1" v-if="loaded">
+        <h1 class="text-center">Student Edit</h1>
+        <br>
         <!-- Name -->
         <v-row>
             <v-col class="text-left py-0" cols="4">
@@ -113,8 +115,17 @@
         </v-row>
         <br><br>
         <v-row class="mx-12">
-            <v-btn @click="Save">
+            <v-btn color="#03003f" elevation="5" style="color:#ffffff" @click="Save">
                 Save Changes
+            </v-btn>
+        </v-row>
+        <br><br>
+        <v-row class="mx-12">
+            <v-btn
+                class="ml-auto mr-auto" width="220px"
+                @click="$router.push({ name: 'user-edit', params: {id: student.id} })"
+            >
+                Go To User Edit
             </v-btn>
         </v-row>
     </v-container>
